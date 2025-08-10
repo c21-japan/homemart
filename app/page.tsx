@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import AreaSearch from '@/components/AreaSearch'
 
 interface Property {
   id: number
@@ -85,6 +86,11 @@ export default function Home() {
             今すぐ相談
           </a>
         </div>
+      </div>
+
+      {/* エリア検索セクション - ここに追加！ */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <AreaSearch />
       </div>
 
       {/* 物件一覧 */}
