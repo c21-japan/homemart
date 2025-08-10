@@ -210,12 +210,12 @@ export default function PropertyDetail() {
                   📱 LINEで問い合わせ
                 </a>
 
-                <button 
-                  onClick={() => alert('お問い合わせフォームは準備中です')}
+                <Link
+                  href={`/contact?property=${encodeURIComponent(property.name)}&id=${property.id}`}
                   className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 font-bold"
                 >
                   ✉️ メールで問い合わせ
-                </button>
+                </Link>
               </div>
 
               <div className="mt-6 p-4 bg-gray-50 rounded">

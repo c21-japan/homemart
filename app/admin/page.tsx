@@ -127,6 +127,9 @@ export default function Admin() {
             <Link href="/admin/properties" className="text-blue-600 hover:underline">
               物件一覧
             </Link>
+            <Link href="/admin/inquiries" className="text-blue-600 hover:underline">
+              お問い合わせ
+            </Link>
             <a href="/" className="text-blue-600 hover:underline">
               サイトを見る
             </a>
@@ -251,29 +254,38 @@ export default function Admin() {
             <li>• 登録した物件はすぐにトップページに表示されます</li>
             <li>• おすすめ物件にチェックを入れると上位に表示されます</li>
             <li>• 「物件一覧」から編集・削除ができます</li>
+            <li>• 「お問い合わせ」から顧客の問い合わせを確認できます</li>
           </ul>
         </div>
 
-        {/* リンク集 */}
-        <div className="mt-4 flex justify-center gap-4">
+        {/* クイックアクセス */}
+        <div className="mt-8 grid grid-cols-3 gap-4">
           <Link 
             href="/admin/properties" 
-            className="text-blue-600 hover:underline inline-flex items-center gap-2"
+            className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow text-center"
           >
-            <span>登録済み物件を管理</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <div className="text-3xl mb-2">📋</div>
+            <p className="font-bold">物件一覧</p>
+            <p className="text-sm text-gray-600">登録済み物件の管理</p>
           </Link>
+          
+          <Link 
+            href="/admin/inquiries" 
+            className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow text-center"
+          >
+            <div className="text-3xl mb-2">📧</div>
+            <p className="font-bold">お問い合わせ</p>
+            <p className="text-sm text-gray-600">顧客からの問い合わせ</p>
+          </Link>
+          
           <a 
             href="/" 
             target="_blank" 
-            className="text-blue-600 hover:underline inline-flex items-center gap-2"
+            className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow text-center"
           >
-            <span>公開サイトを確認</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
+            <div className="text-3xl mb-2">🌐</div>
+            <p className="font-bold">公開サイト</p>
+            <p className="text-sm text-gray-600">お客様向けページ</p>
           </a>
         </div>
       </div>
