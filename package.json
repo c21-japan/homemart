@@ -12,6 +12,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@supabase/supabase-js": "^2.54.0",
     "next": "15.4.6",
+    "next-cloudinary": "^6.16.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-dropzone": "^14.3.8"
