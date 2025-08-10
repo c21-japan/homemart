@@ -1,10 +1,11 @@
 'use client'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function Contact() {
+// メインのコンポーネントを分離
+function ContactForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const propertyName = searchParams.get('property') || ''
@@ -232,5 +233,18 @@ export default function Contact() {
         </div>
       </main>
     </div>
+  )
+}
+
+// Suspenseで囲んだメインコンポーネント
+export default function Contact() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">読み込み中...</div>
+      </div>
+    }>
+      <ContactForm />
+    </Suspense>
   )
 }
