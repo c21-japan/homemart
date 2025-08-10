@@ -77,6 +77,11 @@ export default function AreaSearch() {
     setSelectedArea(areaName)
   }
 
+  // 検索画面を閉じる関数を追加
+  const handleCloseSearch = () => {
+    setSelectedArea(null)
+  }
+
   return (
     <>
       <div className="w-full max-w-7xl mx-auto p-4 bg-white rounded-lg shadow-sm">
@@ -136,9 +141,12 @@ export default function AreaSearch() {
         </div>
       </div>
 
-      {/* 検索画面モーダル */}
+      {/* 検索画面モーダル - onCloseを追加 */}
       {selectedArea && (
-        <PropertySearch selectedArea={selectedArea} />
+        <PropertySearch 
+          selectedArea={selectedArea} 
+          onClose={handleCloseSearch}
+        />
       )}
     </>
   )
