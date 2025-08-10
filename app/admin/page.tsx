@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { ImageUpload } from '@/components/ImageUpload'
+import Link from 'next/link'
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -123,6 +124,9 @@ export default function Admin() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">物件管理画面</h1>
           <div className="flex gap-4">
+            <Link href="/admin/properties" className="text-blue-600 hover:underline">
+              物件一覧
+            </Link>
             <a href="/" className="text-blue-600 hover:underline">
               サイトを見る
             </a>
@@ -246,18 +250,27 @@ export default function Admin() {
             <li>• 物件情報を入力して「物件を登録」をクリック</li>
             <li>• 登録した物件はすぐにトップページに表示されます</li>
             <li>• おすすめ物件にチェックを入れると上位に表示されます</li>
-            <li>• パスワードは30日間保存されます</li>
+            <li>• 「物件一覧」から編集・削除ができます</li>
           </ul>
         </div>
 
-        {/* 登録済み物件の確認リンク */}
-        <div className="mt-4 text-center">
+        {/* リンク集 */}
+        <div className="mt-4 flex justify-center gap-4">
+          <Link 
+            href="/admin/properties" 
+            className="text-blue-600 hover:underline inline-flex items-center gap-2"
+          >
+            <span>登録済み物件を管理</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
           <a 
             href="/" 
             target="_blank" 
             className="text-blue-600 hover:underline inline-flex items-center gap-2"
           >
-            <span>登録した物件を確認する</span>
+            <span>公開サイトを確認</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
