@@ -49,12 +49,6 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">株式会社ホームマート</h1>
             <div className="flex gap-4 items-center">
-              <Link 
-                href="/admin" 
-                className="text-gray-600 hover:text-gray-900 text-sm"
-              >
-                管理画面
-              </Link>
               <a 
                 href="tel:0120438639" 
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
