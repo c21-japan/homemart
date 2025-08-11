@@ -32,54 +32,167 @@ export default function NewProperty() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   
   const [formData, setFormData] = useState({
+    // 基本情報
     name: '',
     price: '',
-    address: '',
-    description: '',
-    phone: '',
-    status: 'published',
-    is_new: true,
-    property_type: '新築戸建',
+    price_per_tsubo: '',
     prefecture: '奈良県',
     city: '',
     town: '',
     station: '',
+    route: '',
     walking_time: '',
     land_area: '',
+    land_area_tsubo: '',
     building_area: '',
     layout: '',
     building_age: '',
+    build_year: '',
+    build_month: '',
     structure: '木造',
     floors: '',
+    direction: '南向き',
+    
+    // 詳細情報
     parking: '',
     building_coverage: '',
     floor_area_ratio: '',
     land_rights: '所有権',
     use_district: '',
     road_situation: '',
+    road_type: '公道',
+    road_width: '',
     current_status: '空家',
-    reform_history: '',
-    equipment: '',
-    features: '',
-    staff_comment: '',
-    // マンション用
+    delivery_time: '',
+    
+    // マンション専用
+    floor_number: '',
+    total_floors: '',
     total_units: '',
     management_fee: '',
     repair_fund: '',
     management_company: '',
+    management_type: '全部委託',
     balcony_area: '',
-    // 土地用
-    price_per_tsubo: '',
+    private_garden_area: '',
+    parking_fee: '',
+    parking_status: '',
+    elevator: false,
+    auto_lock: false,
+    delivery_box: false,
+    bicycle_parking: false,
+    common_facilities: '',
+    
+    // 土地専用
     land_shape: '整形',
-    building_conditions: '無'
+    building_conditions: '無',
+    terrain: '平坦',
+    water_supply: '公営',
+    sewage: '公共下水',
+    gas: '都市ガス',
+    electricity: '引込済',
+    height_limit: '',
+    fire_zone: '',
+    other_restrictions: '',
+    
+    // 法的事項
+    building_confirmation: '',
+    inspection_certificate: false,
+    insurance: false,
+    performance_evaluation: false,
+    long_term_excellent: false,
+    flat35s: false,
+    energy_standard: false,
+    earthquake_resistance: '',
+    insulation_grade: '',
+    
+    // リフォーム・設備
+    reform_history: '',
+    equipment_status: '',
+    
+    // 周辺環境
+    school_district: '',
+    shopping_facilities: '',
+    public_facilities: '',
+    transportation: '',
+    
+    // 営業情報
+    staff_comment: '',
+    sales_point: '',
+    
+    // 共通特徴（チェックボックス）
+    features: {
+      // 住宅性能・品質
+      long_term_excellent: false,
+      performance_evaluation: false,
+      flat35s: false,
+      energy_standard: false,
+      earthquake_grade3: false,
+      insulation_grade4: false,
+      
+      // 設備・仕様
+      system_kitchen: false,
+      dishwasher: false,
+      ih_cooktop: false,
+      bathroom_dryer: false,
+      washlet: false,
+      floor_heating: false,
+      air_conditioner: false,
+      tv_intercom: false,
+      
+      // 立地・環境
+      sunny: false,
+      well_ventilated: false,
+      corner_lot: false,
+      quiet_area: false,
+      station_10min: false,
+      shopping_nearby: false,
+      school_nearby: false,
+      park_nearby: false,
+      
+      // その他
+      parking_2cars: false,
+      all_room_storage: false,
+      walk_in_closet: false,
+      under_floor_storage: false,
+      attic_storage: false,
+      south_balcony: false,
+      private_garden: false,
+      pet_allowed: false
+    },
+    
+    // システム情報
+    status: 'published',
+    is_new: true,
+    property_type: '新築戸建'
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+    const { name, value, type } = e.target
+    
+    if (type === 'checkbox') {
+      const checkbox = e.target as HTMLInputElement
+      if (name.startsWith('features.')) {
+        const featureName = name.split('.')[1]
+        setFormData(prev => ({
+          ...prev,
+          features: {
+            ...prev.features,
+            [featureName]: checkbox.checked
+          }
+        }))
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [name]: checkbox.checked
+        }))
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
 
     // 都道府県が変更されたら市区町村をリセット
     if (name === 'prefecture') {
@@ -256,6 +369,21 @@ export default function NewProperty() {
                   />
                 </div>
 
+                {formData.property_type === '土地' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      坪単価（万円/坪）
+                    </label>
+                    <input
+                      type="number"
+                      name="price_per_tsubo"
+                      value={formData.price_per_tsubo}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     都道府県 <span className="text-red-500">*</span>
@@ -320,6 +448,20 @@ export default function NewProperty() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
+                    路線
+                  </label>
+                  <input
+                    type="text"
+                    name="route"
+                    value={formData.route}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    placeholder="例：近鉄大阪線"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
                     駅徒歩（分）
                   </label>
                   <input
@@ -332,19 +474,65 @@ export default function NewProperty() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    間取り
-                  </label>
-                  <input
-                    type="text"
-                    name="layout"
-                    value={formData.layout}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：3LDK"
-                  />
-                </div>
+                {formData.property_type !== '土地' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        間取り
+                      </label>
+                      <input
+                        type="text"
+                        name="layout"
+                        value={formData.layout}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                        placeholder="例：3LDK"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        築年月
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          name="build_year"
+                          value={formData.build_year}
+                          onChange={handleChange}
+                          className="flex-1 p-2 border rounded"
+                          placeholder="2024"
+                        />
+                        <span className="self-center">年</span>
+                        <input
+                          type="number"
+                          name="build_month"
+                          value={formData.build_month}
+                          onChange={handleChange}
+                          className="w-20 p-2 border rounded"
+                          placeholder="3"
+                          min="1"
+                          max="12"
+                        />
+                        <span className="self-center">月</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        築年数
+                      </label>
+                      <input
+                        type="number"
+                        name="building_age"
+                        value={formData.building_age}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                        placeholder="0"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -374,16 +562,6 @@ export default function NewProperty() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">築年数</label>
-                    <input
-                      type="number"
-                      name="building_age"
-                      value={formData.building_age}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium mb-2">構造</label>
                     <select
                       name="structure"
@@ -398,6 +576,17 @@ export default function NewProperty() {
                     </select>
                   </div>
                   <div>
+                    <label className="block text-sm font-medium mb-2">建物階数</label>
+                    <input
+                      type="number"
+                      name="floors"
+                      value={formData.floors}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="2"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium mb-2">駐車場（台）</label>
                     <input
                       type="number"
@@ -407,6 +596,87 @@ export default function NewProperty() {
                       className="w-full p-2 border rounded"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">建ぺい率（%）</label>
+                    <input
+                      type="number"
+                      name="building_coverage"
+                      value={formData.building_coverage}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">容積率（%）</label>
+                    <input
+                      type="number"
+                      name="floor_area_ratio"
+                      value={formData.floor_area_ratio}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">土地権利</label>
+                    <select
+                      name="land_rights"
+                      value={formData.land_rights}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="所有権">所有権</option>
+                      <option value="借地権">借地権</option>
+                      <option value="定期借地権">定期借地権</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">用途地域</label>
+                    <input
+                      type="text"
+                      name="use_district"
+                      value={formData.use_district}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：第一種低層住居専用地域"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">接道状況</label>
+                    <input
+                      type="text"
+                      name="road_situation"
+                      value={formData.road_situation}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：南側6m公道"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">現況</label>
+                    <select
+                      name="current_status"
+                      value={formData.current_status}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="空家">空家</option>
+                      <option value="居住中">居住中</option>
+                      <option value="賃貸中">賃貸中</option>
+                    </select>
+                  </div>
+                  {formData.property_type === '中古戸建' && (
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium mb-2">リフォーム履歴</label>
+                      <textarea
+                        name="reform_history"
+                        value={formData.reform_history}
+                        onChange={handleChange}
+                        rows={3}
+                        className="w-full p-2 border rounded"
+                        placeholder="例：2023年3月 外壁塗装、屋根葺き替え"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -436,6 +706,70 @@ export default function NewProperty() {
                     />
                   </div>
                   <div>
+                    <label className="block text-sm font-medium mb-2">階数 / 総階数</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        name="floor_number"
+                        value={formData.floor_number}
+                        onChange={handleChange}
+                        className="flex-1 p-2 border rounded"
+                        placeholder="5"
+                      />
+                      <span className="self-center">階 /</span>
+                      <input
+                        type="number"
+                        name="total_floors"
+                        value={formData.total_floors}
+                        onChange={handleChange}
+                        className="flex-1 p-2 border rounded"
+                        placeholder="10"
+                      />
+                      <span className="self-center">階建</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">向き</label>
+                    <select
+                      name="direction"
+                      value={formData.direction}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="南向き">南向き</option>
+                      <option value="東向き">東向き</option>
+                      <option value="西向き">西向き</option>
+                      <option value="北向き">北向き</option>
+                      <option value="南東向き">南東向き</option>
+                      <option value="南西向き">南西向き</option>
+                      <option value="北東向き">北東向き</option>
+                      <option value="北西向き">北西向き</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">総戸数</label>
+                    <input
+                      type="number"
+                      name="total_units"
+                      value={formData.total_units}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">構造</label>
+                    <select
+                      name="structure"
+                      value={formData.structure}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="RC造">RC造</option>
+                      <option value="SRC造">SRC造</option>
+                      <option value="鉄骨造">鉄骨造</option>
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium mb-2">管理費（月額）</label>
                     <input
                       type="number"
@@ -454,6 +788,100 @@ export default function NewProperty() {
                       onChange={handleChange}
                       className="w-full p-2 border rounded"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">管理形態</label>
+                    <select
+                      name="management_type"
+                      value={formData.management_type}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="全部委託">全部委託</option>
+                      <option value="一部委託">一部委託</option>
+                      <option value="自主管理">自主管理</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">管理会社名</label>
+                    <input
+                      type="text"
+                      name="management_company"
+                      value={formData.management_company}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">駐車場（月額）</label>
+                    <input
+                      type="number"
+                      name="parking_fee"
+                      value={formData.parking_fee}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="10000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">現況</label>
+                    <select
+                      name="current_status"
+                      value={formData.current_status}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="空室">空室</option>
+                      <option value="居住中">居住中</option>
+                      <option value="賃貸中">賃貸中</option>
+                    </select>
+                  </div>
+                  
+                  {/* 共用施設 */}
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-2">共用施設</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name="elevator"
+                          checked={formData.elevator}
+                          onChange={handleChange}
+                          className="mr-2"
+                        />
+                        エレベーター
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name="auto_lock"
+                          checked={formData.auto_lock}
+                          onChange={handleChange}
+                          className="mr-2"
+                        />
+                        オートロック
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name="delivery_box"
+                          checked={formData.delivery_box}
+                          onChange={handleChange}
+                          className="mr-2"
+                        />
+                        宅配ボックス
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name="bicycle_parking"
+                          checked={formData.bicycle_parking}
+                          onChange={handleChange}
+                          className="mr-2"
+                        />
+                        駐輪場
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -474,17 +902,171 @@ export default function NewProperty() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">坪単価（万円）</label>
+                    <label className="block text-sm font-medium mb-2">土地面積（坪）</label>
                     <input
                       type="number"
-                      name="price_per_tsubo"
-                      value={formData.price_per_tsubo}
+                      name="land_area_tsubo"
+                      value={formData.land_area_tsubo}
                       onChange={handleChange}
                       className="w-full p-2 border rounded"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">土地形状</label>
+                    <label className="block text-sm font-medium mb-2">土地権利</label>
+                    <select
+                      name="land_rights"
+                      value={formData.land_rights}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="所有権">所有権</option>
+                      <option value="借地権">借地権</option>
+                      <option value="定期借地権">定期借地権</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">用途地域</label>
+                    <input
+                      type="text"
+                      name="use_district"
+                      value={formData.use_district}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：第一種低層住居専用地域"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">建ぺい率（%）</label>
+                    <input
+                      type="number"
+                      name="building_coverage"
+                      value={formData.building_coverage}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">容積率（%）</label>
+                    <input
+                      type="number"
+                      name="floor_area_ratio"
+                      value={formData.floor_area_ratio}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">高さ制限</label>
+                    <input
+                      type="text"
+                      name="height_limit"
+                      value={formData.height_limit}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：10m"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">防火地域</label>
+                    <input
+                      type="text"
+                      name="fire_zone"
+                      value={formData.fire_zone}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：準防火地域"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">接道状況</label>
+                    <input
+                      type="text"
+                      name="road_situation"
+                      value={formData.road_situation}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                      placeholder="例：南側6m公道"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">道路種別</label>
+                    <select
+                      name="road_type"
+                      value={formData.road_type}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="公道">公道</option>
+                      <option value="私道">私道</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">上水道</label>
+                    <select
+                      name="water_supply"
+                      value={formData.water_supply}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="公営">公営</option>
+                      <option value="井戸">井戸</option>
+                      <option value="なし">なし</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">下水道</label>
+                    <select
+                      name="sewage"
+                      value={formData.sewage}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="公共下水">公共下水</option>
+                      <option value="浄化槽">浄化槽</option>
+                      <option value="汲み取り">汲み取り</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">都市ガス</label>
+                    <select
+                      name="gas"
+                      value={formData.gas}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="都市ガス">都市ガス</option>
+                      <option value="プロパン">プロパン</option>
+                      <option value="なし">なし</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">電気</label>
+                    <select
+                      name="electricity"
+                      value={formData.electricity}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="引込済">引込済</option>
+                      <option value="要工事">要工事</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">地勢</label>
+                    <select
+                      name="terrain"
+                      value={formData.terrain}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="平坦">平坦</option>
+                      <option value="傾斜">傾斜</option>
+                      <option value="高台">高台</option>
+                      <option value="低地">低地</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">土地の形状</label>
                     <select
                       name="land_shape"
                       value={formData.land_shape}
@@ -494,6 +1076,20 @@ export default function NewProperty() {
                       <option value="整形">整形</option>
                       <option value="不整形">不整形</option>
                       <option value="角地">角地</option>
+                      <option value="旗竿地">旗竿地</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">現況</label>
+                    <select
+                      name="current_status"
+                      value={formData.current_status}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="更地">更地</option>
+                      <option value="古家有">古家有</option>
+                      <option value="建物有">建物有</option>
                     </select>
                   </div>
                   <div>
@@ -511,6 +1107,339 @@ export default function NewProperty() {
                 </div>
               </div>
             )}
+
+            {/* 共通特徴（チェックボックス） */}
+            <div className="border-t pt-6">
+              <h2 className="text-lg font-bold mb-4">物件の特徴</h2>
+              
+              {/* 住宅性能・品質 */}
+              <div className="mb-4">
+                <h3 className="font-medium mb-2">住宅性能・品質</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.long_term_excellent"
+                      checked={formData.features.long_term_excellent}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    長期優良住宅
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.performance_evaluation"
+                      checked={formData.features.performance_evaluation}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    住宅性能評価書取得
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.flat35s"
+                      checked={formData.features.flat35s}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    フラット35S対応
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.energy_standard"
+                      checked={formData.features.energy_standard}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    省エネ基準適合
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.earthquake_grade3"
+                      checked={formData.features.earthquake_grade3}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    耐震等級3
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.insulation_grade4"
+                      checked={formData.features.insulation_grade4}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    断熱等性能等級4
+                  </label>
+                </div>
+              </div>
+
+              {/* 設備・仕様 */}
+              <div className="mb-4">
+                <h3 className="font-medium mb-2">設備・仕様</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.system_kitchen"
+                      checked={formData.features.system_kitchen}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    システムキッチン
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.dishwasher"
+                      checked={formData.features.dishwasher}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    食器洗い乾燥機
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.ih_cooktop"
+                      checked={formData.features.ih_cooktop}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    IHクッキングヒーター
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.bathroom_dryer"
+                      checked={formData.features.bathroom_dryer}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    浴室乾燥機
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.washlet"
+                      checked={formData.features.washlet}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    温水洗浄便座
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.floor_heating"
+                      checked={formData.features.floor_heating}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    床暖房
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.air_conditioner"
+                      checked={formData.features.air_conditioner}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    エアコン
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.tv_intercom"
+                      checked={formData.features.tv_intercom}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    TVモニタ付インターホン
+                  </label>
+                </div>
+              </div>
+
+              {/* 立地・環境 */}
+              <div className="mb-4">
+                <h3 className="font-medium mb-2">立地・環境</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.sunny"
+                      checked={formData.features.sunny}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    陽当り良好
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.well_ventilated"
+                      checked={formData.features.well_ventilated}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    通風良好
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.corner_lot"
+                      checked={formData.features.corner_lot}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    角地
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.quiet_area"
+                      checked={formData.features.quiet_area}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    閑静な住宅地
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.station_10min"
+                      checked={formData.features.station_10min}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    駅徒歩10分以内
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.shopping_nearby"
+                      checked={formData.features.shopping_nearby}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    商業施設近い
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.school_nearby"
+                      checked={formData.features.school_nearby}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    学校近い
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.park_nearby"
+                      checked={formData.features.park_nearby}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    公園近い
+                  </label>
+                </div>
+              </div>
+
+              {/* その他 */}
+              <div className="mb-4">
+                <h3 className="font-medium mb-2">その他</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.parking_2cars"
+                      checked={formData.features.parking_2cars}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    駐車2台可
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.all_room_storage"
+                      checked={formData.features.all_room_storage}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    全居室収納
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.walk_in_closet"
+                      checked={formData.features.walk_in_closet}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    ウォークインクローゼット
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.under_floor_storage"
+                      checked={formData.features.under_floor_storage}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    床下収納
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.attic_storage"
+                      checked={formData.features.attic_storage}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    小屋裏収納
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.south_balcony"
+                      checked={formData.features.south_balcony}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    南面バルコニー
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.private_garden"
+                      checked={formData.features.private_garden}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    専用庭
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="features.pet_allowed"
+                      checked={formData.features.pet_allowed}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    ペット可
+                  </label>
+                </div>
+              </div>
+            </div>
 
             {/* スタッフコメント */}
             <div className="border-t pt-6">
