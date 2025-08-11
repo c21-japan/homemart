@@ -16,6 +16,7 @@ interface Property {
   status: string
   is_new: boolean
   staff_comment?: string
+  featured?: boolean
   created_at: string
   updated_at: string
 }
@@ -38,11 +39,14 @@ function PropertiesListContent() {
     try {
       let query = supabase.from('properties').select('*')
       
+      // URLパラメータに基づいてフィルタリング
       if (viewParam === 'published') {
         query = query.eq('status', 'published')
       } else if (viewParam === 'featured') {
-        query = query.not('staff_comment', 'is', null)
+        // featuredフィールドがtrueの物件、またはstaff_commentがある物件を取得
+        query = query.or('featured.eq.true,staff_comment.not.is.null')
       }
+      // viewParam === 'all' の場合はフィルタなし
       
       const { data, error } = await query.order('created_at', { ascending: false })
 
@@ -91,6 +95,22 @@ function PropertiesListContent() {
     }
   }
 
+  const handleFeaturedToggle = async (id: string, currentFeatured: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .update({ featured: !currentFeatured })
+        .eq('id', id)
+
+      if (error) throw error
+      
+      alert(`おすすめ物件${!currentFeatured ? 'に設定' : 'から解除'}しました`)
+      fetchProperties()
+    } catch (error) {
+      console.error('Error updating featured status:', error)
+    }
+  }
+
   const getFilteredProperties = () => {
     let filtered = [...properties]
 
@@ -125,7 +145,7 @@ function PropertiesListContent() {
   const getBadgeColor = () => {
     switch (viewParam) {
       case 'published': return 'bg-green-100 text-green-800'
-      case 'featured': return 'bg-yellow-100 text-yellow-800'
+      case 'featured': return 'bg-purple-100 text-purple-800'
       default: return 'bg-blue-100 text-blue-800'
     }
   }
@@ -153,7 +173,7 @@ function PropertiesListContent() {
               </span>
             </div>
             <Link
-              href="/admin/properties/new"
+              href="/admin/properties"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               新規物件登録
@@ -190,7 +210,7 @@ function PropertiesListContent() {
                 href="/admin/properties-list?view=featured"
                 className={`py-2 px-6 border-b-2 font-medium text-sm ${
                   viewParam === 'featured'
-                    ? 'border-yellow-500 text-yellow-600'
+                    ? 'border-purple-500 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -267,6 +287,12 @@ function PropertiesListContent() {
                           編集
                         </button>
                         <button
+                          onClick={() => handleFeaturedToggle(property.id, property.featured || false)}
+                          className="text-purple-600 hover:bg-purple-50 p-2 rounded"
+                        >
+                          {property.featured ? 'おすすめ解除' : 'おすすめ設定'}
+                        </button>
+                        <button
                           onClick={() => handleDelete(property.id)}
                           className="text-red-600 hover:bg-red-50 p-2 rounded"
                         >
@@ -340,8 +366,8 @@ function PropertiesListContent() {
                         >
                           {property.status === 'published' ? '公開中' : '下書き'}
                         </button>
-                        {property.staff_comment && (
-                          <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+                        {(property.featured || property.staff_comment) && (
+                          <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
                             おすすめ
                           </span>
                         )}
@@ -384,7 +410,7 @@ function PropertiesListContent() {
             <div className="text-center py-12">
               <p className="text-gray-500">
                 {viewParam === 'featured' 
-                  ? 'おすすめ物件はありません。物件編集画面でスタッフコメントを追加してください。'
+                  ? 'おすすめ物件はありません。物件編集画面でスタッフコメントを追加するか、おすすめ設定をしてください。'
                   : '物件が見つかりませんでした'
                 }
               </p>
