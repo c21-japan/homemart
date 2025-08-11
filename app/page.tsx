@@ -102,11 +102,9 @@ export default function Home() {
               <Link href="/contact" className="py-2 px-4 hover:bg-[#FFA500] hover:bg-opacity-20 rounded transition-colors font-medium text-[#FFA500]">
                 お問い合わせ
               </Link>
-              <Link href="/admin" className="py-2 px-4 hover:bg-gray-200 rounded transition-colors font-medium text-gray-600">
-                管理画面
-              </Link>
             </div>
           </nav>
+          {/* 管理画面リンクを削除 */}
         </div>
       </header>
 
