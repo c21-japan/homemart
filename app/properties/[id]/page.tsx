@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
-// 型定義
 interface Property {
   id: string
   name: string
@@ -45,9 +44,7 @@ interface Property {
   auto_lock?: boolean
   delivery_box?: boolean
   bicycle_parking?: boolean
-  features?: {
-    [key: string]: boolean
-  }
+  features?: string[]
 }
 
 export default function PropertyDetailPage() {
@@ -95,7 +92,6 @@ export default function PropertyDetailPage() {
     )
   }
 
-  // 画像配列を型安全に作成
   const images: string[] = []
   if (property.images && property.images.length > 0) {
     images.push(...property.images)
@@ -105,7 +101,6 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link href="/properties" className="text-blue-600 hover:underline">
@@ -116,30 +111,35 @@ export default function PropertyDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* 画像ギャラリー */}
           {images.length > 0 && (
             <div className="relative">
-              <img
-                src={images[currentImageIndex]}
-                alt={`${property.name} - ${currentImageIndex + 1}`}
-                className="w-full h-96 object-cover"
-              />
+              <div className="relative h-[500px] bg-gray-100">
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${property.name} - ${currentImageIndex + 1}`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
               
               {images.length > 1 && (
                 <>
                   <button
                     onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100"
                   >
-                    ←
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
                   </button>
                   <button
                     onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100"
                   >
-                    →
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-60 text-white px-3 py-1 rounded">
                     {currentImageIndex + 1} / {images.length}
                   </div>
                 </>
@@ -147,24 +147,22 @@ export default function PropertyDetailPage() {
             </div>
           )}
 
-          {/* サムネイル */}
           {images.length > 1 && (
-            <div className="flex gap-2 p-4 overflow-x-auto">
+            <div className="flex gap-2 p-4 overflow-x-auto bg-gray-50">
               {images.map((img: string, index: number) => (
                 <img
                   key={index}
                   src={img}
                   alt={`サムネイル ${index + 1}`}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`w-20 h-20 object-cover cursor-pointer rounded ${
-                    index === currentImageIndex ? 'ring-2 ring-blue-500' : ''
+                  className={`w-20 h-20 object-cover cursor-pointer rounded transition-all ${
+                    index === currentImageIndex ? 'ring-2 ring-blue-500 scale-105' : 'opacity-70 hover:opacity-100'
                   }`}
                 />
               ))}
             </div>
           )}
 
-          {/* 基本情報 */}
           <div className="p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -172,18 +170,21 @@ export default function PropertyDetailPage() {
                 <p className="text-gray-600">{property.property_type}</p>
               </div>
               <div className="text-right">
-                <p className="text-4xl font-bold text-red-600">
-                  {property.price.toLocaleString()}万円
-                </p>
-                {property.price_per_tsubo && (
-                  <p className="text-sm text-gray-600">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-gray-600">価格</span>
+                  <span className="text-4xl font-bold text-red-600">
+                    {property.price.toLocaleString()}
+                  </span>
+                  <span className="text-2xl text-red-600">万円</span>
+                </div>
+                {property.price_per_tsubo && property.price_per_tsubo > 0 && (
+                  <p className="text-sm text-gray-600 mt-1">
                     坪単価: {property.price_per_tsubo.toLocaleString()}万円
                   </p>
                 )}
               </div>
             </div>
 
-            {/* スタッフコメント */}
             {property.staff_comment && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
                 <div className="flex items-start gap-3">
@@ -203,7 +204,6 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* セールスポイント */}
             {property.sales_point && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h3 className="font-bold mb-2">物件の特徴</h3>
@@ -211,9 +211,7 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* 物件詳細テーブル */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 左側 */}
               <div>
                 <h2 className="text-xl font-bold mb-4 border-b pb-2">物件概要</h2>
                 <table className="w-full">
@@ -237,22 +235,22 @@ export default function PropertyDetailPage() {
                         <td className="py-2">{property.layout}</td>
                       </tr>
                     )}
-                    {property.land_area && (
+                    {property.land_area && property.land_area > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">土地面積</th>
                         <td className="py-2">
                           {property.land_area}㎡
-                          {property.land_area_tsubo && ` (${property.land_area_tsubo}坪)`}
+                          {property.land_area_tsubo && property.land_area_tsubo > 0 && ` (${property.land_area_tsubo}坪)`}
                         </td>
                       </tr>
                     )}
-                    {property.building_area && (
+                    {property.building_area && property.building_area > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">建物面積</th>
                         <td className="py-2">{property.building_area}㎡</td>
                       </tr>
                     )}
-                    {property.building_age !== undefined && property.building_age !== null && (
+                    {property.building_age !== undefined && property.building_age !== null && property.building_age >= 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">築年数</th>
                         <td className="py-2">
@@ -268,7 +266,7 @@ export default function PropertyDetailPage() {
                         <td className="py-2">{property.structure}</td>
                       </tr>
                     )}
-                    {property.floors && (
+                    {property.floors && property.floors > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">階数</th>
                         <td className="py-2">{property.floors}階建</td>
@@ -284,12 +282,11 @@ export default function PropertyDetailPage() {
                 </table>
               </div>
 
-              {/* 右側 */}
               <div>
                 <h2 className="text-xl font-bold mb-4 border-b pb-2">詳細情報</h2>
                 <table className="w-full">
                   <tbody>
-                    {property.parking && (
+                    {property.parking && property.parking > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">駐車場</th>
                         <td className="py-2">{property.parking}台</td>
@@ -307,13 +304,13 @@ export default function PropertyDetailPage() {
                         <td className="py-2">{property.use_district}</td>
                       </tr>
                     )}
-                    {property.building_coverage && (
+                    {property.building_coverage && property.building_coverage > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">建ぺい率</th>
                         <td className="py-2">{property.building_coverage}%</td>
                       </tr>
                     )}
-                    {property.floor_area_ratio && (
+                    {property.floor_area_ratio && property.floor_area_ratio > 0 && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">容積率</th>
                         <td className="py-2">{property.floor_area_ratio}%</td>
@@ -342,7 +339,6 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            {/* リフォーム履歴 */}
             {property.reform_history && (
               <div className="mt-6">
                 <h2 className="text-xl font-bold mb-4 border-b pb-2">リフォーム履歴</h2>
@@ -350,8 +346,9 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* 共用施設（マンション） */}
             {property.property_type === '中古マンション' && (
+              property.elevator || property.auto_lock || property.delivery_box || property.bicycle_parking
+            ) && (
               <div className="mt-6">
                 <h2 className="text-xl font-bold mb-4 border-b pb-2">共用施設</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -383,57 +380,22 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* 物件の特徴 */}
-            {property.features && Object.values(property.features).some(v => v) && (
+            {property.features && Array.isArray(property.features) && property.features.length > 0 && (
               <div className="mt-6">
                 <h2 className="text-xl font-bold mb-4 border-b pb-2">物件の特徴</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {Object.entries(property.features).map(([key, value]) => {
-                    if (!value) return null
-                    const labels: { [key: string]: string } = {
-                      long_term_excellent: '長期優良住宅',
-                      performance_evaluation: '住宅性能評価書取得',
-                      flat35s: 'フラット35S対応',
-                      energy_standard: '省エネ基準適合',
-                      earthquake_grade3: '耐震等級3',
-                      insulation_grade4: '断熱等性能等級4',
-                      system_kitchen: 'システムキッチン',
-                      dishwasher: '食器洗い乾燥機',
-                      ih_cooktop: 'IHクッキングヒーター',
-                      bathroom_dryer: '浴室乾燥機',
-                      washlet: '温水洗浄便座',
-                      floor_heating: '床暖房',
-                      air_conditioner: 'エアコン',
-                      tv_intercom: 'TVモニタ付インターホン',
-                      sunny: '陽当り良好',
-                      well_ventilated: '通風良好',
-                      corner_lot: '角地',
-                      quiet_area: '閑静な住宅地',
-                      station_10min: '駅徒歩10分以内',
-                      shopping_nearby: '商業施設近い',
-                      school_nearby: '学校近い',
-                      park_nearby: '公園近い',
-                      parking_2cars: '駐車2台可',
-                      all_room_storage: '全居室収納',
-                      walk_in_closet: 'ウォークインクローゼット',
-                      under_floor_storage: '床下収納',
-                      attic_storage: '小屋裏収納',
-                      south_balcony: '南面バルコニー',
-                      private_garden: '専用庭',
-                      pet_allowed: 'ペット可'
-                    }
-                    return (
-                      <div key={key} className="flex items-center">
+                  {property.features.map((feature, index) => (
+                    feature && feature.trim() && (
+                      <div key={index} className="flex items-center">
                         <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-sm">{labels[key] || key}</span>
+                        <span className="text-sm">{feature}</span>
                       </div>
                     )
-                  })}
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* お問い合わせボタン */}
             <div className="mt-8 p-6 bg-gray-50 rounded-lg text-center">
               <p className="text-lg mb-4">この物件についてお問い合わせ</p>
               <div className="flex gap-4 justify-center">
