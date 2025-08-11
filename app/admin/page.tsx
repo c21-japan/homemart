@@ -151,7 +151,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 統計カード - 正しいパスに修正 */}
+        {/* 統計カード */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Link href="/admin/properties-list?view=all" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
             <div className="flex items-center justify-between">
@@ -210,8 +210,8 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {/* クイックアクセス - 正しいパスに修正 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* クイックアクセス - 画像管理を追加 */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Link href="/admin/properties" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-4">
               <div className="bg-blue-100 p-3 rounded-full">
@@ -250,6 +250,20 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="font-bold text-lg">お問い合わせ管理</h3>
                 <p className="text-sm text-gray-600">お問い合わせを確認</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/admin/media" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-purple-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">画像管理</h3>
+                <p className="text-sm text-gray-600">サイト画像を管理</p>
               </div>
             </div>
           </Link>
