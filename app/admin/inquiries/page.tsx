@@ -1,46 +1,45 @@
 'use client'
-import { useState, useEffect } from 'react'
+
+import { useState, useEffect, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 interface Inquiry {
-  id: number
-  property_name: string
+  id: string
   name: string
   email: string
-  phone: string
-  message: string
+  phone?: string
+  message?: string
+  property_name?: string
   status: string
   created_at: string
 }
 
-export default function InquiriesList() {
+function InquiriesContent() {
+  const searchParams = useSearchParams()
+  const statusFilter = searchParams.get('status')
+  
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
 
-  // 認証チェック
-  useEffect(() => {
-    const auth = localStorage.getItem('adminAuth')
-    const expiry = localStorage.getItem('authExpiry')
-    
-    if (auth !== 'true' || !expiry || Date.now() >= Number(expiry)) {
-      router.push('/admin')
-    }
-  }, [router])
-
-  // 問い合わせ一覧を取得
   useEffect(() => {
     fetchInquiries()
-  }, [])
+  }, [statusFilter])
 
-  async function fetchInquiries() {
+  const fetchInquiries = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('inquiries')
         .select('*')
         .order('created_at', { ascending: false })
+
+      if (statusFilter === 'new') {
+        query = query.eq('status', 'new')
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setInquiries(data || [])
@@ -51,128 +50,169 @@ export default function InquiriesList() {
     }
   }
 
-  // ステータス更新
-  async function updateStatus(id: number, status: string) {
-    try {
-      const { error } = await supabase
-        .from('inquiries')
-        .update({ status })
-        .eq('id', id)
+  const handleViewInquiry = async (inquiry: Inquiry) => {
+    setSelectedInquiry(inquiry)
+    
+    // 新着の場合は既読にする
+    if (inquiry.status === 'new') {
+      try {
+        const { error } = await supabase
+          .from('inquiries')
+          .update({ status: 'read' })
+          .eq('id', inquiry.id)
 
-      if (error) throw error
-      
-      // 一覧を更新
-      setInquiries(inquiries.map(inq => 
-        inq.id === id ? { ...inq, status } : inq
-      ))
-    } catch (error) {
-      console.error('Error:', error)
+        if (error) throw error
+        
+        // リストを更新
+        fetchInquiries()
+      } catch (error) {
+        console.error('Error updating status:', error)
+      }
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <div className="bg-white shadow-sm mb-8">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">お問い合わせ管理</h1>
-            <div className="flex gap-4">
-              <Link href="/admin" className="text-blue-600 hover:underline">
-                物件登録
-              </Link>
-              <Link href="/admin/properties" className="text-blue-600 hover:underline">
-                物件一覧
-              </Link>
-              <a href="/" className="text-blue-600 hover:underline">
-                サイトを見る
-              </a>
-            </div>
+            <h1 className="text-2xl font-bold">
+              {statusFilter === 'new' ? '新着問い合わせ' : 'お問い合わせ管理'}
+            </h1>
+            <Link
+              href="/admin"
+              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+            >
+              ダッシュボードに戻る
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* 一覧 */}
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">
-              お問い合わせ一覧（{inquiries.length}件）
-            </h2>
-
-            {loading ? (
-              <p>読み込み中...</p>
-            ) : inquiries.length === 0 ? (
-              <p className="text-gray-500">お問い合わせはありません</p>
-            ) : (
-              <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* 一覧 */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-4 border-b">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => window.location.href = '/admin/inquiries'}
+                    className={`px-4 py-2 rounded ${!statusFilter ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                  >
+                    すべて
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/admin/inquiries?status=new'}
+                    className={`px-4 py-2 rounded ${statusFilter === 'new' ? 'bg-orange-600 text-white' : 'bg-gray-200'}`}
+                  >
+                    新着のみ
+                  </button>
+                </div>
+              </div>
+              
+              <div className="divide-y">
                 {inquiries.map((inquiry) => (
-                  <div key={inquiry.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${
-                          inquiry.status === 'new' 
-                            ? 'bg-red-100 text-red-800' 
-                            : inquiry.status === 'contacted'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {inquiry.status === 'new' ? '新規' : 
-                           inquiry.status === 'contacted' ? '対応中' : '完了'}
-                        </span>
-                        <span className="ml-2 text-sm text-gray-500">
-                          {new Date(inquiry.created_at).toLocaleString('ja-JP')}
-                        </span>
-                      </div>
-                      <select
-                        value={inquiry.status}
-                        onChange={(e) => updateStatus(inquiry.id, e.target.value)}
-                        className="text-sm border rounded px-2 py-1"
-                      >
-                        <option value="new">新規</option>
-                        <option value="contacted">対応中</option>
-                        <option value="completed">完了</option>
-                      </select>
-                    </div>
-
-                    {inquiry.property_name && (
-                      <p className="text-sm bg-blue-50 px-2 py-1 rounded mb-2">
-                        物件：{inquiry.property_name}
-                      </p>
-                    )}
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">お名前</p>
-                        <p className="font-bold">{inquiry.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">電話番号</p>
-                        <a href={`tel:${inquiry.phone}`} className="font-bold text-blue-600 hover:underline">
-                          {inquiry.phone}
-                        </a>
-                      </div>
-                      {inquiry.email && (
-                        <div>
-                          <p className="text-sm text-gray-600">メール</p>
-                          <a href={`mailto:${inquiry.email}`} className="text-blue-600 hover:underline">
-                            {inquiry.email}
-                          </a>
+                  <div
+                    key={inquiry.id}
+                    onClick={() => handleViewInquiry(inquiry)}
+                    className="p-4 hover:bg-gray-50 cursor-pointer"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium">{inquiry.name}</h3>
+                          {inquiry.status === 'new' && (
+                            <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">新着</span>
+                          )}
                         </div>
-                      )}
-                    </div>
-
-                    <div className="mt-3">
-                      <p className="text-sm text-gray-600">お問い合わせ内容</p>
-                      <p className="mt-1 whitespace-pre-wrap">{inquiry.message}</p>
+                        <p className="text-sm text-gray-600 mt-1">{inquiry.email}</p>
+                        {inquiry.property_name && (
+                          <p className="text-sm text-blue-600 mt-1">物件: {inquiry.property_name}</p>
+                        )}
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(inquiry.created_at).toLocaleString('ja-JP')}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}
+              </div>
+              
+              {inquiries.length === 0 && (
+                <div className="p-8 text-center text-gray-500">
+                  お問い合わせがありません
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 詳細表示 */}
+          <div className="lg:col-span-1">
+            {selectedInquiry ? (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-bold mb-4">お問い合わせ詳細</h2>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600">お名前</p>
+                    <p className="font-medium">{selectedInquiry.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">メールアドレス</p>
+                    <p className="font-medium">{selectedInquiry.email}</p>
+                  </div>
+                  {selectedInquiry.phone && (
+                    <div>
+                      <p className="text-sm text-gray-600">電話番号</p>
+                      <p className="font-medium">{selectedInquiry.phone}</p>
+                    </div>
+                  )}
+                  {selectedInquiry.property_name && (
+                    <div>
+                      <p className="text-sm text-gray-600">対象物件</p>
+                      <p className="font-medium text-blue-600">{selectedInquiry.property_name}</p>
+                    </div>
+                  )}
+                  {selectedInquiry.message && (
+                    <div>
+                      <p className="text-sm text-gray-600">メッセージ</p>
+                      <p className="mt-1 whitespace-pre-wrap">{selectedInquiry.message}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-gray-600">受信日時</p>
+                    <p>{new Date(selectedInquiry.created_at).toLocaleString('ja-JP')}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow p-6">
+                <p className="text-gray-500 text-center">
+                  お問い合わせを選択してください
+                </p>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function InquiriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    }>
+      <InquiriesContent />
+    </Suspense>
   )
 }

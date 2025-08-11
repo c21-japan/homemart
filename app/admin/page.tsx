@@ -151,9 +151,9 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 統計カード */}
+        {/* 統計カード - クリック可能に変更 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/properties/list" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総物件数</p>
@@ -165,9 +165,9 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/properties/published" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">公開中</p>
@@ -179,9 +179,9 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/inquiries?status=new" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">新着問い合わせ</p>
@@ -193,9 +193,9 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <Link href="/admin/properties/featured" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">おすすめ物件</p>
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* クイックアクセス */}
@@ -274,7 +274,7 @@ export default function AdminDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-medium">{property.name}</h3>
-                          {property.staff_comment && (
+                          {property.featured && (
                             <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">おすすめ</span>
                           )}
                         </div>

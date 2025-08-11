@@ -3,21 +3,34 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import AreaSearch from '@/components/AreaSearch'
+import PropertyCard from '@/components/PropertyCard'
 
 interface Property {
-  id: number
+  id: string
   name: string
   price: number
+  prefecture: string
+  city: string
   address: string
-  description: string
-  image_url: string
-  featured: boolean
-  phone: string
+  station?: string
+  walking_time?: number
+  property_type: string
+  land_area?: number
+  building_area?: number
+  layout?: string
+  building_age?: number
+  image_url?: string
+  images?: string[]
+  is_new?: boolean
+  staff_comment?: string
+  created_at: string
+  featured?: boolean
   status: string
 }
 
 export default function Home() {
-  const [properties, setProperties] = useState<Property[]>([])
+  const [newProperties, setNewProperties] = useState<Property[]>([])
+  const [recommendedProperties, setRecommendedProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -27,14 +40,30 @@ export default function Home() {
 
   async function fetchProperties() {
     try {
-      const { data, error } = await supabase
+      // 新着物件を取得
+      const { data: newData, error: newError } = await supabase
         .from('properties')
         .select('*')
         .eq('status', 'published')
-        .order('featured', { ascending: false })
+        .eq('is_new', true)
+        .order('created_at', { ascending: false })
+        .limit(6)
 
-      if (error) throw error
-      setProperties(data || [])
+      if (newError) throw newError
+
+      // おすすめ物件を取得（スタッフコメントがある物件）
+      const { data: recommendedData, error: recommendedError } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('status', 'published')
+        .not('staff_comment', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(6)
+
+      if (recommendedError) throw recommendedError
+
+      setNewProperties(newData || [])
+      setRecommendedProperties(recommendedData || [])
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -84,6 +113,9 @@ export default function Home() {
               <Link href="/" className="py-2 px-4 hover:bg-[#F5F5DC] rounded transition-colors font-medium">
                 トップ
               </Link>
+              <Link href="/properties" className="py-2 px-4 hover:bg-[#FF69B4] hover:bg-opacity-20 rounded transition-colors font-medium text-[#FF69B4]">
+                物件を探す
+              </Link>
               <Link href="/buy" className="py-2 px-4 hover:bg-[#FF69B4] hover:bg-opacity-20 rounded transition-colors font-medium text-[#FF69B4]">
                 家を買う
               </Link>
@@ -104,7 +136,6 @@ export default function Home() {
               </Link>
             </div>
           </nav>
-          {/* 管理画面リンクを削除 */}
         </div>
       </header>
 
@@ -159,12 +190,12 @@ export default function Home() {
           
           {/* CTAボタン */}
           <div className="flex flex-col md:flex-row justify-center gap-4 mt-12">
-            <a 
-              href="#properties" 
+            <Link 
+              href="/properties" 
               className="bg-[#FFD700] text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#DAA520] transition-all transform hover:scale-105 shadow-lg"
             >
               物件を探す
-            </a>
+            </Link>
             <a 
               href="tel:0120438639" 
               className="bg-[#FF0000] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition-all transform hover:scale-105 shadow-lg"
@@ -256,77 +287,55 @@ export default function Home() {
         <AreaSearch />
       </div>
 
-      {/* 物件一覧 */}
-      <div id="properties" className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-[#36454F]">おすすめ物件情報</h2>
-        
+      {/* 新着物件 */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-[#36454F]">新着物件</h2>
+          <Link href="/properties" className="text-[#FFD700] hover:underline font-bold">
+            すべて見る →
+          </Link>
+        </div>
+
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFD700] mx-auto"></div>
             <p className="mt-4">読み込み中...</p>
           </div>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {properties?.map((property) => (
-              <div key={property.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                {property.featured && (
-                  <div className="bg-[#FF0000] text-white text-center py-1 font-bold">
-                    おすすめ
-                  </div>
-                )}
-                <Link href={`/properties/${property.id}`}>
-                  <div className="cursor-pointer">
-                    <div className="relative overflow-hidden">
-                      <img 
-                        src={property.image_url || 'https://via.placeholder.com/400x300'} 
-                        alt={property.name}
-                        className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-bold text-xl mb-2 hover:text-[#FFD700] transition-colors">
-                        {property.name}
-                      </h3>
-                      <p className="text-2xl text-[#FF0000] font-bold mb-2">
-                        {(property.price / 10000).toLocaleString()}万円
-                      </p>
-                      <p className="text-gray-600 mb-2">{property.address}</p>
-                      <p className="text-sm text-gray-700 mb-4 line-clamp-2">
-                        {property.description}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-                <div className="px-4 pb-4 flex gap-2">
-                  <Link 
-                    href={`/properties/${property.id}`}
-                    className="flex-1 bg-[#FFD700] text-black text-center py-2 rounded hover:bg-[#DAA520] transition-colors font-bold"
-                  >
-                    詳細を見る
-                  </Link>
-                  <a 
-                    href={`tel:${property.phone || '0120438639'}`}
-                    className="bg-[#32CD32] text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-                  >
-                    📞
-                  </a>
-                </div>
-              </div>
+        ) : newProperties.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {newProperties.map(property => (
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
+        ) : (
+          <p className="text-gray-600 text-center py-8">
+            新着物件はありません
+          </p>
         )}
+      </div>
 
-        {!loading && (!properties || properties.length === 0) && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">現在、公開中の物件はありません</p>
-            <Link 
-              href="/admin" 
-              className="text-[#FFD700] hover:underline font-bold"
-            >
-              管理画面から物件を登録
+      {/* おすすめ物件 */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-[#36454F]">スタッフおすすめ物件</h2>
+            <Link href="/properties" className="text-[#FFD700] hover:underline font-bold">
+              すべて見る →
             </Link>
           </div>
-        )}
+
+          {recommendedProperties.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recommendedProperties.map(property => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600 text-center py-8">
+              おすすめ物件はありません
+            </p>
+          )}
+        </div>
       </div>
 
       {/* モデルルーム情報 */}
