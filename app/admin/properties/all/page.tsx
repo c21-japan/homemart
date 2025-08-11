@@ -83,7 +83,6 @@ export default function AllPropertiesPage() {
     }
   }
 
-  // フィルタリングとソート
   const filteredProperties = properties
     .filter(property => {
       const matchesSearch = property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,7 +112,6 @@ export default function AllPropertiesPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* ヘッダー */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -134,7 +132,6 @@ export default function AllPropertiesPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* フィルター */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
@@ -174,7 +171,6 @@ export default function AllPropertiesPage() {
           </div>
         </div>
 
-        {/* 物件リスト */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full">
             <thead className="bg-gray-50">
