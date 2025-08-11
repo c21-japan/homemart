@@ -180,3 +180,49 @@ export async function listImages(folder: string = '') {
     return { error }
   }
 }
+/**
+ * カテゴリー別に画像を取得（media バケット用）
+ */
+export async function getMediaByCategory(category: string) {
+    try {
+      // mediaバケットから取得を試みる
+      const { data: mediaData, error: mediaError } = await supabase.storage
+        .from('media')
+        .list(category, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'created_at', order: 'desc' }
+        })
+      
+      if (!mediaError && mediaData && mediaData.length > 0) {
+        return mediaData.map(file => ({
+          name: file.name,
+          url: supabase.storage.from('media').getPublicUrl(`${category}/${file.name}`).data.publicUrl,
+          createdAt: file.created_at
+        }))
+      }
+      
+      // property-imagesバケットから取得を試みる（フォールバック）
+      const { data: propertyData, error: propertyError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .list(category, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'created_at', order: 'desc' }
+        })
+      
+      if (!propertyError && propertyData) {
+        return propertyData.map(file => ({
+          name: file.name,
+          url: getImageUrl(`${category}/${file.name}`),
+          createdAt: file.created_at
+        }))
+      }
+      
+      return []
+    } catch (error) {
+      console.error('Error fetching media by category:', error)
+      return []
+    }
+  }
+  

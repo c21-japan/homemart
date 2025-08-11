@@ -16,13 +16,28 @@ interface Property {
   image_url?: string
 }
 
+interface SiteImages {
+  ceo: string
+  hero: string
+  character: string
+  shiro: string
+  modelRoom: string
+}
+
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('buy')
+  const [siteImages, setSiteImages] = useState<SiteImages>({
+    ceo: 'https://via.placeholder.com/500x600/FFD700/000?text=代表写真',
+    hero: 'https://via.placeholder.com/1920x1080/FFD700/000?text=ヒーロー画像',
+    character: 'https://via.placeholder.com/150x150/FFD700/000?text=キャラクター',
+    shiro: 'https://via.placeholder.com/80x80/FFD700/000?text=シロ',
+    modelRoom: 'https://via.placeholder.com/1200x800/FFD700/000?text=モデルルーム'
+  })
 
   useEffect(() => {
     fetchFeaturedProperties()
+    loadSiteImages()
   }, [])
 
   const fetchFeaturedProperties = async () => {
@@ -43,11 +58,67 @@ export default function HomePage() {
     }
   }
 
+  const loadSiteImages = async () => {
+    try {
+      // デフォルトのプレースホルダー画像を設定
+      const defaultImages = {
+        ceo: 'https://via.placeholder.com/500x600/FFD700/000?text=代表写真',
+        hero: 'https://via.placeholder.com/1920x1080/FFD700/000?text=ヒーロー画像',
+        character: 'https://via.placeholder.com/150x150/FFD700/000?text=キャラクター',
+        shiro: 'https://via.placeholder.com/80x80/FFD700/000?text=シロ',
+        modelRoom: 'https://via.placeholder.com/1200x800/FFD700/000?text=モデルルーム'
+      }
+      
+      setSiteImages(defaultImages)
+      
+      // Supabase Storageから画像を取得する処理（動的インポート）
+      try {
+        const storageModule = await import('@/lib/supabase-storage').catch(() => null)
+        
+        if (storageModule && storageModule.getMediaByCategory) {
+          const { getMediaByCategory } = storageModule
+          
+          const [ceoImages, heroImages, characterImages, modelRoomImages] = await Promise.all([
+            getMediaByCategory('ceo').catch(() => []),
+            getMediaByCategory('hero').catch(() => []),
+            getMediaByCategory('characters').catch(() => []),
+            getMediaByCategory('model-room').catch(() => [])
+          ])
+          
+          // 取得した画像があれば更新
+          setSiteImages({
+            ceo: ceoImages[0]?.url || defaultImages.ceo,
+            hero: heroImages[0]?.url || defaultImages.hero,
+            character: characterImages.find((img: any) => img.name?.includes('shin'))?.url || 
+                      characterImages[0]?.url || 
+                      defaultImages.character,
+            shiro: characterImages.find((img: any) => img.name?.includes('shiro'))?.url || 
+                   characterImages[1]?.url || 
+                   defaultImages.shiro,
+            modelRoom: modelRoomImages[0]?.url || defaultImages.modelRoom
+          })
+        }
+      } catch (error) {
+        console.log('Supabase Storage is not configured yet, using placeholder images')
+      }
+    } catch (error) {
+      console.error('Error loading site images:', error)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* ヒーローセクション */}
       <section className="relative h-[70vh] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] to-[#B8860B]">
+        <div className="absolute inset-0">
+          <Image
+            src={siteImages.hero}
+            alt="ヒーロー画像"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/80 to-[#B8860B]/80"></div>
           <div className="absolute inset-0 bg-black/20"></div>
         </div>
         
@@ -55,14 +126,11 @@ export default function HomePage() {
         <div className="absolute top-10 right-10 z-20 animate-bounce">
           <div className="relative">
             <Image 
-              src="/images/characters/shin-chan.png" 
+              src={siteImages.character}
               alt="ホームマートくん" 
               width={150} 
               height={150}
               className="drop-shadow-2xl"
-              onError={(e) => {
-                e.currentTarget.src = 'https://via.placeholder.com/150x150/FFD700/000?text=キャラクター'
-              }}
             />
             <div className="absolute -bottom-8 -left-20 bg-white rounded-full px-4 py-2 shadow-lg">
               <p className="text-sm font-bold text-[#B8860B]">お家探しなら任せるゾ〜！</p>
@@ -74,16 +142,9 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl">
               <div className="flex items-center gap-4 mb-6">
-                <Image 
-                  src="/images/century21-logo.png" 
-                  alt="センチュリー21" 
-                  width={200} 
-                  height={60}
-                  className="bg-white p-2 rounded"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                  }}
-                />
+                <div className="bg-white p-2 rounded">
+                  <p className="text-2xl font-bold text-[#B8860B]">センチュリー21</p>
+                </div>
                 <span className="text-white text-2xl font-bold">ホームマート</span>
               </div>
               
@@ -157,14 +218,11 @@ export default function HomePage() {
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#B8860B] rounded-full opacity-20"></div>
                 <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
                   <Image 
-                    src="/images/staff/inui-ceo.jpg" 
+                    src={siteImages.ceo}
                     alt="代表取締役 乾佑企" 
                     width={500} 
                     height={600}
                     className="w-full h-auto"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/500x600/FFD700/000?text=代表写真'
-                    }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
                     <h3 className="text-white text-2xl font-bold">乾 佑企</h3>
@@ -429,9 +487,16 @@ export default function HomePage() {
               <div className="bg-white rounded-2xl p-8 shadow-2xl">
                 <div className="text-5xl mb-4">🏠</div>
                 <h3 className="text-2xl font-bold mb-4 text-gray-800">モデルルーム見学</h3>
+                <div className="mb-4 rounded-lg overflow-hidden h-32 relative">
+                  <Image
+                    src={siteImages.modelRoom}
+                    alt="モデルルーム"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 <p className="text-lg text-gray-700 mb-4">
-                  159.8㎡の広々2LDK<br />
-                  実際の暮らしをイメージ
+                  159.8㎡の広々2LDK
                 </p>
                 <Link href="/contact" className="inline-block bg-gradient-to-r from-[#FFD700] to-[#B8860B] text-white px-6 py-3 rounded-full font-bold hover:shadow-lg transition-all">
                   見学予約する
@@ -447,14 +512,11 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center gap-8">
             <Image 
-              src="/images/characters/shiro.png" 
+              src={siteImages.shiro}
               alt="シロ" 
               width={80} 
               height={80}
               className="animate-bounce"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
             />
             <p className="text-gray-600 text-sm">
               © 2024 センチュリー21 ホームマート All Rights Reserved.

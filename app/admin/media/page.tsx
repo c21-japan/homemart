@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
@@ -88,6 +88,68 @@ export default function MediaManagementPage() {
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
 
+  // ページロード時にバケットを作成
+  useEffect(() => {
+    const initStorage = async () => {
+      try {
+        // バケットの存在確認と作成
+        const { data: buckets } = await supabase.storage.listBuckets()
+        const mediaExists = buckets?.some(bucket => bucket.name === 'media')
+        
+        if (!mediaExists) {
+          const { error } = await supabase.storage.createBucket('media', {
+            public: true,
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            fileSizeLimit: 10485760 // 10MB
+          })
+          
+          if (error && !error.message.includes('already exists')) {
+            console.error('Error creating bucket:', error)
+          } else {
+            console.log('Media bucket created successfully')
+          }
+        }
+        
+        // 既存の画像を読み込み
+        loadExistingImages()
+      } catch (error) {
+        console.error('Error initializing storage:', error)
+      }
+    }
+    
+    initStorage()
+  }, [])
+
+  // 既存の画像を読み込む
+  const loadExistingImages = async () => {
+    try {
+      const images: {[key: string]: string[]} = {}
+      
+      for (const category of mediaCategories) {
+        const { data, error } = await supabase.storage
+          .from('media')
+          .list(category.id, {
+            limit: 100,
+            offset: 0,
+            sortBy: { column: 'created_at', order: 'desc' }
+          })
+        
+        if (!error && data) {
+          images[category.id] = data.map(file => {
+            const { data: { publicUrl } } = supabase.storage
+              .from('media')
+              .getPublicUrl(`${category.id}/${file.name}`)
+            return publicUrl
+          })
+        }
+      }
+      
+      setUploadedImages(images)
+    } catch (error) {
+      console.error('Error loading existing images:', error)
+    }
+  }
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return
 
@@ -104,13 +166,16 @@ export default function MediaManagementPage() {
       
       // ファイル名の生成
       const timestamp = Date.now()
-      const fileName = `${selectedCategory.id}/${timestamp}_${file.name}`
+      const fileName = `${selectedCategory.id}/${timestamp}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '')}`
 
       try {
         // Supabase Storageにアップロード
         const { data, error } = await supabase.storage
           .from('media')
-          .upload(fileName, resizedFile)
+          .upload(fileName, resizedFile, {
+            cacheControl: '3600',
+            upsert: false
+          })
 
         if (error) throw error
 
@@ -214,13 +279,15 @@ export default function MediaManagementPage() {
     if (!confirm('この画像を削除しますか？')) return
 
     try {
-      // URLからファイル名を抽出
-      const fileName = imageUrl.split('/').pop()
-      if (!fileName) return
+      // URLからファイルパスを抽出
+      const urlParts = imageUrl.split('/storage/v1/object/public/media/')
+      if (urlParts.length < 2) return
+      
+      const filePath = urlParts[1]
 
       const { error } = await supabase.storage
         .from('media')
-        .remove([`${categoryId}/${fileName}`])
+        .remove([filePath])
 
       if (error) throw error
 
