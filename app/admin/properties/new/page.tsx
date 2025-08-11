@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { CldUploadWidget } from 'next-cloudinary'
 
 // 都道府県と市区町村のデータ
 const areaData = {
@@ -27,7 +26,7 @@ const areaData = {
 export default function NewProperty() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [images, setImages] = useState<string[]>([])
+  const [images, setImages] = useState<string[]>([''])
   const [selectedPrefecture, setSelectedPrefecture] = useState('奈良県')
   
   const [formData, setFormData] = useState({
@@ -87,9 +86,16 @@ export default function NewProperty() {
     }
   }
 
-  const handleImageUpload = (result: any) => {
-    const url = result.info.secure_url
-    setImages(prev => [...prev, url])
+  const addImageField = () => {
+    if (images.length < 20) {
+      setImages([...images, ''])
+    }
+  }
+
+  const updateImage = (index: number, value: string) => {
+    const newImages = [...images]
+    newImages[index] = value
+    setImages(newImages)
   }
 
   const removeImage = (index: number) => {
@@ -111,6 +117,9 @@ export default function NewProperty() {
     setIsSubmitting(true)
 
     try {
+      // 空のURLを除外
+      const validImages = images.filter(url => url.trim() !== '')
+      
       const { error } = await supabase
         .from('properties')
         .insert({
@@ -129,8 +138,8 @@ export default function NewProperty() {
           repair_fund: parseInt(formData.repair_fund) || null,
           balcony_area: parseFloat(formData.balcony_area) || null,
           price_per_tsubo: parseFloat(formData.price_per_tsubo) || null,
-          image_url: images[0] || '',
-          images: images,
+          image_url: validImages[0] || '',
+          images: validImages,
           address: `${formData.prefecture}${formData.city}${formData.town}`
         })
 
@@ -491,59 +500,55 @@ export default function NewProperty() {
               />
             </div>
 
-            {/* 画像アップロード */}
+            {/* 画像URL入力 */}
             <div className="border-t pt-6">
               <h2 className="text-lg font-bold mb-4">
-                画像（最大20枚）
+                画像URL（最大20枚）
                 <span className="text-sm text-gray-500 ml-2">1枚目：外観、2枚目：間取り図</span>
               </h2>
               
-              <CldUploadWidget
-                uploadPreset="ml_default"
-                onUpload={handleImageUpload}
-                options={{
-                  multiple: true,
-                  maxFiles: 20
-                }}
+              <button
+                type="button"
+                onClick={addImageField}
+                disabled={images.length >= 20}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 mb-4"
               >
-                {({ open }) => (
-                  <button
-                    type="button"
-                    onClick={() => open()}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    画像を選択（複数選択可）
-                  </button>
-                )}
-              </CldUploadWidget>
+                画像URLを追加
+              </button>
 
-              {images.length > 0 && (
-                <div className="mt-4 grid grid-cols-5 gap-4">
-                  {images.map((url, index) => (
-                    <div key={index} className="relative group">
-                      <img src={url} alt={`画像${index + 1}`} className="w-full h-32 object-cover rounded" />
-                      <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white px-2 py-1 text-xs rounded-tl">
-                        {index === 0 ? '外観' : index === 1 ? '間取り' : `${index + 1}枚目`}
-                      </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        {index > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => moveImage(index, 'up')}
-                            className="bg-white text-black px-2 py-1 rounded text-sm"
-                          >
-                            ←
-                          </button>
-                        )}
-                        {index < images.length - 1 && (
-                          <button
-                            type="button"
-                            onClick={() => moveImage(index, 'down')}
-                            className="bg-white text-black px-2 py-1 rounded text-sm"
-                          >
-                            →
-                          </button>
-                        )}
+              <div className="space-y-2">
+                {images.map((url, index) => (
+                  <div key={index} className="flex gap-2 items-center">
+                    <span className="w-24 text-sm">
+                      {index === 0 ? '外観' : index === 1 ? '間取り図' : `${index + 1}枚目`}:
+                    </span>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => updateImage(index, e.target.value)}
+                      className="flex-1 p-2 border rounded"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                    <div className="flex gap-1">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, 'up')}
+                          className="bg-gray-500 text-white px-2 py-1 rounded text-sm"
+                        >
+                          ↑
+                        </button>
+                      )}
+                      {index < images.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, 'down')}
+                          className="bg-gray-500 text-white px-2 py-1 rounded text-sm"
+                        >
+                          ↓
+                        </button>
+                      )}
+                      {images.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
@@ -551,11 +556,30 @@ export default function NewProperty() {
                         >
                           削除
                         </button>
-                      </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
+
+              {/* プレビュー */}
+              <div className="mt-4 grid grid-cols-5 gap-2">
+                {images.filter(url => url).map((url, index) => (
+                  <div key={index} className="relative">
+                    <img 
+                      src={url} 
+                      alt={`プレビュー${index + 1}`} 
+                      className="w-full h-24 object-cover rounded border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150'
+                      }}
+                    />
+                    <span className="absolute top-0 left-0 bg-black bg-opacity-50 text-white text-xs px-1">
+                      {index === 0 ? '外観' : index === 1 ? '間取り' : index + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* ボタン */}
