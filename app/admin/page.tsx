@@ -28,6 +28,8 @@ export default function NewProperty() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<string[]>([])
   const [selectedPrefecture, setSelectedPrefecture] = useState('奈良県')
+  const [showMoreImages, setShowMoreImages] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -92,14 +94,35 @@ export default function NewProperty() {
     setImages(newImages)
   }
 
-  const moveImage = (index: number, direction: 'up' | 'down') => {
+  // ドラッグ開始
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  // ドラッグオーバー
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  // ドロップ
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === dropIndex) return
+
+    const draggedImage = images[draggedIndex]
     const newImages = [...images]
-    if (direction === 'up' && index > 0) {
-      [newImages[index], newImages[index - 1]] = [newImages[index - 1], newImages[index]]
-    } else if (direction === 'down' && index < images.length - 1) {
-      [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]]
-    }
+    
+    // ドラッグした要素を削除
+    newImages.splice(draggedIndex, 1)
+    
+    // ドロップ位置に挿入
+    const adjustedDropIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex
+    newImages.splice(adjustedDropIndex, 0, draggedImage)
+    
     setImages(newImages)
+    setDraggedIndex(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -148,6 +171,9 @@ export default function NewProperty() {
     month: 'long',
     day: 'numeric'
   })
+
+  // 表示する画像スロット数
+  const displaySlots = showMoreImages ? 20 : 12
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -505,14 +531,21 @@ export default function NewProperty() {
                 物件画像（最大20枚）
               </h2>
               
-              {/* 20枚分のスロット */}
+              {/* 画像スロット */}
               <div className="grid grid-cols-4 gap-4">
-                {Array.from({ length: 20 }, (_, index) => {
+                {Array.from({ length: displaySlots }, (_, index) => {
                   const imageUrl = images[index]
-                  const label = index === 0 ? '外観' : index === 1 ? '間取り図' : `その他${index - 1}`
+                  const label = index === 0 ? '外観' : index === 1 ? '間取り図/区画図' : `その他${index - 1}`
                   
                   return (
-                    <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                    <div 
+                      key={index} 
+                      className="border rounded-lg p-3 bg-gray-50"
+                      draggable={!!imageUrl}
+                      onDragStart={(e) => imageUrl && handleDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index)}
+                    >
                       {/* ラベル */}
                       <div className="text-sm font-medium mb-2">
                         {index + 1}. {label}
@@ -525,35 +558,19 @@ export default function NewProperty() {
                             <img 
                               src={imageUrl} 
                               alt={label}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover cursor-move"
                             />
-                            {/* 削除・移動ボタン */}
-                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                              {index > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => moveImage(index, 'up')}
-                                  className="bg-white text-black px-2 py-1 rounded text-xs"
-                                >
-                                  ←
-                                </button>
-                              )}
-                              {index < images.length - 1 && (
-                                <button
-                                  type="button"
-                                  onClick={() => moveImage(index, 'down')}
-                                  className="bg-white text-black px-2 py-1 rounded text-xs"
-                                >
-                                  →
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="bg-red-500 text-white px-2 py-1 rounded text-xs"
-                              >
-                                削除
-                              </button>
+                            {/* 削除ボタン */}
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                            {/* ドラッグ表示 */}
+                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                              ドラッグで移動
                             </div>
                           </>
                         ) : (
@@ -607,6 +624,19 @@ export default function NewProperty() {
                 })}
               </div>
 
+              {/* もっと画像を追加ボタン */}
+              {!showMoreImages && (
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowMoreImages(true)}
+                    className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+                  >
+                    もっと画像登録を増やす（13〜20枚目）
+                  </button>
+                </div>
+              )}
+
               {/* ドラッグ&ドロップ対応の一括アップロード */}
               <div 
                 className="mt-6 p-8 bg-blue-50 rounded-lg border-2 border-dashed border-blue-300 text-center"
@@ -633,7 +663,7 @@ export default function NewProperty() {
                 <svg className="mx-auto h-12 w-12 text-blue-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <p className="text-gray-600 mb-2">画像をドラッグ&ドロップ</p>
+                <p className="text-gray-600 mb-2">複数画像をまとめてドラッグ&ドロップ</p>
                 <p className="text-xs text-gray-500 mb-3">または</p>
                 <label
                   htmlFor="bulk-upload"
