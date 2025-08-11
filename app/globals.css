@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 既存のCSSの最後に追加 */
 
 /* ゴールドテーマのカスタムスタイル */
