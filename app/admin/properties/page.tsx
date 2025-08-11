@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -30,25 +30,30 @@ const AREA_DATA = {
   ]
 } as const
 
-const RAILWAY_LINES = {
-  '奈良県': [
-    'JR大和路線', 'JR桜井線', 'JR和歌山線',
-    '近鉄奈良線', '近鉄大阪線', '近鉄京都線', '近鉄橿原線',
-    '近鉄南大阪線', '近鉄吉野線', '近鉄生駒線', '近鉄田原本線',
-    '近鉄御所線', '近鉄天理線', '近鉄けいはんな線', '近鉄生駒鋼索線'
-  ],
-  '大阪府': [
-    'JR大阪環状線', 'JR東海道本線', 'JR大阪東線', 'JR学研都市線',
-    'JR大和路線', 'JR阪和線', 'JR関西空港線',
-    '大阪メトロ御堂筋線', '大阪メトロ谷町線', '大阪メトロ四つ橋線',
-    '大阪メトロ中央線', '大阪メトロ千日前線', '大阪メトロ堺筋線',
-    '大阪メトロ長堀鶴見緑地線', '大阪メトロ今里筋線', '大阪メトロニュートラム',
-    '近鉄大阪線', '近鉄奈良線', '近鉄南大阪線',
-    '南海本線', '南海高野線', '京阪本線', '京阪中之島線',
-    '阪急京都線', '阪急宝塚線', '阪急神戸線',
-    '阪神本線', '阪神なんば線', '泉北高速鉄道線'
-  ]
-} as const
+// 路線と駅のデータ
+const routeStations: { [key: string]: string[] } = {
+  'JR大和路線': ['王寺', '法隆寺', '大和小泉', '郡山', '奈良', '平城山', '木津', '加茂'],
+  'JR和歌山線': ['王寺', '畠田', '志都美', '香芝', '高田', '大和新庄', '御所', '玉手', '掖上', '吉野口', '北宇智', '五条'],
+  'JR桜井線': ['奈良', '京終', '帯解', '櫟本', '天理', '長柄', '柳本', '巻向', '三輪', '桜井', '香久山', '畝傍', '金橋', '高田'],
+  '近鉄奈良線': ['大和西大寺', '新大宮', '近鉄奈良', '学園前', '富雄', '東生駒', '生駒', '石切', '額田', '枚岡', '瓢箪山', '東花園', '河内花園', '若江岩田', '八戸ノ里', '河内小阪', '河内永和', '俊徳道', '長瀬', '弥刀', '久宝寺口'],
+  '近鉄大阪線': ['大和八木', '耳成', '大福', '桜井', '大和朝倉', '長谷寺', '榛原', '室生口大野', '三本松', '赤目口', '名張', '桔梗が丘', '美旗', '伊賀神戸'],
+  '近鉄橿原線': ['大和西大寺', '尼ヶ辻', '西ノ京', '九条', '近鉄郡山', '筒井', '平端', 'ファミリー公園前', '結崎', '石見', '田原本', '笠縫', '新ノ口', '大和八木', '八木西口', '畝傍御陵前', '橿原神宮前'],
+  '近鉄京都線': ['大和西大寺', '平城', '高の原', '山田川', '木津川台', '新祝園', '狛田', '新田辺', '興戸', '三山木', '近鉄宮津', '小倉', '伊勢田', '大久保', '久津川', '寺田', '富野荘', '向島'],
+  '近鉄南大阪線': ['大阪阿部野橋', '河堀口', '北田辺', '今川', '針中野', '矢田', '河内天美', '布忍', '高見ノ里', '河内松原', '恵我ノ荘', '高鷲', '藤井寺', '土師ノ里', '道明寺', '古市', '駒ヶ谷', '上ノ太子', '二上山', '二上神社口', '当麻寺', '磐城', '尺土', '高田市', '浮孔', '坊城', '橿原神宮西口', '橿原神宮前'],
+  '近鉄生駒線': ['王寺', '信貴山下', '勢野北口', '竜田川', '平群', '元山上口', '東山', '萩の台', '生駒'],
+  '近鉄田原本線': ['西田原本', '黒田', '但馬', '箸尾', '池部', '佐味田川', '大輪田', '新王寺'],
+  '近鉄御所線': ['尺土', '近鉄新庄', '忍海', '近鉄御所'],
+  '近鉄吉野線': ['橿原神宮前', '岡寺', '飛鳥', '壺阪山', '市尾', '葛', '吉野口', '薬水', '大阿太', '福神', '下市口', '越部', '六田', '大和上市', '吉野神宮', '吉野'],
+  '近鉄けいはんな線': ['生駒', '白庭台', '学研北生駒', '学研奈良登美ヶ丘'],
+  '大阪メトロ御堂筋線': ['江坂', '東三国', '新大阪', '西中島南方', '中津', '梅田', '淀屋橋', '本町', '心斎橋', 'なんば', '大国町', '動物園前', '天王寺', '昭和町', '西田辺', '長居', 'あびこ', '北花田', '新金岡', 'なかもず'],
+  '大阪メトロ谷町線': ['大日', '守口', '太子橋今市', '千林大宮', '関目高殿', '野江内代', '都島', '天神橋筋六丁目', '中崎町', '東梅田', '南森町', '天満橋', '谷町四丁目', '谷町六丁目', '谷町九丁目', '四天王寺前夕陽ヶ丘', '天王寺', '阿倍野', '文の里', '田辺', '駒川中野', '平野', '喜連瓜破', '出戸', '長原', '八尾南'],
+  '大阪メトロ四つ橋線': ['西梅田', '肥後橋', '本町', '四ツ橋', 'なんば', '大国町', '花園町', '岸里', '玉出', '北加賀屋', '住之江公園'],
+  '大阪メトロ中央線': ['コスモスクエア', '大阪港', '朝潮橋', '弁天町', '九条', '阿波座', '本町', '堺筋本町', '谷町四丁目', '森ノ宮', '緑橋', '深江橋', '高井田', '長田'],
+  '大阪メトロ千日前線': ['野田阪神', '玉川', '阿波座', '西長堀', '桜川', 'なんば', '日本橋', '谷町九丁目', '鶴橋', '今里', '新深江', '小路', '北巽', '南巽'],
+  '大阪メトロ堺筋線': ['天神橋筋六丁目', '扇町', '南森町', '北浜', '堺筋本町', '長堀橋', '日本橋', '恵美須町', '動物園前', '天下茶屋'],
+  '南海本線': ['難波', '新今宮', '天下茶屋', '岸里玉出', '粉浜', '住吉大社', '住ノ江', '七道', '堺', '湊', '石津川', '諏訪ノ森', '浜寺公園', '羽衣', '高石', '北助松', '松ノ浜', '泉大津', '忠岡', '春木', '和泉大宮', '岸和田', '蛸地蔵', '貝塚', '二色浜', '鶴原', '井原里', '泉佐野', '羽倉崎', '吉見ノ里', '岡田浦', '樽井', '尾崎', '鳥取ノ荘', '箱作', '淡輪', '深日町', '深日港', '多奈川', '孝子', '和歌山大学前', '紀ノ川', '和歌山市'],
+  '南海高野線': ['難波', '今宮戎', '新今宮', '萩ノ茶屋', '天下茶屋', '岸里玉出', '帝塚山', '住吉東', '沢ノ町', '我孫子前', '浅香山', '堺東', '三国ヶ丘', '百舌鳥八幡', '中百舌鳥', '白鷺', '初芝', '萩原天神', '北野田', '狭山', '大阪狭山市', '金剛', '滝谷', '千代田', '河内長野', '三日市町', '美加の台', '千早口', '天見', '紀見峠', '林間田園都市', '御幸辻', '橋本', '紀伊清水', '学文路', '九度山', '高野下', '下古沢', '上古沢', '紀伊細川', '紀伊神谷', '極楽橋']
+}
 
 const LAYOUT_TYPES = ['K', 'DK', 'LDK'] as const
 
@@ -90,14 +95,13 @@ function getUpdatedRegistrationDate(originalDate: Date): string {
   })
 }
 
-// ========== 間取り入力コンポーネント（修正版） ==========
+// ========== 間取り入力コンポーネント ==========
 function LayoutInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const [rooms, setRooms] = useState('')
   const [hasS, setHasS] = useState(false)
   const [layoutType, setLayoutType] = useState<typeof LAYOUT_TYPES[number]>('LDK')
   const [initialized, setInitialized] = useState(false)
 
-  // 初期値の設定（初回のみ）
   useEffect(() => {
     if (value && !initialized) {
       const match = value.match(/^(\d+)(S?)(.*)$/)
@@ -172,11 +176,15 @@ function LayoutInput({ value, onChange }: { value: string; onChange: (value: str
 // ========== メインコンポーネント ==========
 export default function NewProperty() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<string[]>([])
   const [selectedPrefecture, setSelectedPrefecture] = useState('奈良県')
+  const [selectedRoute, setSelectedRoute] = useState('')
+  const [availableStations, setAvailableStations] = useState<string[]>([])
   const [showMoreImages, setShowMoreImages] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
   const [registrationDate] = useState(new Date())
   const [errors, setErrors] = useState<Record<string, boolean>>({})
   
@@ -319,6 +327,32 @@ export default function NewProperty() {
     property_type: '新築戸建'
   })
 
+  // 路線が変更されたときに駅リストを更新
+  useEffect(() => {
+    if (selectedRoute && routeStations[selectedRoute]) {
+      setAvailableStations(routeStations[selectedRoute])
+    } else {
+      setAvailableStations([])
+    }
+    setFormData(prev => ({ ...prev, station: '' }))
+  }, [selectedRoute])
+
+  // 土地面積から坪数を自動計算
+  useEffect(() => {
+    if (formData.land_area) {
+      const tsubo = (parseFloat(formData.land_area) / 3.305785).toFixed(2)
+      setFormData(prev => ({ ...prev, land_area_tsubo: tsubo }))
+    }
+  }, [formData.land_area])
+
+  // 坪単価を自動計算（土地の場合のみ）
+  useEffect(() => {
+    if (formData.property_type === '土地' && formData.price && formData.land_area_tsubo) {
+      const pricePerTsubo = (parseFloat(formData.price) / parseFloat(formData.land_area_tsubo)).toFixed(2)
+      setFormData(prev => ({ ...prev, price_per_tsubo: pricePerTsubo }))
+    }
+  }, [formData.price, formData.land_area_tsubo, formData.property_type])
+
   // 築年月が変更されたら築年数を自動計算
   useEffect(() => {
     const age = calculateBuildingAge(formData.build_year, formData.build_month)
@@ -329,6 +363,70 @@ export default function NewProperty() {
       }))
     }
   }, [formData.build_year, formData.build_month])
+
+  // 画像アップロード処理
+  const handleImageUpload = async (files: FileList) => {
+    const uploadedImages: string[] = []
+    
+    for (let i = 0; i < files.length && images.length + uploadedImages.length < 20; i++) {
+      const file = files[i]
+      const reader = new FileReader()
+      
+      await new Promise((resolve) => {
+        reader.onloadend = () => {
+          uploadedImages.push(reader.result as string)
+          resolve(null)
+        }
+        reader.readAsDataURL(file)
+      })
+    }
+    
+    setImages(prev => [...prev, ...uploadedImages].slice(0, 20))
+  }
+
+  // ドラッグ&ドロップ処理
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(false)
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      handleImageUpload(files)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files.length > 0) {
+      handleImageUpload(files)
+    }
+  }
+
+  // 個別画像アップロード
+  const handleSingleImageUpload = async (index: number, file: File) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const newImages = [...images]
+      if (images.length <= index) {
+        while (newImages.length < index) {
+          newImages.push('')
+        }
+        newImages.push(reader.result as string)
+      } else {
+        newImages[index] = reader.result as string
+      }
+      setImages(newImages.filter(img => img !== ''))
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -370,6 +468,12 @@ export default function NewProperty() {
     if (name === 'prefecture') {
       setSelectedPrefecture(value)
       setFormData(prev => ({ ...prev, city: '', route: '' }))
+      setSelectedRoute('')
+    }
+    
+    // 路線が変更されたら
+    if (name === 'route') {
+      setSelectedRoute(value)
     }
   }
 
@@ -386,20 +490,13 @@ export default function NewProperty() {
     setImages(newImages)
   }
 
-  // ドラッグ開始
-  const handleDragStart = (e: React.DragEvent, index: number) => {
+  // 画像のドラッグ&ドロップ並び替え
+  const handleImageDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index)
     e.dataTransfer.effectAllowed = 'move'
   }
 
-  // ドラッグオーバー
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-  }
-
-  // ドロップ
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+  const handleImageDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault()
     if (draggedIndex === null || draggedIndex === dropIndex) return
 
@@ -458,7 +555,7 @@ export default function NewProperty() {
         city: formData.city,
         town: formData.town || null,
         station: formData.station || null,
-        route: formData.route || null,
+        route: selectedRoute || null,
         walking_time: formData.walking_time ? parseInt(formData.walking_time) : null,
         
         // 土地・建物情報
@@ -649,21 +746,6 @@ export default function NewProperty() {
                   />
                 </div>
 
-                {formData.property_type === '土地' && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      坪単価（万円/坪）
-                    </label>
-                    <input
-                      type="number"
-                      name="price_per_tsubo"
-                      value={formData.price_per_tsubo}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     都道府県 <span className="text-red-500">*</span>
@@ -714,35 +796,35 @@ export default function NewProperty() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    最寄り駅
-                  </label>
-                  <input
-                    type="text"
-                    name="station"
-                    value={formData.station}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：近鉄大和高田駅"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    路線
-                  </label>
+                  <label className="block text-sm font-medium mb-2">路線</label>
                   <select
                     name="route"
-                    value={formData.route}
+                    value={selectedRoute}
                     onChange={handleChange}
                     className="w-full p-2 border rounded"
                   >
                     <option value="">選択してください</option>
-                    <optgroup label={selectedPrefecture}>
-                      {RAILWAY_LINES[selectedPrefecture as keyof typeof RAILWAY_LINES]?.map(line => (
-                        <option key={line} value={line}>{line}</option>
-                      ))}
-                    </optgroup>
+                    {Object.keys(routeStations).map(route => (
+                      <option key={route} value={route}>{route}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">最寄り駅</label>
+                  <select
+                    name="station"
+                    value={formData.station}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    disabled={!selectedRoute}
+                  >
+                    <option value="">
+                      {selectedRoute ? '駅を選択' : '先に路線を選択してください'}
+                    </option>
+                    {availableStations.map(station => (
+                      <option key={station} value={`${station}駅`}>{station}駅</option>
+                    ))}
                   </select>
                 </div>
 
@@ -759,13 +841,65 @@ export default function NewProperty() {
                     placeholder="10"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* 土地・建物情報 */}
+            <div className="border-t pt-6">
+              <h2 className="text-lg font-bold mb-4">土地・建物情報</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">土地面積（㎡）</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="land_area"
+                    value={formData.land_area}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">土地面積（坪）</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.land_area_tsubo}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100"
+                    placeholder="自動計算"
+                  />
+                </div>
+
+                {formData.property_type === '土地' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">坪単価（万円/坪）</label>
+                    <input
+                      type="number"
+                      value={formData.price_per_tsubo}
+                      readOnly
+                      className="w-full p-2 border rounded bg-gray-100"
+                      placeholder="自動計算"
+                    />
+                  </div>
+                )}
 
                 {formData.property_type !== '土地' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium mb-2">
-                        間取り
-                      </label>
+                      <label className="block text-sm font-medium mb-2">建物面積（㎡）</label>
+                      <input
+                        type="number"
+                        name="building_area"
+                        value={formData.building_area}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">間取り</label>
                       <LayoutInput
                         value={formData.layout}
                         onChange={handleLayoutChange}
@@ -773,9 +907,7 @@ export default function NewProperty() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">
-                        築年月
-                      </label>
+                      <label className="block text-sm font-medium mb-2">築年月</label>
                       <div className="flex gap-2">
                         <input
                           type="number"
@@ -801,839 +933,170 @@ export default function NewProperty() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">
-                        築年数（自動計算）
-                      </label>
+                      <label className="block text-sm font-medium mb-2">築年数（自動計算）</label>
                       <div className="p-2 bg-gray-100 border rounded">
                         {formData.building_age ? `${formData.building_age}年` : '築年月を入力すると自動計算されます'}
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">構造</label>
+                      <select
+                        name="structure"
+                        value={formData.structure}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="木造">木造</option>
+                        <option value="鉄骨造">鉄骨造</option>
+                        <option value="RC造">RC造</option>
+                        <option value="SRC造">SRC造</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">建物階数</label>
+                      <input
+                        type="number"
+                        name="floors"
+                        value={formData.floors}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                        placeholder="2"
+                      />
                     </div>
                   </>
                 )}
               </div>
             </div>
 
-            {/* 物件種別に応じた詳細情報 */}
-            {(formData.property_type === '新築戸建' || formData.property_type === '中古戸建') && (
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-bold mb-4">戸建詳細情報</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="land_area"
-                      value={formData.land_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建物面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="building_area"
-                      value={formData.building_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">構造</label>
-                    <select
-                      name="structure"
-                      value={formData.structure}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="木造">木造</option>
-                      <option value="鉄骨造">鉄骨造</option>
-                      <option value="RC造">RC造</option>
-                      <option value="SRC造">SRC造</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建物階数</label>
-                    <input
-                      type="number"
-                      name="floors"
-                      value={formData.floors}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">駐車場（台）</label>
-                    <input
-                      type="number"
-                      name="parking"
-                      value={formData.parking}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建ぺい率（%）</label>
-                    <input
-                      type="number"
-                      name="building_coverage"
-                      value={formData.building_coverage}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">容積率（%）</label>
-                    <input
-                      type="number"
-                      name="floor_area_ratio"
-                      value={formData.floor_area_ratio}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地権利</label>
-                    <select
-                      name="land_rights"
-                      value={formData.land_rights}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="所有権">所有権</option>
-                      <option value="借地権">借地権</option>
-                      <option value="定期借地権">定期借地権</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">用途地域</label>
-                    <input
-                      type="text"
-                      name="use_district"
-                      value={formData.use_district}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：第一種低層住居専用地域"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">接道状況</label>
-                    <input
-                      type="text"
-                      name="road_situation"
-                      value={formData.road_situation}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：南側6m公道"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">現況</label>
-                    <select
-                      name="current_status"
-                      value={formData.current_status}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="空家">空家</option>
-                      <option value="居住中">居住中</option>
-                      <option value="賃貸中">賃貸中</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">引渡し時期</label>
-                    <input
-                      type="text"
-                      name="delivery_time"
-                      value={formData.delivery_time}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：即時可、相談"
-                    />
-                  </div>
-                  {formData.property_type === '中古戸建' && (
-                    <>
-                      <div className="col-span-2">
-                        <label className="block text-sm font-medium mb-2">リフォーム履歴</label>
-                        <textarea
-                          name="reform_history"
-                          value={formData.reform_history}
-                          onChange={handleChange}
-                          rows={3}
-                          className="w-full p-2 border rounded"
-                          placeholder="例：2023年3月 外壁塗装、屋根葺き替え&#10;2022年12月 キッチン交換"
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <label className="block text-sm font-medium mb-2">設備状況</label>
-                        <textarea
-                          name="equipment_status"
-                          value={formData.equipment_status}
-                          onChange={handleChange}
-                          rows={3}
-                          className="w-full p-2 border rounded"
-                          placeholder="例：キッチン、浴室、トイレは2020年に交換済み&#10;エアコン全室設置済み"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {formData.property_type === '中古マンション' && (
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-bold mb-4">マンション詳細情報</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">専有面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="building_area"
-                      value={formData.building_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">バルコニー面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="balcony_area"
-                      value={formData.balcony_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">専用庭面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="private_garden_area"
-                      value={formData.private_garden_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">階数 / 総階数</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        name="floor_number"
-                        value={formData.floor_number}
-                        onChange={handleChange}
-                        className="flex-1 p-2 border rounded"
-                        placeholder="5"
-                      />
-                      <span className="self-center">階 /</span>
-                      <input
-                        type="number"
-                        name="total_floors"
-                        value={formData.total_floors}
-                        onChange={handleChange}
-                        className="flex-1 p-2 border rounded"
-                        placeholder="10"
-                      />
-                      <span className="self-center">階建</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">向き</label>
-                    <select
-                      name="direction"
-                      value={formData.direction}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="南向き">南向き</option>
-                      <option value="東向き">東向き</option>
-                      <option value="西向き">西向き</option>
-                      <option value="北向き">北向き</option>
-                      <option value="南東向き">南東向き</option>
-                      <option value="南西向き">南西向き</option>
-                      <option value="北東向き">北東向き</option>
-                      <option value="北西向き">北西向き</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">総戸数</label>
-                    <input
-                      type="number"
-                      name="total_units"
-                      value={formData.total_units}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">構造</label>
-                    <select
-                      name="structure"
-                      value={formData.structure}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="RC造">RC造</option>
-                      <option value="SRC造">SRC造</option>
-                      <option value="鉄骨造">鉄骨造</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">管理費（月額）</label>
-                    <input
-                      type="number"
-                      name="management_fee"
-                      value={formData.management_fee}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">修繕積立金（月額）</label>
-                    <input
-                      type="number"
-                      name="repair_fund"
-                      value={formData.repair_fund}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">管理形態</label>
-                    <select
-                      name="management_type"
-                      value={formData.management_type}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="全部委託">全部委託</option>
-                      <option value="一部委託">一部委託</option>
-                      <option value="自主管理">自主管理</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">管理会社名</label>
-                    <input
-                      type="text"
-                      name="management_company"
-                      value={formData.management_company}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">駐車場（月額）</label>
-                    <input
-                      type="number"
-                      name="parking_fee"
-                      value={formData.parking_fee}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="10000"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">駐車場空き状況</label>
-                    <input
-                      type="text"
-                      name="parking_status"
-                      value={formData.parking_status}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：空きあり、要確認"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">現況</label>
-                    <select
-                      name="current_status"
-                      value={formData.current_status}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="空室">空室</option>
-                      <option value="居住中">居住中</option>
-                      <option value="賃貸中">賃貸中</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">引渡し時期</label>
-                    <input
-                      type="text"
-                      name="delivery_time"
-                      value={formData.delivery_time}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：即時可、相談"
-                    />
-                  </div>
-                  
-                  {/* 修繕履歴・長期修繕計画 */}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium mb-2">修繕履歴</label>
-                    <textarea
-                      name="repair_history"
-                      value={formData.repair_history}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：2022年 大規模修繕工事実施（外壁塗装、防水工事）"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium mb-2">長期修繕計画</label>
-                    <textarea
-                      name="long_term_repair_plan"
-                      value={formData.long_term_repair_plan}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：次回大規模修繕は2032年予定"
-                    />
-                  </div>
-                  
-                  {/* リフォーム履歴 */}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium mb-2">リフォーム履歴</label>
-                    <textarea
-                      name="reform_history"
-                      value={formData.reform_history}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：2023年3月 全面リフォーム（キッチン、浴室、フローリング張替）"
-                    />
-                  </div>
-                  
-                  {/* 共用施設 */}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium mb-2">共用施設</label>
-                    <div className="grid grid-cols-4 gap-2">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="elevator"
-                          checked={formData.elevator}
-                          onChange={handleChange}
-                          className="mr-2"
-                        />
-                        エレベーター
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="auto_lock"
-                          checked={formData.auto_lock}
-                          onChange={handleChange}
-                          className="mr-2"
-                        />
-                        オートロック
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="delivery_box"
-                          checked={formData.delivery_box}
-                          onChange={handleChange}
-                          className="mr-2"
-                        />
-                        宅配ボックス
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="bicycle_parking"
-                          checked={formData.bicycle_parking}
-                          onChange={handleChange}
-                          className="mr-2"
-                        />
-                        駐輪場
-                      </label>
-                    </div>
-                    <input
-                      type="text"
-                      name="common_facilities"
-                      value={formData.common_facilities}
-                      onChange={handleChange}
-                      className="w-full mt-2 p-2 border rounded"
-                      placeholder="その他の共用施設（例：ゲストルーム、キッズルーム）"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {formData.property_type === '土地' && (
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-bold mb-4">土地詳細情報</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地面積（㎡）</label>
-                    <input
-                      type="number"
-                      name="land_area"
-                      value={formData.land_area}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地面積（坪）</label>
-                    <input
-                      type="number"
-                      name="land_area_tsubo"
-                      value={formData.land_area_tsubo}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地権利</label>
-                    <select
-                      name="land_rights"
-                      value={formData.land_rights}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="所有権">所有権</option>
-                      <option value="借地権">借地権</option>
-                      <option value="定期借地権">定期借地権</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">用途地域</label>
-                    <input
-                      type="text"
-                      name="use_district"
-                      value={formData.use_district}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：第一種低層住居専用地域"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建ぺい率（%）</label>
-                    <input
-                      type="number"
-                      name="building_coverage"
-                      value={formData.building_coverage}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">容積率（%）</label>
-                    <input
-                      type="number"
-                      name="floor_area_ratio"
-                      value={formData.floor_area_ratio}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">高さ制限</label>
-                    <input
-                      type="text"
-                      name="height_limit"
-                      value={formData.height_limit}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：10m"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">防火地域</label>
-                    <input
-                      type="text"
-                      name="fire_zone"
-                      value={formData.fire_zone}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：準防火地域"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">その他法的制限</label>
-                    <input
-                      type="text"
-                      name="other_restrictions"
-                      value={formData.other_restrictions}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：景観法、風致地区"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">接道状況</label>
-                    <input
-                      type="text"
-                      name="road_situation"
-                      value={formData.road_situation}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：南側6m公道"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">道路種別</label>
-                    <select
-                      name="road_type"
-                      value={formData.road_type}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="公道">公道</option>
-                      <option value="私道">私道</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">道路幅員（m）</label>
-                    <input
-                      type="number"
-                      name="road_width"
-                      value={formData.road_width}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="6"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">上水道</label>
-                    <select
-                      name="water_supply"
-                      value={formData.water_supply}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="公営">公営</option>
-                      <option value="井戸">井戸</option>
-                      <option value="なし">なし</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">下水道</label>
-                    <select
-                      name="sewage"
-                      value={formData.sewage}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="公共下水">公共下水</option>
-                      <option value="浄化槽">浄化槽</option>
-                      <option value="汲み取り">汲み取り</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">都市ガス</label>
-                    <select
-                      name="gas"
-                      value={formData.gas}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="都市ガス">都市ガス</option>
-                      <option value="プロパン">プロパン</option>
-                      <option value="なし">なし</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">電気</label>
-                    <select
-                      name="electricity"
-                      value={formData.electricity}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="引込済">引込済</option>
-                      <option value="要工事">要工事</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">地勢</label>
-                    <select
-                      name="terrain"
-                      value={formData.terrain}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="平坦">平坦</option>
-                      <option value="傾斜">傾斜</option>
-                      <option value="高台">高台</option>
-                      <option value="低地">低地</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">土地の形状</label>
-                    <select
-                      name="land_shape"
-                      value={formData.land_shape}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="整形">整形</option>
-                      <option value="不整形">不整形</option>
-                      <option value="角地">角地</option>
-                      <option value="旗竿地">旗竿地</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">現況</label>
-                    <select
-                      name="current_status"
-                      value={formData.current_status}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="更地">更地</option>
-                      <option value="古家有">古家有</option>
-                      <option value="建物有">建物有</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建築条件</label>
-                    <select
-                      name="building_conditions"
-                      value={formData.building_conditions}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="無">無</option>
-                      <option value="有">有</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 法的事項（戸建・マンション共通） */}
-            {formData.property_type !== '土地' && (
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-bold mb-4">法的事項</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">建築確認番号</label>
-                    <input
-                      type="text"
-                      name="building_confirmation"
-                      value={formData.building_confirmation}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">検査済証</label>
-                    <select
-                      name="inspection_certificate"
-                      value={formData.inspection_certificate.toString()}
-                      onChange={(e) => setFormData(prev => ({ ...prev, inspection_certificate: e.target.value === 'true' }))}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="true">有</option>
-                      <option value="false">無</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">既存住宅売買瑕疵保険</label>
-                    <select
-                      name="insurance"
-                      value={formData.insurance.toString()}
-                      onChange={(e) => setFormData(prev => ({ ...prev, insurance: e.target.value === 'true' }))}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="true">加入可</option>
-                      <option value="false">加入不可</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">住宅性能評価</label>
-                    <select
-                      name="performance_evaluation"
-                      value={formData.performance_evaluation.toString()}
-                      onChange={(e) => setFormData(prev => ({ ...prev, performance_evaluation: e.target.value === 'true' }))}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="true">有</option>
-                      <option value="false">無</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">耐震基準</label>
-                    <input
-                      type="text"
-                      name="earthquake_resistance"
-                      value={formData.earthquake_resistance}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：新耐震基準適合"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">断熱等級</label>
-                    <input
-                      type="text"
-                      name="insulation_grade"
-                      value={formData.insulation_grade}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="例：等級4"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 周辺環境 */}
+            {/* 画像アップロード（統合版） */}
             <div className="border-t pt-6">
-              <h2 className="text-lg font-bold mb-4">周辺環境</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">学校区</label>
-                  <input
-                    type="text"
-                    name="school_district"
-                    value={formData.school_district}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：○○小学校、○○中学校"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">商業施設</label>
-                  <input
-                    type="text"
-                    name="shopping_facilities"
-                    value={formData.shopping_facilities}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：スーパー○○まで徒歩5分"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">公共施設</label>
-                  <input
-                    type="text"
-                    name="public_facilities"
-                    value={formData.public_facilities}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：市役所まで車で10分"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">交通機関</label>
-                  <input
-                    type="text"
-                    name="transportation"
-                    value={formData.transportation}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="例：バス停まで徒歩3分"
-                  />
-                </div>
+              <h2 className="text-lg font-bold mb-4">
+                物件画像（最大20枚）
+              </h2>
+              
+              {/* ドラッグ&ドロップエリア */}
+              <div
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onClick={() => fileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors mb-6 ${
+                  isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500 bg-gray-50'
+                }`}
+              >
+                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="text-lg mb-2">画像をドラッグ&ドロップ</p>
+                <p className="text-sm text-gray-500">または</p>
+                <button type="button" className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  ファイルを選択
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  現在 {images.length} / 20 枚
+                </p>
               </div>
+              
+              {/* 画像スロット */}
+              <div className="grid grid-cols-4 gap-4">
+                {Array.from({ length: displaySlots }, (_, index) => {
+                  const imageUrl = images[index]
+                  const label = index === 0 ? '外観（メイン）' : index === 1 ? '間取り図/区画図' : `その他${index - 1}`
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className="border rounded-lg p-3 bg-gray-50"
+                      draggable={!!imageUrl}
+                      onDragStart={(e) => imageUrl && handleImageDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleImageDrop(e, index)}
+                    >
+                      {/* ラベル */}
+                      <div className="text-sm font-medium mb-2">
+                        {index + 1}. {label}
+                      </div>
+                      
+                      {/* プレビューエリア */}
+                      <div className="relative w-full h-32 bg-white border-2 border-dashed border-gray-300 rounded mb-2 overflow-hidden">
+                        {imageUrl ? (
+                          <>
+                            <img 
+                              src={imageUrl} 
+                              alt={label}
+                              className="w-full h-full object-cover cursor-move"
+                            />
+                            {/* 削除ボタン */}
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                            {/* ドラッグ表示 */}
+                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                              ドラッグで移動
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span className="text-xs">画像未選択</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* ファイル選択ボタン */}
+                      <div className="space-y-2">
+                        <input
+                          type="file"
+                          id={`file-${index}`}
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              handleSingleImageUpload(index, file)
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor={`file-${index}`}
+                          className="block w-full bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 text-xs text-center"
+                        >
+                          画像を選択
+                        </label>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* もっと画像を追加ボタン */}
+              {!showMoreImages && (
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowMoreImages(true)}
+                    className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+                  >
+                    もっと画像登録を増やす（13〜20枚目）
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* 共通特徴（チェックボックス） */}
@@ -2018,124 +1481,6 @@ export default function NewProperty() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* 画像アップロード */}
-            <div className="border-t pt-6">
-              <h2 className="text-lg font-bold mb-4">
-                物件画像（最大20枚）
-              </h2>
-              
-              {/* 画像スロット */}
-              <div className="grid grid-cols-4 gap-4">
-                {Array.from({ length: displaySlots }, (_, index) => {
-                  const imageUrl = images[index]
-                  const label = index === 0 ? '外観' : index === 1 ? '間取り図/区画図' : `その他${index - 1}`
-                  
-                  return (
-                    <div 
-                      key={index} 
-                      className="border rounded-lg p-3 bg-gray-50"
-                      draggable={!!imageUrl}
-                      onDragStart={(e) => imageUrl && handleDragStart(e, index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                    >
-                      {/* ラベル */}
-                      <div className="text-sm font-medium mb-2">
-                        {index + 1}. {label}
-                      </div>
-                      
-                      {/* プレビューエリア */}
-                      <div className="relative w-full h-32 bg-white border-2 border-dashed border-gray-300 rounded mb-2 overflow-hidden">
-                        {imageUrl ? (
-                          <>
-                            <img 
-                              src={imageUrl} 
-                              alt={label}
-                              className="w-full h-full object-cover cursor-move"
-                            />
-                            {/* 削除ボタン */}
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600"
-                            >
-                              ×
-                            </button>
-                            {/* ドラッグ表示 */}
-                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                              ドラッグで移動
-                            </div>
-                          </>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span className="text-xs">画像未選択</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* ファイル選択ボタン */}
-                      <div className="space-y-2">
-                        <input
-                          type="file"
-                          id={`file-${index}`}
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                              const reader = new FileReader()
-                              reader.onload = (event) => {
-                                const newImages = [...images]
-                                if (images.length <= index) {
-                                  // 新規追加
-                                  while (newImages.length < index) {
-                                    newImages.push('')
-                                  }
-                                  newImages.push(event.target?.result as string)
-                                } else {
-                                  // 既存を置き換え
-                                  newImages[index] = event.target?.result as string
-                                }
-                                setImages(newImages.filter(img => img !== ''))
-                              }
-                              reader.readAsDataURL(file)
-                            }
-                          }}
-                        />
-                        <label
-                          htmlFor={`file-${index}`}
-                          className="block w-full bg-blue-500 text-white py-1 px-2 rounded cursor-pointer hover:bg-blue-600 text-xs text-center"
-                        >
-                          画像を選択
-                        </label>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* もっと画像を追加ボタン */}
-              {!showMoreImages && (
-                <div className="mt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowMoreImages(true)}
-                    className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
-                  >
-                    もっと画像登録を増やす（13〜20枚目）
-                  </button>
-                </div>
-              )}
-
-              {/* 選択済み画像数の表示 */}
-              <div className="mt-4 text-sm text-gray-600">
-                選択済み: {images.length} / 20 枚
               </div>
             </div>
 
