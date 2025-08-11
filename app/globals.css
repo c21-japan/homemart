@@ -1,47 +1,49 @@
-@import "tailwindcss";
+/* 既存のCSSの最後に追加 */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  
-  /* CENTURY21ブランドカラー */
-  --century21-gold: #FFD700;
-  --century21-dark-gold: #DAA520;
-  
-  /* メインカラー */
-  --beige-light: #F5F5DC;
-  --beige-medium: #F0E68C;
-  --charcoal: #36454F;
-  --dark-brown: #8B4513;
-  
-  /* アクセントカラー */
-  --accent-red: #FF0000;
-  --light-blue: #E6F3FF;
-  --light-green: #E6FFE6;
-  
-  /* ナビゲーションカラー */
-  --nav-pink: #FF69B4;
-  --nav-lightblue: #87CEEB;
-  --nav-green: #32CD32;
-  --nav-orange: #FFA500;
+/* ゴールドテーマのカスタムスタイル */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* スクロールアニメーション */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* グラデーションテキスト */
+.gradient-text {
+  background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* カスタムシャドウ */
+.shadow-gold {
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+
+.shadow-3xl {
+  box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
 }
