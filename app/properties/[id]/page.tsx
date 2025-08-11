@@ -1,4 +1,3 @@
-// app/properties/[id]/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,14 +5,61 @@ import { supabase } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
+// 型定義
+interface Property {
+  id: string
+  name: string
+  price: number
+  image_url?: string
+  images?: string[]
+  property_type: string
+  prefecture: string
+  city: string
+  town?: string
+  station?: string
+  route?: string
+  walking_time?: number
+  layout?: string
+  land_area?: number
+  land_area_tsubo?: number
+  building_area?: number
+  building_age?: number
+  build_year?: string
+  build_month?: string
+  price_per_tsubo?: number
+  staff_comment?: string
+  sales_point?: string
+  structure?: string
+  floors?: number
+  direction?: string
+  parking?: number
+  land_rights?: string
+  use_district?: string
+  building_coverage?: number
+  floor_area_ratio?: number
+  road_situation?: string
+  current_status?: string
+  delivery_time?: string
+  reform_history?: string
+  elevator?: boolean
+  auto_lock?: boolean
+  delivery_box?: boolean
+  bicycle_parking?: boolean
+  features?: {
+    [key: string]: boolean
+  }
+}
+
 export default function PropertyDetailPage() {
   const params = useParams()
-  const [property, setProperty] = useState<any>(null)
+  const [property, setProperty] = useState<Property | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
-    fetchProperty()
+    if (params.id) {
+      fetchProperty()
+    }
   }, [params.id])
 
   const fetchProperty = async () => {
@@ -25,7 +71,7 @@ export default function PropertyDetailPage() {
         .single()
 
       if (error) throw error
-      setProperty(data)
+      setProperty(data as Property)
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -49,7 +95,13 @@ export default function PropertyDetailPage() {
     )
   }
 
-  const images = property.images || [property.image_url].filter(Boolean)
+  // 画像配列を型安全に作成
+  const images: string[] = []
+  if (property.images && property.images.length > 0) {
+    images.push(...property.images)
+  } else if (property.image_url) {
+    images.push(property.image_url)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -98,7 +150,7 @@ export default function PropertyDetailPage() {
           {/* サムネイル */}
           {images.length > 1 && (
             <div className="flex gap-2 p-4 overflow-x-auto">
-              {images.map((img, index) => (
+              {images.map((img: string, index: number) => (
                 <img
                   key={index}
                   src={img}
@@ -151,6 +203,14 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
+            {/* セールスポイント */}
+            {property.sales_point && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h3 className="font-bold mb-2">物件の特徴</h3>
+                <p className="whitespace-pre-wrap">{property.sales_point}</p>
+              </div>
+            )}
+
             {/* 物件詳細テーブル */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 左側 */}
@@ -160,14 +220,14 @@ export default function PropertyDetailPage() {
                   <tbody>
                     <tr className="border-b">
                       <th className="text-left py-2 pr-4 text-gray-600">所在地</th>
-                      <td className="py-2">{property.prefecture}{property.city}{property.town}</td>
+                      <td className="py-2">{property.prefecture}{property.city}{property.town || ''}</td>
                     </tr>
                     {property.station && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">交通</th>
                         <td className="py-2">
                           {property.route && `${property.route} `}
-                          {property.station} 徒歩{property.walking_time}分
+                          {property.station} {property.walking_time && `徒歩${property.walking_time}分`}
                         </td>
                       </tr>
                     )}
@@ -180,7 +240,10 @@ export default function PropertyDetailPage() {
                     {property.land_area && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">土地面積</th>
-                        <td className="py-2">{property.land_area}㎡</td>
+                        <td className="py-2">
+                          {property.land_area}㎡
+                          {property.land_area_tsubo && ` (${property.land_area_tsubo}坪)`}
+                        </td>
                       </tr>
                     )}
                     {property.building_area && (
@@ -189,7 +252,7 @@ export default function PropertyDetailPage() {
                         <td className="py-2">{property.building_area}㎡</td>
                       </tr>
                     )}
-                    {property.building_age !== null && (
+                    {property.building_age !== undefined && property.building_age !== null && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">築年数</th>
                         <td className="py-2">
@@ -209,6 +272,12 @@ export default function PropertyDetailPage() {
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">階数</th>
                         <td className="py-2">{property.floors}階建</td>
+                      </tr>
+                    )}
+                    {property.direction && (
+                      <tr className="border-b">
+                        <th className="text-left py-2 pr-4 text-gray-600">向き</th>
+                        <td className="py-2">{property.direction}</td>
                       </tr>
                     )}
                   </tbody>
@@ -250,6 +319,12 @@ export default function PropertyDetailPage() {
                         <td className="py-2">{property.floor_area_ratio}%</td>
                       </tr>
                     )}
+                    {property.road_situation && (
+                      <tr className="border-b">
+                        <th className="text-left py-2 pr-4 text-gray-600">接道状況</th>
+                        <td className="py-2">{property.road_situation}</td>
+                      </tr>
+                    )}
                     {property.current_status && (
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 text-gray-600">現況</th>
@@ -267,6 +342,47 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
+            {/* リフォーム履歴 */}
+            {property.reform_history && (
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-4 border-b pb-2">リフォーム履歴</h2>
+                <p className="whitespace-pre-wrap">{property.reform_history}</p>
+              </div>
+            )}
+
+            {/* 共用施設（マンション） */}
+            {property.property_type === '中古マンション' && (
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-4 border-b pb-2">共用施設</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {property.elevator && (
+                    <div className="flex items-center">
+                      <span className="text-green-500 mr-2">✓</span>
+                      <span>エレベーター</span>
+                    </div>
+                  )}
+                  {property.auto_lock && (
+                    <div className="flex items-center">
+                      <span className="text-green-500 mr-2">✓</span>
+                      <span>オートロック</span>
+                    </div>
+                  )}
+                  {property.delivery_box && (
+                    <div className="flex items-center">
+                      <span className="text-green-500 mr-2">✓</span>
+                      <span>宅配ボックス</span>
+                    </div>
+                  )}
+                  {property.bicycle_parking && (
+                    <div className="flex items-center">
+                      <span className="text-green-500 mr-2">✓</span>
+                      <span>駐輪場</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* 物件の特徴 */}
             {property.features && Object.values(property.features).some(v => v) && (
               <div className="mt-6">
@@ -274,7 +390,7 @@ export default function PropertyDetailPage() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                   {Object.entries(property.features).map(([key, value]) => {
                     if (!value) return null
-                    const labels: any = {
+                    const labels: { [key: string]: string } = {
                       long_term_excellent: '長期優良住宅',
                       performance_evaluation: '住宅性能評価書取得',
                       flat35s: 'フラット35S対応',
@@ -309,7 +425,7 @@ export default function PropertyDetailPage() {
                     return (
                       <div key={key} className="flex items-center">
                         <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-sm">{labels[key]}</span>
+                        <span className="text-sm">{labels[key] || key}</span>
                       </div>
                     )
                   })}
