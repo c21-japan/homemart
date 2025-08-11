@@ -1,10 +1,8 @@
-// app/properties/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface Property {
   id: string
@@ -23,7 +21,6 @@ interface Property {
   staff_comment: string
   features: any
   created_at: string
-  new_property_expires_at: string
 }
 
 export default function PropertiesPage() {
@@ -82,12 +79,14 @@ export default function PropertiesPage() {
     }
   }
 
-  // 新着物件かどうかを判定
+  // 新着物件かどうかを判定（created_atから30日以内）
   const isNewProperty = (property: Property) => {
-    if (property.new_property_expires_at) {
-      return new Date(property.new_property_expires_at) > new Date()
-    }
-    return false
+    const createdAt = new Date(property.created_at)
+    const now = new Date()
+    const diffTime = now.getTime() - createdAt.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    return diffDays <= 30
   }
 
   return (

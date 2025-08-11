@@ -1,4 +1,3 @@
-// app/admin/properties/page.tsx
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -91,14 +90,16 @@ function getUpdatedRegistrationDate(originalDate: Date): string {
   })
 }
 
-// ========== 間取り入力コンポーネント ==========
+// ========== 間取り入力コンポーネント（修正版） ==========
 function LayoutInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const [rooms, setRooms] = useState('')
   const [hasS, setHasS] = useState(false)
   const [layoutType, setLayoutType] = useState<typeof LAYOUT_TYPES[number]>('LDK')
+  const [initialized, setInitialized] = useState(false)
 
+  // 初期値の設定（初回のみ）
   useEffect(() => {
-    if (value) {
+    if (value && !initialized) {
       const match = value.match(/^(\d+)(S?)(.*)$/)
       if (match) {
         setRooms(match[1])
@@ -107,22 +108,22 @@ function LayoutInput({ value, onChange }: { value: string; onChange: (value: str
           setLayoutType(match[3] as typeof LAYOUT_TYPES[number])
         }
       }
+      setInitialized(true)
     }
-  }, [value])
-
-  useEffect(() => {
-    if (rooms) {
-      const layout = `${rooms}${hasS ? 'S' : ''}${layoutType}`
-      onChange(layout)
-    }
-  }, [rooms, hasS, layoutType, onChange])
+  }, [value, initialized])
 
   return (
     <div className="flex items-center gap-2">
       <input
         type="number"
         value={rooms}
-        onChange={(e) => setRooms(e.target.value)}
+        onChange={(e) => {
+          setRooms(e.target.value)
+          if (e.target.value) {
+            const layout = `${e.target.value}${hasS ? 'S' : ''}${layoutType}`
+            onChange(layout)
+          }
+        }}
         className="w-20 p-2 border rounded focus:ring-2 focus:ring-blue-500"
         placeholder="3"
         min="1"
@@ -131,7 +132,14 @@ function LayoutInput({ value, onChange }: { value: string; onChange: (value: str
       
       <button
         type="button"
-        onClick={() => setHasS(!hasS)}
+        onClick={() => {
+          const newHasS = !hasS
+          setHasS(newHasS)
+          if (rooms) {
+            const layout = `${rooms}${newHasS ? 'S' : ''}${layoutType}`
+            onChange(layout)
+          }
+        }}
         className={`px-3 py-2 rounded transition-colors ${
           hasS 
             ? 'bg-blue-500 text-white' 
@@ -143,7 +151,14 @@ function LayoutInput({ value, onChange }: { value: string; onChange: (value: str
       
       <select
         value={layoutType}
-        onChange={(e) => setLayoutType(e.target.value as typeof LAYOUT_TYPES[number])}
+        onChange={(e) => {
+          const newType = e.target.value as typeof LAYOUT_TYPES[number]
+          setLayoutType(newType)
+          if (rooms) {
+            const layout = `${rooms}${hasS ? 'S' : ''}${newType}`
+            onChange(layout)
+          }
+        }}
         className="p-2 border rounded focus:ring-2 focus:ring-blue-500"
       >
         {LAYOUT_TYPES.map(type => (
@@ -358,12 +373,12 @@ export default function NewProperty() {
     }
   }
 
-  const handleLayoutChange = (value: string) => {
+  const handleLayoutChange = useCallback((value: string) => {
     setFormData(prev => ({
       ...prev,
       layout: value
     }))
-  }
+  }, [])
 
   const removeImage = (index: number) => {
     const newImages = [...images]
@@ -436,71 +451,83 @@ export default function NewProperty() {
     try {
       // Supabaseのテーブルに存在するカラムのみを送信
       const submitData: any = {
+        // 基本情報
         name: formData.name,
         price: parseInt(formData.price) || 0,
         prefecture: formData.prefecture,
         city: formData.city,
-        town: formData.town,
-        station: formData.station,
-        route: formData.route,
-        walking_time: parseInt(formData.walking_time) || null,
-        land_area: parseFloat(formData.land_area) || null,
-        building_area: parseFloat(formData.building_area) || null,
-        layout: formData.layout,
-        building_age: parseInt(formData.building_age) || null,
-        structure: formData.structure,
-        floors: parseInt(formData.floors) || null,
-        direction: formData.direction,
-        parking: parseInt(formData.parking) || null,
-        building_coverage: parseFloat(formData.building_coverage) || null,
-        floor_area_ratio: parseFloat(formData.floor_area_ratio) || null,
-        land_rights: formData.land_rights,
-        use_district: formData.use_district,
-        road_situation: formData.road_situation,
-        current_status: formData.current_status,
-        delivery_time: formData.delivery_time,
-        total_units: parseInt(formData.total_units) || null,
-        management_fee: parseInt(formData.management_fee) || null,
-        repair_fund: parseInt(formData.repair_fund) || null,
-        balcony_area: parseFloat(formData.balcony_area) || null,
-        price_per_tsubo: parseFloat(formData.price_per_tsubo) || null,
-        image_url: images[0] || '',
-        images: images,
-        address: `${formData.prefecture}${formData.city}${formData.town}`,
+        town: formData.town || null,
+        station: formData.station || null,
+        route: formData.route || null,
+        walking_time: formData.walking_time ? parseInt(formData.walking_time) : null,
+        
+        // 土地・建物情報
+        land_area: formData.land_area ? parseFloat(formData.land_area) : null,
+        land_area_tsubo: formData.land_area_tsubo ? parseFloat(formData.land_area_tsubo) : null,
+        building_area: formData.building_area ? parseFloat(formData.building_area) : null,
+        layout: formData.layout || null,
+        building_age: formData.building_age ? parseInt(formData.building_age) : null,
+        build_year: formData.build_year || null,
+        build_month: formData.build_month || null,
+        structure: formData.structure || null,
+        floors: formData.floors ? parseInt(formData.floors) : null,
+        direction: formData.direction || null,
+        
+        // 詳細情報
+        parking: formData.parking ? parseInt(formData.parking) : null,
+        building_coverage: formData.building_coverage ? parseFloat(formData.building_coverage) : null,
+        floor_area_ratio: formData.floor_area_ratio ? parseFloat(formData.floor_area_ratio) : null,
+        land_rights: formData.land_rights || null,
+        use_district: formData.use_district || null,
+        road_situation: formData.road_situation || null,
+        current_status: formData.current_status || null,
+        delivery_time: formData.delivery_time || null,
+        
+        // マンション情報
+        total_units: formData.total_units ? parseInt(formData.total_units) : null,
+        management_fee: formData.management_fee ? parseInt(formData.management_fee) : null,
+        repair_fund: formData.repair_fund ? parseInt(formData.repair_fund) : null,
+        balcony_area: formData.balcony_area ? parseFloat(formData.balcony_area) : null,
+        
+        // 価格関連
+        price_per_tsubo: formData.price_per_tsubo ? parseFloat(formData.price_per_tsubo) : null,
+        
+        // 画像
+        image_url: images[0] || null,
+        images: images.length > 0 ? images : null,
+        
+        // その他
+        address: `${formData.prefecture}${formData.city}${formData.town || ''}`,
         property_type: formData.property_type,
-        status: formData.status,
+        status: formData.status || 'published',
         is_new: formData.is_new,
-        staff_comment: formData.staff_comment,
-        sales_point: formData.sales_point,
-        reform_history: formData.reform_history,
-        elevator: formData.elevator,
-        auto_lock: formData.auto_lock,
-        delivery_box: formData.delivery_box,
-        bicycle_parking: formData.bicycle_parking,
-        features: formData.features,
-        // 新着物件の期限（30日後）を設定
-        new_property_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        staff_comment: formData.staff_comment || null,
+        sales_point: formData.sales_point || null,
+        reform_history: formData.reform_history || null,
+        elevator: formData.elevator || false,
+        auto_lock: formData.auto_lock || false,
+        delivery_box: formData.delivery_box || false,
+        bicycle_parking: formData.bicycle_parking || false,
+        features: formData.features || {}
       }
 
-      // 築年月を文字列として保存（例：2024年3月）
-      if (formData.build_year) {
-        submitData.build_year = formData.build_year
-        submitData.build_month = formData.build_month
-      }
-  
       console.log('送信データ:', submitData)
-  
+
       const { data, error } = await supabase
         .from('properties')
         .insert(submitData)
         .select()
-  
+
       if (error) {
-        console.error('Supabaseエラー詳細:', error)
+        console.error('Supabaseエラー詳細:', {
+          message: error.message,
+          code: error.code,
+          details: error.details
+        })
         alert(`登録に失敗しました。\nエラー: ${error.message}`)
         throw error
       }
-  
+
       alert('物件を登録しました')
       router.push('/admin')
     } catch (error) {
@@ -786,7 +813,7 @@ export default function NewProperty() {
               </div>
             </div>
 
-            {/* 物件種別に応じた詳細情報 - 完全版 */}
+            {/* 物件種別に応じた詳細情報 */}
             {(formData.property_type === '新築戸建' || formData.property_type === '中古戸建') && (
               <div className="border-t pt-6">
                 <h2 className="text-lg font-bold mb-4">戸建詳細情報</h2>
@@ -1609,7 +1636,7 @@ export default function NewProperty() {
               </div>
             </div>
 
-            {/* 共通特徴（チェックボックス） - 続き */}
+            {/* 共通特徴（チェックボックス） */}
             <div className="border-t pt-6">
               <h2 className="text-lg font-bold mb-4">物件の特徴</h2>
               
