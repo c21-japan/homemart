@@ -3,6 +3,27 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* CENTURY21ブランドカラー */
+  --century21-gold: #FFD700;
+  --century21-dark-gold: #DAA520;
+  
+  /* メインカラー */
+  --beige-light: #F5F5DC;
+  --beige-medium: #F0E68C;
+  --charcoal: #36454F;
+  --dark-brown: #8B4513;
+  
+  /* アクセントカラー */
+  --accent-red: #FF0000;
+  --light-blue: #E6F3FF;
+  --light-green: #E6FFE6;
+  
+  /* ナビゲーションカラー */
+  --nav-pink: #FF69B4;
+  --nav-lightblue: #87CEEB;
+  --nav-green: #32CD32;
+  --nav-orange: #FFA500;
 }
 
 @theme inline {
