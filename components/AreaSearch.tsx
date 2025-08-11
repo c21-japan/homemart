@@ -1,83 +1,150 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PropertySearch from './PropertySearch'
+import { getPropertyCountsByArea } from '@/lib/supabase/properties'
+import { supabase } from '@/lib/supabase'
 
 export default function AreaSearch() {
   const [selectedPrefecture, setSelectedPrefecture] = useState<'nara' | 'osaka'>('nara')
   const [selectedArea, setSelectedArea] = useState<string | null>(null)
+  const [propertyCounts, setPropertyCounts] = useState<{ [key: string]: number }>({})
+  const [loading, setLoading] = useState(true)
 
-  // エリアごとの物件数（後でデータベースから取得するように変更可能）
+  // エリアデータの定義（物件数は動的に更新される）
   const areaData = {
     nara: [
-      { name: '奈良市', count: 23 },
-      { name: '天理市', count: 5 },
-      { name: '香芝市', count: 12 },
-      { name: '生駒郡斑鳩町', count: 3 },
-      { name: '磯城郡三宅町', count: 0 },
-      { name: '北葛城郡王寺町', count: 8 },
-      { name: '北葛城郡上牧町', count: 2 },
-      { name: '大和高田市', count: 7 },
-      { name: '橿原市', count: 15 },
-      { name: '葛城市', count: 4 },
-      { name: '生駒郡安堵町', count: 0 },
-      { name: '生駒郡平群町', count: 1 },
-      { name: '磯城郡川西町', count: 0 },
-      { name: '北葛城郡河合町', count: 6 },
-      { name: '大和郡山市', count: 9 },
-      { name: '桜井市', count: 3 },
-      { name: '生駒市', count: 18 },
-      { name: '生駒郡三郷町', count: 5 },
-      { name: '磯城郡田原本町', count: 2 },
-      { name: '北葛城郡広陵町', count: 11 }
+      { name: '奈良市', prefecture: '奈良県' },
+      { name: '天理市', prefecture: '奈良県' },
+      { name: '香芝市', prefecture: '奈良県' },
+      { name: '生駒郡斑鳩町', prefecture: '奈良県' },
+      { name: '磯城郡三宅町', prefecture: '奈良県' },
+      { name: '北葛城郡王寺町', prefecture: '奈良県' },
+      { name: '北葛城郡上牧町', prefecture: '奈良県' },
+      { name: '大和高田市', prefecture: '奈良県' },
+      { name: '橿原市', prefecture: '奈良県' },
+      { name: '葛城市', prefecture: '奈良県' },
+      { name: '生駒郡安堵町', prefecture: '奈良県' },
+      { name: '生駒郡平群町', prefecture: '奈良県' },
+      { name: '磯城郡川西町', prefecture: '奈良県' },
+      { name: '北葛城郡河合町', prefecture: '奈良県' },
+      { name: '大和郡山市', prefecture: '奈良県' },
+      { name: '桜井市', prefecture: '奈良県' },
+      { name: '生駒市', prefecture: '奈良県' },
+      { name: '生駒郡三郷町', prefecture: '奈良県' },
+      { name: '磯城郡田原本町', prefecture: '奈良県' },
+      { name: '北葛城郡広陵町', prefecture: '奈良県' }
     ],
     osaka: [
-      { name: '堺市堺区', count: 8 },
-      { name: '堺市中区', count: 6 },
-      { name: '堺市東区', count: 4 },
-      { name: '堺市西区', count: 7 },
-      { name: '堺市南区', count: 3 },
-      { name: '堺市北区', count: 9 },
-      { name: '堺市美原区', count: 2 },
-      { name: '岸和田市', count: 5 },
-      { name: '吹田市', count: 12 },
-      { name: '貝塚市', count: 1 },
-      { name: '茨木市', count: 8 },
-      { name: '富田林市', count: 4 },
-      { name: '松原市', count: 6 },
-      { name: '箕面市', count: 10 },
-      { name: '門真市', count: 3 },
-      { name: '藤井寺市', count: 7 },
-      { name: '四條畷市', count: 2 },
-      { name: '泉大津市', count: 5 },
-      { name: '守口市', count: 4 },
-      { name: '八尾市', count: 9 },
-      { name: '寝屋川市', count: 11 },
-      { name: '大東市', count: 6 },
-      { name: '柏原市', count: 2 },
-      { name: '摂津市', count: 3 },
-      { name: '交野市', count: 4 },
-      { name: '池田市', count: 7 },
-      { name: '高槻市', count: 15 },
-      { name: '枚方市', count: 13 },
-      { name: '泉佐野市', count: 5 },
-      { name: '河内長野市', count: 3 },
-      { name: '和泉市', count: 8 },
-      { name: '羽曳野市', count: 6 },
-      { name: '高石市', count: 2 },
-      { name: '泉南市', count: 4 },
-      { name: '大阪狭山市', count: 5 }
+      { name: '堺市堺区', prefecture: '大阪府' },
+      { name: '堺市中区', prefecture: '大阪府' },
+      { name: '堺市東区', prefecture: '大阪府' },
+      { name: '堺市西区', prefecture: '大阪府' },
+      { name: '堺市南区', prefecture: '大阪府' },
+      { name: '堺市北区', prefecture: '大阪府' },
+      { name: '堺市美原区', prefecture: '大阪府' },
+      { name: '岸和田市', prefecture: '大阪府' },
+      { name: '吹田市', prefecture: '大阪府' },
+      { name: '貝塚市', prefecture: '大阪府' },
+      { name: '茨木市', prefecture: '大阪府' },
+      { name: '富田林市', prefecture: '大阪府' },
+      { name: '松原市', prefecture: '大阪府' },
+      { name: '箕面市', prefecture: '大阪府' },
+      { name: '門真市', prefecture: '大阪府' },
+      { name: '藤井寺市', prefecture: '大阪府' },
+      { name: '四條畷市', prefecture: '大阪府' },
+      { name: '泉大津市', prefecture: '大阪府' },
+      { name: '守口市', prefecture: '大阪府' },
+      { name: '八尾市', prefecture: '大阪府' },
+      { name: '寝屋川市', prefecture: '大阪府' },
+      { name: '大東市', prefecture: '大阪府' },
+      { name: '柏原市', prefecture: '大阪府' },
+      { name: '摂津市', prefecture: '大阪府' },
+      { name: '交野市', prefecture: '大阪府' },
+      { name: '池田市', prefecture: '大阪府' },
+      { name: '高槻市', prefecture: '大阪府' },
+      { name: '枚方市', prefecture: '大阪府' },
+      { name: '泉佐野市', prefecture: '大阪府' },
+      { name: '河内長野市', prefecture: '大阪府' },
+      { name: '和泉市', prefecture: '大阪府' },
+      { name: '羽曳野市', prefecture: '大阪府' },
+      { name: '高石市', prefecture: '大阪府' },
+      { name: '泉南市', prefecture: '大阪府' },
+      { name: '大阪狭山市', prefecture: '大阪府' }
     ]
   }
 
-  const handleAreaClick = (areaName: string) => {
-    if (areaData[selectedPrefecture].find(a => a.name === areaName)?.count === 0) {
-      return // 物件数が0の場合は何もしない
+  // 物件数を取得する関数
+  async function fetchPropertyCounts() {
+    setLoading(true)
+    try {
+      const counts = await getPropertyCountsByArea()
+      setPropertyCounts(counts)
+    } catch (error) {
+      console.error('Error fetching property counts:', error)
+    } finally {
+      setLoading(false)
     }
-    setSelectedArea(areaName)
   }
 
-  // 検索画面を閉じる関数を追加
+  // コンポーネントマウント時に物件数を取得 + リアルタイム更新の設定
+  useEffect(() => {
+    // 初回読み込み
+    fetchPropertyCounts()
+
+    // リアルタイム更新の設定
+    const channel = supabase
+      .channel('properties-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE すべてを監視
+          schema: 'public',
+          table: 'properties'
+        },
+        (payload) => {
+          console.log('物件データが更新されました:', payload)
+          // データが変更されたら自動的に件数を再取得
+          fetchPropertyCounts()
+        }
+      )
+      .subscribe()
+
+    // クリーンアップ（コンポーネントがアンマウントされるときに購読解除）
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+  // ページがフォーカスされたときも更新（念のため）
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchPropertyCounts()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [])
+
+  // エリアごとの物件数を取得
+  const getAreaCount = (prefecture: string, city: string) => {
+    const key = `${prefecture}_${city}`
+    return propertyCounts[key] || 0
+  }
+
+  const handleAreaClick = (area: { name: string, prefecture: string }) => {
+    const count = getAreaCount(area.prefecture, area.name)
+    if (count === 0) {
+      return // 物件数が0の場合は何もしない
+    }
+    // 既存のPropertySearchコンポーネントに渡す形式に合わせる
+    setSelectedArea(area.name)
+  }
+
+  // 検索画面を閉じる関数
   const handleCloseSearch = () => {
     setSelectedArea(null)
   }
@@ -91,6 +158,9 @@ export default function AreaSearch() {
             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
           </svg>
           エリアから物件を探す
+          {loading && (
+            <span className="text-sm text-gray-500 ml-2">（読み込み中...）</span>
+          )}
         </h2>
 
         {/* 県選択タブ */}
@@ -119,29 +189,32 @@ export default function AreaSearch() {
 
         {/* エリアボタン一覧 */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {areaData[selectedPrefecture].map((area) => (
-            <button
-              key={area.name}
-              onClick={() => handleAreaClick(area.name)}
-              disabled={area.count === 0}
-              className={`p-3 rounded-lg border-2 transition-all ${
-                area.count > 0
-                  ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-50 hover:shadow-md cursor-pointer'
-                  : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
-              }`}
-            >
-              <div className="text-sm font-medium text-gray-700">{area.name}</div>
-              <div className={`text-xs mt-1 font-bold ${
-                area.count > 0 ? 'text-orange-500' : 'text-gray-400'
-              }`}>
-                {area.count}件
-              </div>
-            </button>
-          ))}
+          {areaData[selectedPrefecture].map((area) => {
+            const count = getAreaCount(area.prefecture, area.name)
+            return (
+              <button
+                key={area.name}
+                onClick={() => handleAreaClick(area)}
+                disabled={count === 0}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  count > 0
+                    ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-50 hover:shadow-md cursor-pointer'
+                    : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
+                }`}
+              >
+                <div className="text-sm font-medium text-gray-700">{area.name}</div>
+                <div className={`text-xs mt-1 font-bold ${
+                  count > 0 ? 'text-orange-500' : 'text-gray-400'
+                }`}>
+                  {loading ? '...' : `${count}件`}
+                </div>
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      {/* 検索画面モーダル - onCloseを追加 */}
+      {/* 既存の検索画面モーダルを使用 */}
       {selectedArea && (
         <PropertySearch 
           selectedArea={selectedArea} 
