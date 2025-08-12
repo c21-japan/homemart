@@ -5,6 +5,16 @@ import { useRouter, useParams } from 'next/navigation'
 
 import Link from 'next/link'
 
+interface Property {
+  id: string
+  name: string
+  price: number
+  address: string
+  description?: string
+  image_url?: string
+  featured: boolean
+}
+
 export default function EditProperty() {
   const params = useParams()
   const router = useRouter()
@@ -13,7 +23,7 @@ export default function EditProperty() {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
-  const [property, setProperty] = useState<any>(null)
+  const [property, setProperty] = useState<Property | null>(null)
   const [message, setMessage] = useState('')
 
   // 認証チェック

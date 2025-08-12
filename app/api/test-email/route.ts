@@ -42,7 +42,7 @@ export async function GET() {
   } catch (error: unknown) {
     console.error('エラー詳細:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    const errorResponse = (error as any)?.response?.body
+    const errorResponse = (error as { response?: { body?: unknown } })?.response?.body
     return NextResponse.json({ 
       error: errorMessage,
       details: errorResponse 

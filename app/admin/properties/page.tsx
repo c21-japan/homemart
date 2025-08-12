@@ -540,7 +540,7 @@ export default function NewProperty() {
   
     try {
       // Supabaseのテーブルに存在するカラムのみを送信
-      const submitData: Record<string, any> = {
+      const submitData: Record<string, unknown> = {
         // 基本情報
         name: formData.name,
         price: parseInt(formData.price) || 0,
