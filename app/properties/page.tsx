@@ -354,6 +354,7 @@ export default function PropertiesPage() {
       {showSearch && (
         <PropertySearch
           onClose={() => setShowSearch(false)}
+          selectedArea=""
         />
       )}
     </div>
