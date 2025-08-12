@@ -384,7 +384,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-xl p-8 relative">
               <p className="text-xl leading-relaxed mb-6 text-[#121212] relative">
-                <span className="text-5xl text-[#BEAF87] leading-none mr-2">"</span>
+                <span className="text-5xl text-[#BEAF87] leading-none mr-2">&ldquo;</span>
                 他社より300万円高く売却できました。社長直結の交渉力と、CENTURY 21のブランド力の組み合わせが決め手でした。
               </p>
               <div className="flex items-center gap-4 mb-4">
@@ -403,7 +403,7 @@ export default function HomePage() {
             
             <div className="bg-white rounded-xl p-8 relative">
               <p className="text-xl leading-relaxed mb-6 text-[#121212] relative">
-                <span className="text-5xl text-[#BEAF87] leading-none mr-2">"</span>
+                <span className="text-5xl text-[#BEAF87] leading-none mr-2">&ldquo;</span>
                 リフォームから売却まで一貫してお任せできたので、とても楽でした。自社施工なので費用も抑えられて満足です。
               </p>
               <div className="flex items-center gap-4 mb-4">
@@ -422,7 +422,7 @@ export default function HomePage() {
             
             <div className="bg-white rounded-xl p-8 relative">
               <p className="text-xl leading-relaxed mb-6 text-[#121212] relative">
-                <span className="text-5xl text-[#BEAF87] leading-none mr-2">"</span>
+                <span className="text-5xl text-[#BEAF87] leading-none mr-2">&ldquo;</span>
                 急な転勤で時間がない中、1ヶ月で売却完了。社長直結の意思決定の速さに助けられました。
               </p>
               <div className="flex items-center gap-4 mb-4">

@@ -6,13 +6,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 // ========== 定数定義 ==========
-const PROPERTY_TYPES = {
-  NEW_HOUSE: '新築戸建',
-  USED_HOUSE: '中古戸建',
-  USED_MANSION: '中古マンション',
-  LAND: '土地'
-} as const
-
 const AREA_DATA = {
   '奈良県': [
     '奈良市', '天理市', '香芝市', '生駒郡斑鳩町', '磯城郡三宅町',
@@ -108,7 +101,7 @@ function LayoutInput({ value, onChange }: { value: string; onChange: (value: str
       if (match) {
         setRooms(match[1])
         setHasS(match[2] === 'S')
-        if (LAYOUT_TYPES.includes(match[3] as any)) {
+        if (LAYOUT_TYPES.includes(match[3] as typeof LAYOUT_TYPES[number])) {
           setLayoutType(match[3] as typeof LAYOUT_TYPES[number])
         }
       }
@@ -547,7 +540,7 @@ export default function NewProperty() {
   
     try {
       // Supabaseのテーブルに存在するカラムのみを送信
-      const submitData: any = {
+      const submitData: Record<string, any> = {
         // 基本情報
         name: formData.name,
         price: parseInt(formData.price) || 0,
@@ -610,7 +603,7 @@ export default function NewProperty() {
 
       console.log('送信データ:', submitData)
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('properties')
         .insert(submitData)
         .select()

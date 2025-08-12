@@ -39,14 +39,13 @@ export async function GET() {
       success: true, 
       statusCode: result.response.status 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('エラー詳細:', error)
-    if (error.response) {
-      console.error('Mailjet Response:', error.response.body)
-    }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorResponse = (error as any)?.response?.body
     return NextResponse.json({ 
-      error: error.message,
-      details: error.response?.body 
+      error: errorMessage,
+      details: errorResponse 
     }, { status: 500 })
   }
 }

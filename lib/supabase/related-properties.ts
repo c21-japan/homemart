@@ -94,7 +94,7 @@ function calculateSimilarityAndSort(
 
   // スコアで降順ソートして上位limit件を返す
   return scoredProperties
-    .sort((a, b) => (b as any).score - (a as any).score)
+    .sort((a, b) => (b as Property & { score: number }).score - (a as Property & { score: number }).score)
     .slice(0, limit)
     .map(({ score, ...property }) => property); // スコアを除去して返す
 }

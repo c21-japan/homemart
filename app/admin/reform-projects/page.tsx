@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import ImageUpload from '@/components/ImageUpload'
 
@@ -17,7 +16,6 @@ interface ReformProject {
 }
 
 export default function ReformProjectsPage() {
-  const router = useRouter()
   const [projects, setProjects] = useState<ReformProject[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
