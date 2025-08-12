@@ -23,6 +23,12 @@
 - お客様からのお問い合わせの管理
 - ステータス管理
 
+### 社内申請管理
+- 従業員からの各種申請の管理
+- 有給申請、病気休暇、残業申請、経費申請など
+- 申請の承認・却下処理
+- スプレッドシート形式での申請一覧表示
+
 ## 技術スタック
 
 - **フロントエンド**: Next.js 14, React, TypeScript
@@ -67,6 +73,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 2. 以下のSQLファイルをSupabaseのSQLエディタで実行：
    - `database-setup.sql` - 基本的なテーブル構造
    - `database-update-reform-projects.sql` - リフォーム施工実績テーブル
+   - `database-internal-applications.sql` - 社内申請管理テーブル
    - `supabase-storage-policies.sql` - 画像アップロード用のストレージポリシー
 3. 認証設定を有効化
 4. Storageで`images`バケットを作成し、公開設定を有効化
@@ -90,6 +97,7 @@ npm run dev
 - 施工実績管理
 - お問い合わせ管理
 - 画像管理
+- 社内申請管理
 
 ## リフォーム機能
 
@@ -102,6 +110,20 @@ npm run dev
 - 管理画面から施工実績の追加・編集・削除
 - 写真、タイトル、説明文の管理
 - 登録日時の自動記録
+
+## 社内申請機能
+
+### 申請フォーム
+- `/admin/internal-applications/forms/*` で各種申請フォーム
+- 有給申請、病気休暇、残業申請、経費申請、その他申請
+- 各フォームに適した入力項目とバリデーション
+
+### 申請管理
+- `/admin/internal-applications` で申請一覧の管理
+- スプレッドシート形式での申請一覧表示
+- 申請の承認・却下処理
+- フィルタリング機能（種別、ステータス）
+- 申請詳細の表示と編集
 
 ## デプロイ
 
