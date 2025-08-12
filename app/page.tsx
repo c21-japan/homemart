@@ -257,7 +257,7 @@ export default function HomePage() {
                     <img
                       src={property.image_url}
                       alt={property.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain object-center"
                       loading="lazy"
                     />
                   ) : (
