@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { getRelatedProperties } from '@/lib/supabase/related-properties'
 
@@ -65,7 +64,6 @@ interface Property {
 
 export default function PropertyDetail() {
   const params = useParams()
-  const router = useRouter()
   const { recentlyViewed, addRecentlyViewed } = useRecentlyViewed()
   const [property, setProperty] = useState<Property | null>(null)
   const [selectedImage, setSelectedImage] = useState(0)
