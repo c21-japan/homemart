@@ -69,8 +69,8 @@ export default function PropertyDetail() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [relatedProperties, setRelatedProperties] = useState<any[]>([])
-  const [loadingRelated, setLoadingRelated] = useState(false)
+  // const [relatedProperties, setRelatedProperties] = useState<any[]>([])
+  // const [loadingRelated, setLoadingRelated] = useState(false)
 
   useEffect(() => {
     if (params?.id) {
@@ -108,8 +108,8 @@ export default function PropertyDetail() {
           images: data.images
         })
         
-        // 関連物件を取得
-        fetchRelatedProperties(data)
+        // 関連物件を取得（一時的に無効化）
+        // fetchRelatedProperties(data)
       } else {
         setError('物件が見つかりませんでした')
       }
@@ -121,17 +121,17 @@ export default function PropertyDetail() {
     }
   }
 
-  const fetchRelatedProperties = async (currentProperty: Property) => {
-    try {
-      setLoadingRelated(true)
-      const related = await getRelatedProperties(currentProperty, 10)
-      setRelatedProperties(related)
-    } catch (error) {
-      console.error('Error fetching related properties:', error)
-    } finally {
-      setLoadingRelated(false)
-    }
-  }
+  // const fetchRelatedProperties = async (currentProperty: Property) => {
+  //   try {
+  //     setLoadingRelated(true)
+  //     const related = await getRelatedProperties(currentProperty, 10)
+  //     setRelatedProperties(related)
+  //   } catch (error) {
+  //     console.error('Error fetching related properties:', error)
+  //   } finally {
+  //     setLoadingRelated(false)
+  //   }
+  // }
 
   if (loading) {
     return (
@@ -565,8 +565,8 @@ export default function PropertyDetail() {
           </div>
         </div>
 
-        {/* 最近見た物件と関連物件の統合表示 */}
-        {(recentlyViewed.length > 0 || relatedProperties.length > 0) && (
+        {/* 最近見た物件と関連物件の統合表示（一時的に無効化） */}
+        {recentlyViewed.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-6 text-[#36454F]">おすすめ物件</h2>
             
@@ -581,12 +581,7 @@ export default function PropertyDetail() {
               <p className="text-xs text-blue-600">指で画面を左右にスワイプすると、他の物件も表示されます</p>
             </div>
             
-            {loadingRelated ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FFD700] mx-auto"></div>
-                <p className="mt-2 text-gray-600">おすすめ物件を検索中...</p>
-              </div>
-            ) : (
+            <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-5 md:grid-rows-2 md:gap-6 md:overflow-x-visible">
               <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-5 md:grid-rows-2 md:gap-6 md:overflow-x-visible">
                 {/* 最近見た物件を先に表示 */}
                 {recentlyViewed.map((recentProperty) => (
@@ -616,40 +611,8 @@ export default function PropertyDetail() {
                   </Link>
                 ))}
                 
-                {/* 最近見た物件が6物件未満の場合、関連物件で残りのスロットを埋める */}
-                {Array.from({ length: Math.max(0, 10 - recentlyViewed.length) }).map((_, index) => {
-                  const relatedProperty = relatedProperties[index];
-                  if (!relatedProperty) return null;
-                  
-                  return (
-                    <Link key={`related-${relatedProperty.id}`} href={`/properties/${relatedProperty.id}`} className="group">
-                      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden min-w-[200px] md:min-w-0">
-                        <div className="h-32 md:h-40 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
-                          {relatedProperty.image_url || (relatedProperty.images && relatedProperty.images[0]) ? (
-                            <img
-                              src={relatedProperty.image_url || relatedProperty.images[0]}
-                              alt={relatedProperty.name}
-                              className="w-full h-full object-contain object-center"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <span className="text-4xl text-gray-400">🏠</span>
-                          )}
-                        </div>
-                        <div className="p-3">
-                          <h3 className="font-bold text-sm mb-1 line-clamp-2">{relatedProperty.name}</h3>
-                          <p className="text-lg font-bold text-red-600 mb-1">
-                            {relatedProperty.price.toLocaleString()}万円
-                          </p>
-                          <p className="text-xs text-gray-600 line-clamp-1">{relatedProperty.address}</p>
-                          <p className="text-xs text-green-500 font-medium">関連物件</p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>
