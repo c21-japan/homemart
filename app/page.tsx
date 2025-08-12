@@ -17,7 +17,6 @@ interface Property {
 
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([])
-  const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
@@ -45,19 +44,14 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error:', error)
     } finally {
-      setLoading(false)
+      // ローディング状態の管理は不要
     }
   }
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+
 
   return (
     <>

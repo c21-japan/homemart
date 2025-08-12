@@ -31,7 +31,7 @@ export default function PropertiesPage() {
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
-  const [selectedArea, setSelectedArea] = useState('奈良県')
+
   
   // 簡易検索の状態
   const [simpleSearch, setSimpleSearch] = useState({
@@ -353,7 +353,6 @@ export default function PropertiesPage() {
       {/* 検索モーダル */}
       {showSearch && (
         <PropertySearch
-          selectedArea={selectedArea}
           onClose={() => setShowSearch(false)}
         />
       )}
