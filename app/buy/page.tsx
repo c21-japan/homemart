@@ -208,11 +208,24 @@ export default function BuyPage() {
               <div key={property.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                 <Link href={`/properties/${property.id}`}>
                   <div className="cursor-pointer">
-                    <img 
-                      src={property.image_url || 'https://via.placeholder.com/400x300'} 
-                      alt={property.name}
-                      className="w-full h-48 object-cover"
-                    />
+                    <div className="relative h-48 overflow-hidden">
+                      <img 
+                        src={property.image_url || 'https://via.placeholder.com/400x300'} 
+                        alt={property.name}
+                        className="w-full h-full object-cover object-center"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = 'none'
+                          const fallback = target.nextElementSibling as HTMLElement
+                          if (fallback) fallback.style.display = 'flex'
+                        }}
+                      />
+                      {/* フォールバック用の絵文字 */}
+                      <div className="absolute inset-0 flex items-center justify-center text-6xl text-gray-400 bg-gray-200" style={{ display: 'none' }}>
+                        🏠
+                      </div>
+                    </div>
                     <div className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-xl">{property.name}</h3>

@@ -40,12 +40,19 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <Link href={`/properties/${property.id}`}>
       <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
         {/* 画像部分 */}
-        <div className="relative h-48 bg-gray-200">
+        <div className="relative h-48 bg-gray-200 overflow-hidden">
           {mainImage ? (
             <img
               src={mainImage}
               alt={property.name}
-              className="w-full h-full object-contain bg-white"
+              className="w-full h-full object-cover object-center"
+              loading="lazy"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                const fallback = target.nextElementSibling as HTMLElement
+                if (fallback) fallback.style.display = 'flex'
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -53,6 +60,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
           
+          {/* フォールバック用の絵文字 */}
+          <div className="absolute inset-0 flex items-center justify-center text-6xl text-gray-400" style={{ display: 'none' }}>
+            🏠
+          </div>
+
           {/* バッジ */}
           <div className="absolute top-2 left-2 flex gap-2">
             {isNew() && (

@@ -210,7 +210,18 @@ export default function PropertyDetail() {
                       src={allImages[selectedImage]}
                       alt={property.name}
                       className="w-full h-[400px] object-contain bg-gray-100 rounded"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const fallback = target.nextElementSibling as HTMLElement
+                        if (fallback) fallback.style.display = 'flex'
+                      }}
                     />
+                    {/* フォールバック用の絵文字 */}
+                    <div className="w-full h-[400px] bg-gray-100 rounded flex items-center justify-center text-8xl text-gray-400" style={{ display: 'none' }}>
+                      🏠
+                    </div>
                   </div>
                   {allImages.length > 1 && (
                     <div className="grid grid-cols-4 gap-2">
@@ -225,8 +236,19 @@ export default function PropertyDetail() {
                           <img
                             src={img}
                             alt={`${property.name} ${index + 1}`}
-                            className="w-full h-20 object-cover"
+                            className="w-full h-20 object-cover object-center"
+                            loading="lazy"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                              const fallback = target.nextElementSibling as HTMLElement
+                              if (fallback) fallback.style.display = 'flex'
+                            }}
                           />
+                          {/* フォールバック用の絵文字 */}
+                          <div className="absolute inset-0 flex items-center justify-center text-2xl text-gray-400 bg-gray-100" style={{ display: 'none' }}>
+                            🏠
+                          </div>
                         </button>
                       ))}
                     </div>

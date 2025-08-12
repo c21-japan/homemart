@@ -52,46 +52,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ヘッダー */}
-      <header className="bg-white shadow-md sticky top-0 z-50 border-b-4 border-[#FFD700]">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] p-3 rounded-lg shadow-lg">
-                <span className="text-black font-bold text-2xl">C21</span>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">ホームマート</h1>
-                <p className="text-xs text-gray-600">センチュリー21加盟店 | 奈良県北葛城郡</p>
-              </div>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-6">
-              <nav className="flex gap-6">
-                <Link href="/properties" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
-                  物件検索
-                </Link>
-                <Link href="/sell" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
-                  売却査定
-                </Link>
-                <Link href="/about" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
-                  会社案内
-                </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
-                  お問い合わせ
-                </Link>
-              </nav>
-              
-              <div className="border-l pl-6">
-                <p className="text-xs text-gray-600">お電話でのお問い合わせ</p>
-                <a href="tel:0120-43-8639" className="text-2xl font-bold text-[#FF6B00] hover:text-[#FF8C00] transition">
-                  📞 0120-43-8639
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* メインビジュアル */}
       <section className="relative bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF6B00] py-20">
@@ -237,26 +197,27 @@ export default function HomePage() {
               {properties.slice(0, 3).map((property) => (
                 <Link key={property.id} href={`/properties/${property.id}`} className="group">
                   <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition overflow-hidden">
-                                      <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
-                    {property.image_url ? (
-                      <>
-                        <img
-                          src={property.image_url}
-                          alt={property.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.style.display = 'none'
-                            const fallback = target.nextElementSibling as HTMLElement
-                            if (fallback) fallback.style.display = 'flex'
-                          }}
-                        />
-                        <span className="text-6xl text-gray-400 absolute" style={{ display: 'none' }}>🏠</span>
-                      </>
-                    ) : (
-                      <span className="text-6xl text-gray-400">🏠</span>
-                    )}
-                  </div>
+                    <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
+                      {property.image_url ? (
+                        <>
+                          <img
+                            src={property.image_url}
+                            alt={property.name}
+                            className="w-full h-full object-cover object-center"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                              const fallback = target.nextElementSibling as HTMLElement
+                              if (fallback) fallback.style.display = 'flex'
+                            }}
+                            loading="lazy"
+                          />
+                          <span className="text-6xl text-gray-400 absolute" style={{ display: 'none' }}>🏠</span>
+                        </>
+                      ) : (
+                        <span className="text-6xl text-gray-400">🏠</span>
+                      )}
+                    </div>
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="bg-[#FFD700] text-black text-xs px-2 py-1 rounded font-bold">おすすめ</span>
