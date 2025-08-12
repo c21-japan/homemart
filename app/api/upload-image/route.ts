@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
+// 環境変数が設定されていない場合はエラーレスポンスを返す
 if (!supabaseServiceKey) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is required')
+  export async function POST(request: NextRequest) {
+    return NextResponse.json(
+      { error: '画像アップロード機能は現在利用できません。環境変数の設定が必要です。' },
+      { status: 503 }
+    )
+  }
+  return
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
