@@ -25,14 +25,24 @@ export default function HomePage() {
 
   const fetchFeaturedProperties = async () => {
     try {
+      // おすすめ物件を優先的に取得（画像URLがある物件を優先）
       const { data, error } = await supabase
         .from('properties')
         .select('*')
         .eq('status', 'published')
+        .order('featured', { ascending: false })
         .limit(6)
 
       if (error) throw error
-      setProperties(data || [])
+      
+      // 画像URLがある物件を先頭に並べ替え
+      const sortedProperties = (data || []).sort((a, b) => {
+        if (a.image_url && !b.image_url) return -1
+        if (!a.image_url && b.image_url) return 1
+        return 0
+      })
+      
+      setProperties(sortedProperties)
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -227,9 +237,26 @@ export default function HomePage() {
               {properties.slice(0, 3).map((property) => (
                 <Link key={property.id} href={`/properties/${property.id}`} className="group">
                   <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition overflow-hidden">
-                    <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                      <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
+                    {property.image_url ? (
+                      <>
+                        <img
+                          src={property.image_url}
+                          alt={property.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                            const fallback = target.nextElementSibling as HTMLElement
+                            if (fallback) fallback.style.display = 'flex'
+                          }}
+                        />
+                        <span className="text-6xl text-gray-400 absolute" style={{ display: 'none' }}>🏠</span>
+                      </>
+                    ) : (
                       <span className="text-6xl text-gray-400">🏠</span>
-                    </div>
+                    )}
+                  </div>
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="bg-[#FFD700] text-black text-xs px-2 py-1 rounded font-bold">おすすめ</span>

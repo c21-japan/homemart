@@ -27,29 +27,60 @@ export default function MediaManagement() {
   const fetchMediaFiles = async () => {
     try {
       setLoading(true)
-      // ここでCloudinaryやSupabaseから画像ファイルを取得
-      // 現在はダミーデータを使用
-      const dummyData: MediaFile[] = [
-        {
-          id: '1',
-          name: 'sample-property-1.jpg',
-          url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-1',
-          type: 'image/jpeg',
-          size: 1024000,
-          created_at: new Date().toISOString(),
-          property_id: '1'
-        },
-        {
-          id: '2',
-          name: 'sample-property-2.jpg',
-          url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-2',
-          type: 'image/jpeg',
-          size: 2048000,
-          created_at: new Date().toISOString(),
-          property_id: '2'
-        }
-      ]
-      setMediaFiles(dummyData)
+      
+      // Supabaseから物件データを取得
+      const { data: propertiesData, error: propertiesError } = await supabase
+        .from('properties')
+        .select('id, name, image_url')
+        .order('created_at', { ascending: false })
+
+      if (propertiesError) throw propertiesError
+
+      // 画像ファイルのデータを構築
+      const mediaData: MediaFile[] = []
+      
+      // 物件に画像が設定されている場合
+      if (propertiesData) {
+        propertiesData.forEach(property => {
+          if (property.image_url) {
+            mediaData.push({
+              id: `property-${property.id}`,
+              name: `${property.name}.jpg`,
+              url: property.image_url,
+              type: 'image/jpeg',
+              size: 1024000, // 推定サイズ
+              created_at: new Date().toISOString(),
+              property_id: property.id
+            })
+          }
+        })
+      }
+
+      // サンプル画像も追加（開発用）
+      if (mediaData.length === 0) {
+        mediaData.push(
+          {
+            id: '1',
+            name: 'sample-property-1.jpg',
+            url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-1',
+            type: 'image/jpeg',
+            size: 1024000,
+            created_at: new Date().toISOString(),
+            property_id: '1'
+          },
+          {
+            id: '2',
+            name: 'sample-property-2.jpg',
+            url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-2',
+            type: 'image/jpeg',
+            size: 2048000,
+            created_at: new Date().toISOString(),
+            property_id: '2'
+          }
+        )
+      }
+
+      setMediaFiles(mediaData)
     } catch (error) {
       console.error('Error fetching media files:', error)
     } finally {
