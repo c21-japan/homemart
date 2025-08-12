@@ -28,7 +28,8 @@ interface Inquiry {
 interface ReformProject {
   id: string
   title: string
-  image_url: string
+  before_image_url: string
+  after_image_url: string
   description?: string
   created_at: string
 }

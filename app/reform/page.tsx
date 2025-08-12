@@ -7,7 +7,8 @@ import Image from 'next/image'
 interface ReformProject {
   id: string
   title: string
-  image_url: string
+  before_image_url: string
+  after_image_url: string
   description?: string
   created_at: string
 }
@@ -171,16 +172,33 @@ export default function ReformPage() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
           ) : projects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {projects.map((project) => (
                 <div key={project.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="relative h-64">
-                    <Image
-                      src={project.image_url}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
+                  {/* 施工前後の画像を横並びで表示 */}
+                  <div className="grid grid-cols-2 gap-0">
+                    <div className="relative h-64">
+                      <Image
+                        src={project.before_image_url}
+                        alt={`${project.title} - 施工前`}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        施工前
+                      </div>
+                    </div>
+                    <div className="relative h-64">
+                      <Image
+                        src={project.after_image_url}
+                        alt={`${project.title} - 施工後`}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        施工後
+                      </div>
+                    </div>
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-800 mb-3">

@@ -10,7 +10,8 @@ import ImageUpload from '@/components/ImageUpload'
 interface ReformProject {
   id: string
   title: string
-  image_url: string
+  before_image_url: string
+  after_image_url: string
   description?: string
   created_at: string
 }
@@ -24,7 +25,8 @@ export default function ReformProjectsPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    image_url: ''
+    before_image_url: '',
+    after_image_url: ''
   })
   const [uploading, setUploading] = useState(false)
 
@@ -55,15 +57,19 @@ export default function ReformProjectsPage() {
     }
   }
 
-  const handleImageUploaded = (url: string) => {
-    setFormData(prev => ({ ...prev, image_url: url }))
+  const handleBeforeImageUploaded = (url: string) => {
+    setFormData(prev => ({ ...prev, before_image_url: url }))
+  }
+
+  const handleAfterImageUploaded = (url: string) => {
+    setFormData(prev => ({ ...prev, after_image_url: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title.trim() || !formData.image_url.trim()) {
-      alert('タイトルと画像は必須です')
+    if (!formData.title.trim() || !formData.before_image_url.trim() || !formData.after_image_url.trim()) {
+      alert('タイトル、施工前画像、施工後画像は必須です')
       return
     }
 
@@ -77,7 +83,8 @@ export default function ReformProjectsPage() {
           .update({
             title: formData.title,
             description: formData.description,
-            image_url: formData.image_url,
+            before_image_url: formData.before_image_url,
+            after_image_url: formData.after_image_url,
             updated_at: new Date().toISOString()
           })
           .eq('id', editingProject.id)
@@ -91,7 +98,8 @@ export default function ReformProjectsPage() {
           .insert([{
             title: formData.title,
             description: formData.description,
-            image_url: formData.image_url
+            before_image_url: formData.before_image_url,
+            after_image_url: formData.after_image_url
           }])
 
         if (error) throw error
@@ -100,7 +108,7 @@ export default function ReformProjectsPage() {
 
       setShowModal(false)
       setEditingProject(null)
-      setFormData({ title: '', description: '', image_url: '' })
+      setFormData({ title: '', description: '', before_image_url: '', after_image_url: '' })
       fetchProjects()
     } catch (error) {
       console.error('Error saving project:', error)
@@ -115,7 +123,8 @@ export default function ReformProjectsPage() {
     setFormData({
       title: project.title,
       description: project.description || '',
-      image_url: project.image_url
+      before_image_url: project.before_image_url,
+      after_image_url: project.after_image_url
     })
     setShowModal(true)
   }
@@ -141,14 +150,14 @@ export default function ReformProjectsPage() {
 
   const openNewModal = () => {
     setEditingProject(null)
-    setFormData({ title: '', description: '', image_url: '' })
+    setFormData({ title: '', description: '', before_image_url: '', after_image_url: '' })
     setShowModal(true)
   }
 
   const closeModal = () => {
     setShowModal(false)
     setEditingProject(null)
-    setFormData({ title: '', description: '', image_url: '' })
+    setFormData({ title: '', description: '', before_image_url: '', after_image_url: '' })
   }
 
   if (loading) {
@@ -167,7 +176,7 @@ export default function ReformProjectsPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">施工実績管理</h1>
-              <p className="text-gray-600 mt-2">リフォーム施工実績の管理</p>
+              <p className="text-gray-600 mt-2">リフォーム施工実績の管理（施工前後比較）</p>
             </div>
             <div className="flex gap-4">
               <button
@@ -196,13 +205,30 @@ export default function ReformProjectsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (
                   <div key={project.id} className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="relative h-48">
-                      <Image
-                        src={project.image_url}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                      />
+                    {/* 施工前後の画像を横並びで表示 */}
+                    <div className="grid grid-cols-2 gap-1">
+                      <div className="relative h-32">
+                        <Image
+                          src={project.before_image_url}
+                          alt={`${project.title} - 施工前`}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                          施工前
+                        </div>
+                      </div>
+                      <div className="relative h-32">
+                        <Image
+                          src={project.after_image_url}
+                          alt={`${project.title} - 施工後`}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                          施工後
+                        </div>
+                      </div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold text-gray-800 mb-2">
@@ -252,7 +278,7 @@ export default function ReformProjectsPage() {
       {/* モーダル */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               {editingProject ? '施工実績を編集' : '新規施工実績を追加'}
             </h2>
@@ -285,33 +311,64 @@ export default function ReformProjectsPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  画像 *
-                </label>
-                {formData.image_url ? (
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Image
-                        src={formData.image_url}
-                        alt="プレビュー"
-                        width={200}
-                        height={150}
-                        className="rounded-lg object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, image_url: '' })}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600"
-                      >
-                        ✕
-                      </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    施工前画像 *
+                  </label>
+                  {formData.before_image_url ? (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Image
+                          src={formData.before_image_url}
+                          alt="施工前プレビュー"
+                          width={200}
+                          height={150}
+                          className="rounded-lg object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, before_image_url: '' })}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
                     </div>
-                    <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
-                  </div>
-                ) : (
-                  <ImageUpload onImageUploaded={handleImageUploaded} />
-                )}
+                  ) : (
+                    <ImageUpload onImageUploaded={handleBeforeImageUploaded} />
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    施工後画像 *
+                  </label>
+                  {formData.after_image_url ? (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Image
+                          src={formData.after_image_url}
+                          alt="施工後プレビュー"
+                          width={200}
+                          height={150}
+                          className="rounded-lg object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, after_image_url: '' })}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
+                    </div>
+                  ) : (
+                    <ImageUpload onImageUploaded={handleAfterImageUploaded} />
+                  )}
+                </div>
               </div>
 
               <div className="flex gap-3 pt-4">
