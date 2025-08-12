@@ -71,7 +71,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
   const breadcrumbItems = items || generateBreadcrumbs();
   
   return (
-    <nav className="bg-gray-50 border-b border-gray-200" aria-label="パンクズリスト">
+    <nav className="bg-transparent" aria-label="パンクズリスト">
       <div className="container mx-auto px-4 py-3">
         <ol className="flex items-center space-x-2 text-sm">
           {breadcrumbItems.map((item, index) => (
