@@ -130,29 +130,31 @@ export default function MediaManagement() {
           // プログレスバーの初期化
           setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
           
-          // ここでGitHubへの保存処理を実装
-          // 現在はダミーの保存処理（プログレスバー付き）
-          for (let i = 0; i <= 100; i += 10) {
-            await new Promise(resolve => setTimeout(resolve, 50))
-            setUploadProgress(prev => ({ ...prev, [file.name]: i }))
-          }
+          // GitHub APIを使用して画像をリポジトリに保存
+          const success = await uploadToGitHub(file, (progress) => {
+            setUploadProgress(prev => ({ ...prev, [file.name]: progress }))
+          })
 
-          // GitHub用のファイル情報を構築
-          const category = getCategoryFromFileName(file.name)
-          const githubPath = `public/images/${file.name}`
-          
-          const newFile: MediaFile = {
-            id: `${Date.now()}-${index}`,
-            name: file.name,
-            url: `/images/${file.name}`,
-            type: file.type,
-            size: file.size,
-            created_at: new Date().toISOString(),
-            github_path: githubPath,
-            category: category
-          }
+          if (success) {
+            // GitHub用のファイル情報を構築
+            const category = getCategoryFromFileName(file.name)
+            const githubPath = `public/images/${file.name}`
+            
+            const newFile: MediaFile = {
+              id: `${Date.now()}-${index}`,
+              name: file.name,
+              url: `/images/${file.name}`,
+              type: file.type,
+              size: file.size,
+              created_at: new Date().toISOString(),
+              github_path: githubPath,
+              category: category
+            }
 
-          return newFile
+            return newFile
+          } else {
+            return null
+          }
         } catch (error) {
           console.error(`Upload error for ${file.name}:`, error)
           return null
@@ -164,7 +166,7 @@ export default function MediaManagement() {
 
       if (successfulUploads.length > 0) {
         setMediaFiles(prev => [...successfulUploads, ...prev])
-        alert(`${successfulUploads.length}枚の画像のアップロードが完了しました。`)
+        alert(`${successfulUploads.length}枚の画像のGitHub保存が完了しました。`)
       }
 
       setSelectedFiles([])
@@ -182,16 +184,124 @@ export default function MediaManagement() {
     }
   }
 
+  // GitHub APIを使用して画像をアップロード
+  const uploadToGitHub = async (file: File, onProgress: (progress: number) => void): Promise<boolean> => {
+    try {
+      // ファイルをBase64エンコード
+      const base64Content = await fileToBase64(file)
+      
+      // GitHub APIの設定
+      const githubConfig = {
+        owner: 'c21-japan',
+        repo: 'homemart',
+        branch: 'main',
+        path: `public/images/${file.name}`,
+        message: `feat: 画像ファイル ${file.name} を追加`,
+        content: base64Content,
+        committer: {
+          name: 'Homemart Bot',
+          email: 'bot@homemart.com'
+        }
+      }
+
+      // プログレス更新（25%）
+      onProgress(25)
+
+      // GitHub APIにリクエスト送信
+      const response = await fetch(`/api/github-upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(githubConfig)
+      })
+
+      // プログレス更新（75%）
+      onProgress(75)
+
+      if (response.ok) {
+        // プログレス更新（100%）
+        onProgress(100)
+        return true
+      } else {
+        const errorData = await response.json()
+        console.error('GitHub API error:', errorData)
+        return false
+      }
+    } catch (error) {
+      console.error('GitHub upload error:', error)
+      return false
+    }
+  }
+
+  // ファイルをBase64エンコード
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const base64 = reader.result as string
+        // data:image/jpeg;base64, の部分を除去
+        const base64Content = base64.split(',')[1]
+        resolve(base64Content)
+      }
+      reader.onerror = error => reject(error)
+    })
+  }
+
   const handleDelete = async (id: string) => {
-    if (!confirm('このファイルを削除してもよろしいですか？')) return
+    if (!confirm('このファイルをGitHubリポジトリから削除してもよろしいですか？')) return
 
     try {
-      // ここでCloudinaryからファイルを削除
-      setMediaFiles(prev => prev.filter(file => file.id !== id))
-      alert('ファイルを削除しました。')
+      const fileToDelete = mediaFiles.find(file => file.id === id)
+      if (!fileToDelete) return
+
+      // GitHub APIを使用してファイルを削除
+      const success = await deleteFromGitHub(fileToDelete)
+      
+      if (success) {
+        setMediaFiles(prev => prev.filter(file => file.id !== id))
+        alert('ファイルをGitHubリポジトリから削除しました。')
+      } else {
+        alert('GitHubリポジトリからの削除に失敗しました。')
+      }
     } catch (error) {
       console.error('Delete error:', error)
       alert('削除に失敗しました。')
+    }
+  }
+
+  // GitHub APIを使用してファイルを削除
+  const deleteFromGitHub = async (file: MediaFile): Promise<boolean> => {
+    try {
+      if (!file.github_path) return false
+
+      // GitHub APIの設定
+      const githubConfig = {
+        owner: 'c21-japan',
+        repo: 'homemart',
+        branch: 'main',
+        path: file.github_path,
+        message: `feat: 画像ファイル ${file.name} を削除`,
+        committer: {
+          name: 'Homemart Bot',
+          email: 'bot@homemart.com'
+        }
+      }
+
+      // GitHub APIにリクエスト送信
+      const response = await fetch(`/api/github-delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(githubConfig)
+      })
+
+      return response.ok
+    } catch (error) {
+      console.error('GitHub delete error:', error)
+      return false
     }
   }
 
