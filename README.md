@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ホームマート - 不動産・リフォームサービス
 
-## Getting Started
+センチュリー21加盟店の不動産会社ホームマートの公式ウェブサイトです。物件検索、売却査定、リフォームサービスを提供しています。
 
-First, run the development server:
+## 機能
+
+### 物件管理
+- 物件の登録・編集・削除
+- 物件検索・一覧表示
+- おすすめ物件の設定
+
+### リフォームサービス
+- リフォームサービスの紹介
+- 施工実績の表示
+- 各種リフォーム工事の説明
+
+### 施工実績管理
+- リフォーム施工実績の登録・編集・削除
+- 写真とタイトル、説明文の管理
+- 管理画面からの一括管理
+
+### お問い合わせ管理
+- お客様からのお問い合わせの管理
+- ステータス管理
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 14, React, TypeScript
+- **スタイリング**: Tailwind CSS
+- **データベース**: Supabase (PostgreSQL)
+- **画像管理**: Supabase Storage
+- **デプロイ**: Vercel
+
+## セットアップ
+
+### 必要な環境変数
+
+`.env.local`ファイルを作成し、以下の環境変数を設定してください：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### データベースのセットアップ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Supabaseプロジェクトを作成
+2. `database-setup.sql`の内容をSupabaseのSQLエディタで実行
+3. 認証設定を有効化
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 開発サーバーの起動
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+[http://localhost:3000](http://localhost:3000) でアプリケーションを確認できます。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 管理画面
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+管理画面は `/admin` からアクセスできます。
 
-## Deploy on Vercel
+### 主な機能
+- ダッシュボード（統計情報の表示）
+- 物件管理
+- 施工実績管理
+- お問い合わせ管理
+- 画像管理
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## リフォーム機能
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### リフォームページ
+- `/reform` でリフォームサービスの紹介
+- 各種リフォーム工事の説明
+- 施工実績の表示
+
+### 施工実績管理
+- 管理画面から施工実績の追加・編集・削除
+- 写真、タイトル、説明文の管理
+- 登録日時の自動記録
+
+## デプロイ
+
+Vercelを使用したデプロイが推奨されます：
+
+1. GitHubリポジトリとVercelを連携
+2. 環境変数を設定
+3. 自動デプロイが有効化
+
+## ライセンス
+
+© 2024 CENTURY 21 HomeMart. All Rights Reserved.

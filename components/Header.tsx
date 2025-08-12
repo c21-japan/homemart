@@ -22,6 +22,9 @@ export default function Header() {
               <Link href="/sell" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
                 売却査定
               </Link>
+              <Link href="/reform" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
+                リフォーム
+              </Link>
               <Link href="/about" className="text-gray-700 hover:text-[#FFD700] font-medium transition">
                 会社案内
               </Link>

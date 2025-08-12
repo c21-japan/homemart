@@ -25,15 +25,25 @@ interface Inquiry {
   created_at: string
 }
 
+interface ReformProject {
+  id: string
+  title: string
+  image_url: string
+  description?: string
+  created_at: string
+}
+
 export default function AdminDashboard() {
   const router = useRouter()
   const [properties, setProperties] = useState<Property[]>([])
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
+  const [reformProjects, setReformProjects] = useState<ReformProject[]>([])
   const [stats, setStats] = useState({
     totalProperties: 0,
     publishedProperties: 0,
     newInquiries: 0,
-    featuredProperties: 0
+    featuredProperties: 0,
+    totalReformProjects: 0
   })
   const [loading, setLoading] = useState(true)
 
@@ -61,6 +71,15 @@ export default function AdminDashboard() {
 
       if (inquiriesError) throw inquiriesError
 
+      // リフォーム施工実績データ取得
+      const { data: reformData, error: reformError } = await supabase
+        .from('reform_projects')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5)
+
+      if (reformError) throw reformError
+
       // 統計データ取得
       const { count: totalCount } = await supabase
         .from('properties')
@@ -81,13 +100,19 @@ export default function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('featured', true)
 
+      const { count: reformCount } = await supabase
+        .from('reform_projects')
+        .select('*', { count: 'exact', head: true })
+
       setProperties(propertiesData || [])
       setInquiries(inquiriesData || [])
+      setReformProjects(reformData || [])
       setStats({
         totalProperties: totalCount || 0,
         publishedProperties: publishedCount || 0,
         newInquiries: newInquiriesCount || 0,
-        featuredProperties: featuredCount || 0
+        featuredProperties: featuredCount || 0,
+        totalReformProjects: reformCount || 0
       })
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
@@ -111,6 +136,25 @@ export default function AdminDashboard() {
       fetchDashboardData()
     } catch (error) {
       console.error('Error deleting property:', error)
+      alert('削除に失敗しました')
+    }
+  }
+
+  const handleDeleteReformProject = async (id: string) => {
+    if (!confirm('この施工実績を削除してもよろしいですか？')) return
+
+    try {
+      const { error } = await supabase
+        .from('reform_projects')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
+      alert('施工実績を削除しました')
+      fetchDashboardData()
+    } catch (error) {
+      console.error('Error deleting reform project:', error)
       alert('削除に失敗しました')
     }
   }
@@ -208,6 +252,20 @@ export default function AdminDashboard() {
               </div>
             </div>
           </Link>
+
+          <Link href="/admin/reform-projects" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">施工実績</p>
+                <p className="text-3xl font-bold text-indigo-600">{stats.totalReformProjects}</p>
+              </div>
+              <div className="bg-indigo-100 p-3 rounded-full">
+                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* クイックアクセス - 画像管理を追加 */}
@@ -267,9 +325,23 @@ export default function AdminDashboard() {
               </div>
             </div>
           </Link>
+
+          <Link href="/admin/reform-projects" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-indigo-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">施工実績管理</h3>
+                <p className="text-sm text-gray-600">リフォーム施工実績を管理</p>
+              </div>
+            </div>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 最近の物件 */}
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b">
@@ -315,6 +387,52 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <p className="text-gray-500 text-center py-8">物件がありません</p>
+              )}
+            </div>
+          </div>
+
+          {/* 最近の施工実績 */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6 border-b">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold">最近の施工実績</h2>
+                <Link href="/admin/reform-projects" className="text-indigo-600 hover:underline text-sm">
+                  すべて見る →
+                </Link>
+              </div>
+            </div>
+            <div className="p-6">
+              {reformProjects.length > 0 ? (
+                <div className="space-y-4">
+                  {reformProjects.map((project) => (
+                    <div key={project.id} className="flex justify-between items-center border-b pb-3">
+                      <div className="flex-1">
+                        <h3 className="font-medium">{project.title}</h3>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {project.description && project.description.length > 30 
+                            ? `${project.description.substring(0, 30)}...` 
+                            : project.description}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => router.push(`/admin/reform-projects/${project.id}/edit`)}
+                          className="text-blue-600 hover:bg-blue-50 p-2 rounded"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReformProject(project.id)}
+                          className="text-red-600 hover:bg-red-50 p-2 rounded"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">施工実績がありません</p>
               )}
             </div>
           </div>

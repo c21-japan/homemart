@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 
 interface PropertyCardProps {
@@ -40,12 +42,12 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <Link href={`/properties/${property.id}`}>
       <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
         {/* 画像部分 */}
-        <div className="relative h-48 bg-gray-200 overflow-hidden">
+        <div className="relative h-48 bg-gray-200 overflow-hidden property-image-container">
           {mainImage ? (
             <img
               src={mainImage}
               alt={property.name}
-              className="w-full h-full object-cover object-center"
+              className="property-image"
               loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
