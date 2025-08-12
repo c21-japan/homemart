@@ -60,7 +60,10 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(5)
 
-      if (propertiesError) throw propertiesError
+      if (propertiesError) {
+        console.error('Properties error:', propertiesError)
+        // エラーが発生しても処理を続行
+      }
 
       // お問い合わせデータ取得
       const { data: inquiriesData, error: inquiriesError } = await supabase
@@ -69,53 +72,95 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(5)
 
-      if (inquiriesError) throw inquiriesError
+      if (inquiriesError) {
+        console.error('Inquiries error:', inquiriesError)
+        // エラーが発生しても処理を続行
+      }
 
       // リフォーム施工実績データ取得
-      const { data: reformData, error: reformError } = await supabase
-        .from('reform_projects')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
+      let reformData = []
+      let reformCount = 0
+      try {
+        const { data: reformProjects, error: reformError } = await supabase
+          .from('reform_projects')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(5)
 
-      if (reformError) throw reformError
+        if (reformError) {
+          console.error('Reform projects error:', reformError)
+        } else {
+          reformData = reformProjects || []
+        }
+
+        // 施工実績の総数を取得
+        const { count: reformTotal } = await supabase
+          .from('reform_projects')
+          .select('*', { count: 'exact', head: true })
+        
+        reformCount = reformTotal || 0
+      } catch (reformError) {
+        console.error('Reform projects fetch error:', reformError)
+        // テーブルが存在しない場合のエラーを無視
+      }
 
       // 統計データ取得
-      const { count: totalCount } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
+      let totalCount = 0
+      let publishedCount = 0
+      let newInquiriesCount = 0
+      let featuredCount = 0
 
-      const { count: publishedCount } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'published')
+      try {
+        const { count: total } = await supabase
+          .from('properties')
+          .select('*', { count: 'exact', head: true })
+        totalCount = total || 0
 
-      const { count: newInquiriesCount } = await supabase
-        .from('inquiries')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'new')
+        const { count: published } = await supabase
+          .from('properties')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'published')
+        publishedCount = published || 0
 
-      const { count: featuredCount } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('featured', true)
+        const { count: newInquiries } = await supabase
+          .from('inquiries')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'new')
+        newInquiriesCount = newInquiries || 0
 
-      const { count: reformCount } = await supabase
-        .from('reform_projects')
-        .select('*', { count: 'exact', head: true })
+        const { count: featured } = await supabase
+          .from('properties')
+          .select('*', { count: 'exact', head: true })
+          .eq('featured', true)
+        featuredCount = featured || 0
+      } catch (statsError) {
+        console.error('Stats fetch error:', statsError)
+        // 統計データの取得エラーを無視
+      }
 
       setProperties(propertiesData || [])
       setInquiries(inquiriesData || [])
-      setReformProjects(reformData || [])
+      setReformProjects(reformData)
       setStats({
-        totalProperties: totalCount || 0,
-        publishedProperties: publishedCount || 0,
-        newInquiries: newInquiriesCount || 0,
-        featuredProperties: featuredCount || 0,
-        totalReformProjects: reformCount || 0
+        totalProperties: totalCount,
+        publishedProperties: publishedCount,
+        newInquiries: newInquiriesCount,
+        featuredProperties: featuredCount,
+        totalReformProjects: reformCount
       })
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
+      // エラーが発生しても空のデータで初期化
+      setProperties([])
+      setInquiries([])
+      setReformProjects([])
+      setStats({
+        totalProperties: 0,
+        publishedProperties: 0,
+        newInquiries: 0,
+        featuredProperties: 0,
+        totalReformProjects: 0
+      })
     } finally {
       setLoading(false)
     }

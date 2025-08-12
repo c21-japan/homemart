@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import ImageUpload from '@/components/ImageUpload'
 
 interface ReformProject {
   id: string
@@ -25,6 +26,7 @@ export default function ReformProjectsPage() {
     description: '',
     image_url: ''
   })
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     fetchProjects()
@@ -32,30 +34,42 @@ export default function ReformProjectsPage() {
 
   const fetchProjects = async () => {
     try {
+      setLoading(true)
       const { data, error } = await supabase
         .from('reform_projects')
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
+      
       setProjects(data || [])
     } catch (error) {
       console.error('Error fetching projects:', error)
-      alert('データの取得に失敗しました')
+      // エラーが発生しても空配列を設定して処理を続行
+      setProjects([])
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleImageUploaded = (url: string) => {
+    setFormData(prev => ({ ...prev, image_url: url }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!formData.title.trim() || !formData.image_url.trim()) {
-      alert('タイトルと画像URLは必須です')
+      alert('タイトルと画像は必須です')
       return
     }
 
     try {
+      setUploading(true)
+      
       if (editingProject) {
         // 編集
         const { error } = await supabase
@@ -91,6 +105,8 @@ export default function ReformProjectsPage() {
     } catch (error) {
       console.error('Error saving project:', error)
       alert('保存に失敗しました')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -236,7 +252,7 @@ export default function ReformProjectsPage() {
       {/* モーダル */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               {editingProject ? '施工実績を編集' : '新規施工実績を追加'}
             </h2>
@@ -271,24 +287,40 @@ export default function ReformProjectsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  画像URL *
+                  画像 *
                 </label>
-                <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
-                  required
-                />
+                {formData.image_url ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Image
+                        src={formData.image_url}
+                        alt="プレビュー"
+                        width={200}
+                        height={150}
+                        className="rounded-lg object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, image_url: '' })}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
+                  </div>
+                ) : (
+                  <ImageUpload onImageUploaded={handleImageUploaded} />
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                  disabled={uploading}
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {editingProject ? '更新' : '追加'}
+                  {uploading ? '処理中...' : (editingProject ? '更新' : '追加')}
                 </button>
                 <button
                   type="button"

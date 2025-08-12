@@ -197,13 +197,13 @@ export default function HomePage() {
               {properties.slice(0, 3).map((property) => (
                 <Link key={property.id} href={`/properties/${property.id}`} className="group">
                   <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition overflow-hidden">
-                    <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
+                    <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative property-image-container">
                       {property.image_url ? (
                         <>
                           <img
                             src={property.image_url}
                             alt={property.name}
-                            className="w-full h-full object-cover object-center"
+                            className="property-image"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement
                               target.style.display = 'none'
