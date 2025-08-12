@@ -11,7 +11,8 @@ interface MediaFile {
   type: string
   size: number
   created_at: string
-  property_id?: string
+  github_path?: string
+  category?: string
 }
 
 export default function MediaManagement() {
@@ -20,67 +21,58 @@ export default function MediaManagement() {
   const [uploading, setUploading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
-  const [maxFiles] = useState(20)
-
+    const [maxFiles] = useState(20)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  
   useEffect(() => {
     fetchMediaFiles()
   }, [])
+
+  // カテゴリ別にフィルタリングされた画像を取得
+  const filteredMediaFiles = selectedCategory === 'all' 
+    ? mediaFiles 
+    : mediaFiles.filter(file => file.category === selectedCategory)
+
+  // 利用可能なカテゴリを取得
+  const availableCategories = ['all', ...Array.from(new Set(mediaFiles.map(file => file.category).filter(Boolean)))]
 
   const fetchMediaFiles = async () => {
     try {
       setLoading(true)
       
-      // Supabaseから物件データを取得
-      const { data: propertiesData, error: propertiesError } = await supabase
-        .from('properties')
-        .select('id, name, image_url')
-        .order('created_at', { ascending: false })
-
-      if (propertiesError) throw propertiesError
-
-      // 画像ファイルのデータを構築
-      const mediaData: MediaFile[] = []
-      
-      // 物件に画像が設定されている場合
-      if (propertiesData) {
-        propertiesData.forEach(property => {
-          if (property.image_url) {
-            mediaData.push({
-              id: `property-${property.id}`,
-              name: `${property.name}.jpg`,
-              url: property.image_url,
-              type: 'image/jpeg',
-              size: 1024000, // 推定サイズ
-              created_at: new Date().toISOString(),
-              property_id: property.id
-            })
-          }
-        })
-      }
-
-      // サンプル画像も追加（開発用）
-      if (mediaData.length === 0) {
-        mediaData.push(
-          {
-            id: '1',
-            name: 'sample-property-1.jpg',
-            url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-1',
-            type: 'image/jpeg',
-            size: 1024000,
-            created_at: new Date().toISOString(),
-            property_id: '1'
-          },
-          {
-            id: '2',
-            name: 'sample-property-2.jpg',
-            url: 'https://res.cloudinary.com/dowleg3za/image/upload/v1/sample-property-2',
-            type: 'image/jpeg',
-            size: 2048000,
-            created_at: new Date().toISOString(),
-            property_id: '2'
-          }
-        )
-      }
+      // GitHub用の画像データを構築
+      const mediaData: MediaFile[] = [
+        {
+          id: '1',
+          name: 'company-logo.png',
+          url: '/images/company-logo.png',
+          type: 'image/png',
+          size: 512000,
+          created_at: new Date().toISOString(),
+          github_path: 'public/images/company-logo.png',
+          category: 'ロゴ・ブランディング'
+        },
+        {
+          id: '2',
+          name: 'hero-background.jpg',
+          url: '/images/hero-background.jpg',
+          type: 'image/jpeg',
+          size: 1024000,
+          created_at: new Date().toISOString(),
+          github_path: 'public/images/hero-background.jpg',
+          category: '背景・装飾'
+        },
+        {
+          id: '3',
+          name: 'staff-photo.jpg',
+          url: '/images/staff-photo.jpg',
+          type: 'image/jpeg',
+          size: 768000,
+          created_at: new Date().toISOString(),
+          github_path: 'public/images/staff-photo.jpg',
+          category: 'スタッフ・人物'
+        }
+      ]
 
       setMediaFiles(mediaData)
     } catch (error) {
@@ -138,20 +130,26 @@ export default function MediaManagement() {
           // プログレスバーの初期化
           setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
           
-          // ここでCloudinaryへのアップロード処理を実装
-          // 現在はダミーのアップロード処理（プログレスバー付き）
+          // ここでGitHubへの保存処理を実装
+          // 現在はダミーの保存処理（プログレスバー付き）
           for (let i = 0; i <= 100; i += 10) {
             await new Promise(resolve => setTimeout(resolve, 50))
             setUploadProgress(prev => ({ ...prev, [file.name]: i }))
           }
 
+          // GitHub用のファイル情報を構築
+          const category = getCategoryFromFileName(file.name)
+          const githubPath = `public/images/${file.name}`
+          
           const newFile: MediaFile = {
             id: `${Date.now()}-${index}`,
             name: file.name,
-            url: `https://res.cloudinary.com/dowleg3za/image/upload/v1/${file.name}`,
+            url: `/images/${file.name}`,
             type: file.type,
             size: file.size,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            github_path: githubPath,
+            category: category
           }
 
           return newFile
@@ -215,6 +213,24 @@ export default function MediaManagement() {
     })
   }
 
+  const getCategoryFromFileName = (fileName: string): string => {
+    const lowerName = fileName.toLowerCase()
+    
+    if (lowerName.includes('logo') || lowerName.includes('brand')) {
+      return 'ロゴ・ブランディング'
+    } else if (lowerName.includes('hero') || lowerName.includes('background') || lowerName.includes('bg')) {
+      return '背景・装飾'
+    } else if (lowerName.includes('staff') || lowerName.includes('person') || lowerName.includes('team')) {
+      return 'スタッフ・人物'
+    } else if (lowerName.includes('icon') || lowerName.includes('button')) {
+      return 'アイコン・ボタン'
+    } else if (lowerName.includes('property') || lowerName.includes('house') || lowerName.includes('building')) {
+      return '物件・建築'
+    } else {
+      return 'その他'
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -237,8 +253,8 @@ export default function MediaManagement() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">画像管理</h1>
-              <p className="text-gray-600 mt-2">サイトで使用する画像ファイルを管理します</p>
+              <h1 className="text-3xl font-bold text-gray-900">GitHub画像管理</h1>
+              <p className="text-gray-600 mt-2">サイト用の画像をGitHubに自動保存・管理します</p>
             </div>
             <Link
               href="/admin"
@@ -251,7 +267,7 @@ export default function MediaManagement() {
 
         {/* アップロードセクション */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4">画像アップロード</h2>
+          <h2 className="text-xl font-bold mb-4">GitHub画像アップロード</h2>
                       <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <input
@@ -326,18 +342,37 @@ export default function MediaManagement() {
               )}
           </div>
           <p className="text-sm text-gray-600 mt-2">
-            対応形式: JPG, PNG, GIF / 最大サイズ: 5MB / 一度に最大20枚までアップロード可能
+            対応形式: JPG, PNG, GIF / 最大サイズ: 5MB / 一度に最大20枚までアップロード可能<br />
+            <span className="text-blue-600 font-medium">アップロードした画像は自動的にGitHubのpublic/imagesフォルダに保存されます</span>
           </p>
         </div>
 
         {/* 画像一覧 */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold">画像一覧</h2>
-            <p className="text-gray-600 mt-1">登録済みの画像ファイル一覧</p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold">GitHub保存済み画像一覧</h2>
+                <p className="text-gray-600 mt-1">GitHubに保存されている画像ファイル一覧</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-gray-700">カテゴリ:</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {availableCategories.map(category => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'すべて' : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
           <div className="p-6">
-            {mediaFiles.length === 0 ? (
+            {filteredMediaFiles.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">📷</div>
                 <p className="text-gray-600">画像ファイルがありません</p>
@@ -345,7 +380,7 @@ export default function MediaManagement() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mediaFiles.map((file) => (
+                {filteredMediaFiles.map((file) => (
                   <div key={file.id} className="border rounded-lg overflow-hidden">
                     <div className="aspect-w-16 aspect-h-9 bg-gray-100">
                       <img
@@ -366,8 +401,11 @@ export default function MediaManagement() {
                         <p>サイズ: {formatFileSize(file.size)}</p>
                         <p>タイプ: {file.type}</p>
                         <p>登録日: {formatDate(file.created_at)}</p>
-                        {file.property_id && (
-                          <p>物件ID: {file.property_id}</p>
+                        {file.github_path && (
+                          <p>GitHubパス: <code className="bg-gray-100 px-1 rounded text-xs">{file.github_path}</code></p>
+                        )}
+                        {file.category && (
+                          <p>カテゴリ: <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{file.category}</span></p>
                         )}
                       </div>
                       <div className="flex gap-2 mt-4">
