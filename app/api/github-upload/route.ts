@@ -16,10 +16,20 @@ interface GitHubUploadRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: GitHubUploadRequest = await request.json()
+    console.log('GitHubアップロードリクエスト受信:', {
+      owner: body.owner,
+      repo: body.repo,
+      path: body.path,
+      message: body.message,
+      contentLength: body.content?.length || 0
+    })
     
     // GitHub APIの設定
     const githubToken = process.env.GITHUB_TOKEN || 'your_github_token_here'
     const apiUrl = `https://api.github.com/repos/${body.owner}/${body.repo}/contents/${body.path}`
+    
+    console.log('GitHub API URL:', apiUrl)
+    console.log('GitHub Token:', githubToken ? '設定済み' : '未設定')
     
     // GitHub APIにリクエスト送信
     const response = await fetch(apiUrl, {
@@ -37,8 +47,15 @@ export async function POST(request: NextRequest) {
       })
     })
 
+    console.log('GitHub API レスポンス:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    })
+
     if (response.ok) {
       const result = await response.json()
+      console.log('GitHub API 成功レスポンス:', result)
       
       return NextResponse.json({
         success: true,
@@ -51,6 +68,7 @@ export async function POST(request: NextRequest) {
       })
     } else {
       const errorData = await response.json()
+      console.error('GitHub API エラーレスポンス:', errorData)
       
       return NextResponse.json({
         success: false,

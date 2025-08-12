@@ -104,20 +104,7 @@ function ContactForm() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー - CENTURY21仕様 */}
-      <header className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-4">
-              <span className="text-3xl font-bold text-[#FFD700]">C21</span>
-              <h1 className="text-xl font-bold">センチュリー21ホームマート</h1>
-            </Link>
-            <a href="tel:0120438639" className="text-xl font-bold text-[#FF0000]">
-              📞 0120-43-8639
-            </a>
-          </div>
-        </div>
-      </header>
+
 
       {/* メインビジュアル */}
       <div className="bg-gradient-to-r from-[#FFA500] to-[#FFD700] py-16">
@@ -322,22 +309,6 @@ function ContactForm() {
         </div>
       </div>
 
-      {/* フッター */}
-      <footer className="bg-[#36454F] text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="text-4xl font-bold text-[#FFD700] mb-4">C21</div>
-          <p className="text-lg font-bold mb-2">CENTURY 21 ホームマート</p>
-          <p className="text-sm text-gray-300 mb-4">
-            センチュリー21の加盟店は、すべて独立・自営です
-          </p>
-          <Link href="/" className="text-[#FFD700] hover:underline">
-            トップページに戻る
-          </Link>
-          <p className="mt-4 text-sm text-gray-400">
-            © 2024 CENTURY21 HOMEMART. All Rights Reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }
