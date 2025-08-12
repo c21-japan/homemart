@@ -23,19 +23,33 @@ export default function ImageUpload({ onImageUploaded, className = '' }: ImageUp
       const formData = new FormData()
       formData.append('file', file)
 
+      console.log('画像アップロード開始:', file.name)
+
       const response = await fetch('/api/upload-image', {
         method: 'POST',
         body: formData
       })
 
       const result = await response.json()
+      console.log('APIレスポンス:', result)
 
       if (!response.ok) {
+        // 環境変数が設定されていない場合の特別な処理
+        if (response.status === 503) {
+          throw new Error('画像アップロード機能は現在利用できません。管理者に連絡してください。')
+        }
         throw new Error(result.error || 'アップロードに失敗しました')
       }
 
+      if (!result.url) {
+        console.error('URLが含まれていません:', result)
+        throw new Error('アップロードレスポンスにURLが含まれていません')
+      }
+
+      console.log('アップロード成功、URL:', result.url)
       onImageUploaded(result.url)
     } catch (err) {
+      console.error('アップロードエラー:', err)
       setError(err instanceof Error ? err.message : 'アップロードに失敗しました')
     } finally {
       setUploading(false)

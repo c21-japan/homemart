@@ -38,15 +38,38 @@
 `.env.local`ファイルを作成し、以下の環境変数を設定してください：
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+# Supabase設定
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
+
+**重要**: 画像アップロード機能を使用するには、`SUPABASE_SERVICE_ROLE_KEY`の設定が必須です。
+
+#### 環境変数の取得方法
+
+1. [Supabase](https://supabase.com) にログイン
+2. プロジェクトを選択
+3. 設定 → API から以下を取得：
+   - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
+   - anon public → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - service_role secret → `SUPABASE_SERVICE_ROLE_KEY`
+
+#### 画像アップロード機能の設定
+
+1. Supabase Storageで`images`バケットを作成
+2. `supabase-storage-policies.sql`の内容をSQLエディタで実行
+3. バケットの公開設定を有効化
 
 ### データベースのセットアップ
 
 1. Supabaseプロジェクトを作成
-2. `database-setup.sql`の内容をSupabaseのSQLエディタで実行
+2. 以下のSQLファイルをSupabaseのSQLエディタで実行：
+   - `database-setup.sql` - 基本的なテーブル構造
+   - `database-update-reform-projects.sql` - リフォーム施工実績テーブル
+   - `supabase-storage-policies.sql` - 画像アップロード用のストレージポリシー
 3. 認証設定を有効化
+4. Storageで`images`バケットを作成し、公開設定を有効化
 
 ### 開発サーバーの起動
 

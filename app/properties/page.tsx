@@ -72,108 +72,13 @@ export default function PropertiesPage() {
     fetchProperties()
   }, [])
 
-  // 詳細検索の結果を受け取る
-  useEffect(() => {
-    const handlePropertySearch = (event: CustomEvent) => {
-      const searchParams = event.detail
-      let filtered = properties
-
-      // エリアで絞り込み
-      if (searchParams.area) {
-        filtered = filtered.filter(property => 
-          property.prefecture === searchParams.area || 
-          property.city.includes(searchParams.area) ||
-          property.address.includes(searchParams.area)
-        )
-      }
-
-      // 種別で絞り込み
-      if (searchParams.types && searchParams.types.length > 0) {
-        filtered = filtered.filter(property => 
-          searchParams.types.includes(property.property_type)
-        )
-      }
-
-      // 間取りで絞り込み
-      if (searchParams.layouts && searchParams.layouts.length > 0) {
-        filtered = filtered.filter(property => 
-          property.layout && searchParams.layouts.includes(property.layout)
-        )
-      }
-
-      // 価格で絞り込み
-      if (searchParams.priceMin) {
-        filtered = filtered.filter(property => 
-          property.price >= parseInt(searchParams.priceMin)
-        )
-      }
-      if (searchParams.priceMax) {
-        filtered = filtered.filter(property => 
-          property.price <= parseInt(searchParams.priceMax)
-        )
-      }
-
-      // 築年数で絞り込み
-      if (searchParams.ageMin) {
-        filtered = filtered.filter(property => 
-          property.building_age && property.building_age >= parseInt(searchParams.ageMin)
-        )
-      }
-      if (searchParams.ageMax) {
-        filtered = filtered.filter(property => 
-          property.building_age && property.building_age <= parseInt(searchParams.ageMax)
-        )
-      }
-
-      // 土地面積で絞り込み
-      if (searchParams.landAreaMin) {
-        filtered = filtered.filter(property => 
-          property.land_area && property.land_area >= parseInt(searchParams.landAreaMin)
-        )
-      }
-      if (searchParams.landAreaMax) {
-        filtered = filtered.filter(property => 
-          property.land_area && property.land_area <= parseInt(searchParams.landAreaMax)
-        )
-      }
-
-      // 建物面積で絞り込み
-      if (searchParams.buildingAreaMin) {
-        filtered = filtered.filter(property => 
-          property.building_area && property.building_area >= parseInt(searchParams.buildingAreaMin)
-        )
-      }
-      if (searchParams.buildingAreaMax) {
-        filtered = filtered.filter(property => 
-          property.building_area && property.building_area <= parseInt(searchParams.buildingAreaMax)
-        )
-      }
-
-      // 徒歩時間で絞り込み
-      if (searchParams.walkingTime) {
-        filtered = filtered.filter(property => 
-          property.walking_time && property.walking_time <= parseInt(searchParams.walkingTime)
-        )
-      }
-
-      setFilteredProperties(filtered)
-    }
-
-    // イベントリスナーを追加
-    window.addEventListener('propertySearch', handlePropertySearch as EventListener)
-
-    // クリーンアップ
-    return () => {
-      window.removeEventListener('propertySearch', handlePropertySearch as EventListener)
-    }
-  }, [properties])
-
   // 簡易検索の実行
   const handleSimpleSearch = () => {
+    console.log('簡易検索実行:', simpleSearch) // デバッグ用
     let filtered = properties
 
     // エリアで絞り込み
-    if (simpleSearch.area) {
+    if (simpleSearch.area && simpleSearch.area !== '奈良県') {
       filtered = filtered.filter(property => 
         property.prefecture === simpleSearch.area || 
         property.city.includes(simpleSearch.area) ||
@@ -189,8 +94,8 @@ export default function PropertiesPage() {
     }
 
     // キーワードで絞り込み
-    if (simpleSearch.keyword) {
-      const keyword = simpleSearch.keyword.toLowerCase()
+    if (simpleSearch.keyword.trim()) {
+      const keyword = simpleSearch.keyword.toLowerCase().trim()
       filtered = filtered.filter(property => 
         property.name.toLowerCase().includes(keyword) ||
         property.address.toLowerCase().includes(keyword) ||
@@ -199,6 +104,8 @@ export default function PropertiesPage() {
       )
     }
 
+    console.log('絞り込み前:', properties.length, '件')
+    console.log('絞り込み後:', filtered.length, '件')
     setFilteredProperties(filtered)
   }
 
@@ -211,6 +118,121 @@ export default function PropertiesPage() {
     })
     setFilteredProperties(properties)
   }
+
+  // 詳細検索の結果を受け取る
+  useEffect(() => {
+    const handlePropertySearch = (event: CustomEvent) => {
+      console.log('詳細検索イベント受信:', event.detail) // デバッグ用
+      const searchParams = event.detail
+      let filtered = [...properties] // 配列のコピーを作成
+
+      console.log('詳細検索開始 - 元の物件数:', filtered.length)
+
+      // エリアで絞り込み
+      if (searchParams.area) {
+        filtered = filtered.filter(property => 
+          property.prefecture === searchParams.area || 
+          property.city.includes(searchParams.area) ||
+          property.address.includes(searchParams.area)
+        )
+        console.log('エリア絞り込み後:', filtered.length, '件')
+      }
+
+      // 種別で絞り込み
+      if (searchParams.types && searchParams.types.length > 0) {
+        filtered = filtered.filter(property => 
+          searchParams.types.includes(property.property_type)
+        )
+        console.log('種別絞り込み後:', filtered.length, '件 (選択種別:', searchParams.types, ')')
+      }
+
+      // 間取りで絞り込み
+      if (searchParams.layouts && searchParams.layouts.length > 0) {
+        filtered = filtered.filter(property => 
+          property.layout && searchParams.layouts.includes(property.layout)
+        )
+        console.log('間取り絞り込み後:', filtered.length, '件')
+      }
+
+      // 価格で絞り込み
+      if (searchParams.priceMin) {
+        filtered = filtered.filter(property => 
+          property.price >= parseInt(searchParams.priceMin)
+        )
+        console.log('価格下限絞り込み後:', filtered.length, '件')
+      }
+      if (searchParams.priceMax) {
+        filtered = filtered.filter(property => 
+          property.price <= parseInt(searchParams.priceMax)
+        )
+        console.log('価格上限絞り込み後:', filtered.length, '件')
+      }
+
+      // 築年数で絞り込み
+      if (searchParams.ageMin) {
+        filtered = filtered.filter(property => 
+          property.building_age && property.building_age >= parseInt(searchParams.ageMin)
+        )
+        console.log('築年数下限絞り込み後:', filtered.length, '件')
+      }
+      if (searchParams.ageMax) {
+        filtered = filtered.filter(property => 
+          property.building_age && property.building_age <= parseInt(searchParams.ageMax)
+        )
+        console.log('築年数上限絞り込み後:', filtered.length, '件')
+      }
+
+      // 土地面積で絞り込み
+      if (searchParams.landAreaMin) {
+        filtered = filtered.filter(property => 
+          property.land_area && property.land_area >= parseInt(searchParams.landAreaMin)
+        )
+        console.log('土地面積下限絞り込み後:', filtered.length, '件')
+      }
+      if (searchParams.landAreaMax) {
+        filtered = filtered.filter(property => 
+          property.land_area && property.land_area <= parseInt(searchParams.landAreaMax)
+        )
+        console.log('土地面積上限絞り込み後:', filtered.length, '件')
+      }
+
+      // 建物面積で絞り込み
+      if (searchParams.buildingAreaMin) {
+        filtered = filtered.filter(property => 
+          property.building_area && property.building_area >= parseInt(searchParams.buildingAreaMin)
+        )
+        console.log('建物面積下限絞り込み後:', filtered.length, '件')
+      }
+      if (searchParams.buildingAreaMax) {
+        filtered = filtered.filter(property => 
+          property.building_area && property.building_area <= parseInt(searchParams.buildingAreaMax)
+        )
+        console.log('建物面積上限絞り込み後:', filtered.length, '件')
+      }
+
+      // 徒歩時間で絞り込み
+      if (searchParams.walkingTime) {
+        filtered = filtered.filter(property => 
+          property.walking_time && property.walking_time <= parseInt(searchParams.walkingTime)
+        )
+        console.log('徒歩時間絞り込み後:', filtered.length, '件')
+      }
+
+      console.log('詳細検索絞り込み前:', properties.length, '件')
+      console.log('詳細検索絞り込み後:', filtered.length, '件')
+      console.log('最終絞り込み結果:', filtered.map(p => ({ id: p.id, name: p.name, type: p.property_type })))
+      
+      setFilteredProperties(filtered)
+    }
+
+    // イベントリスナーを追加
+    window.addEventListener('propertySearch', handlePropertySearch as EventListener)
+
+    // クリーンアップ
+    return () => {
+      window.removeEventListener('propertySearch', handlePropertySearch as EventListener)
+    }
+  }, [properties])
 
   if (isLoading) {
     return (
@@ -278,13 +300,19 @@ export default function PropertiesPage() {
               {/* 検索ボタン */}
               <div className="flex gap-2">
                 <button
-                  onClick={handleSimpleSearch}
+                  onClick={() => {
+                    console.log('検索ボタンクリック:', simpleSearch)
+                    handleSimpleSearch()
+                  }}
                   className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-bold transition-colors"
                 >
                   検索
                 </button>
                 <button
-                  onClick={handleClearSearch}
+                  onClick={() => {
+                    console.log('クリアボタンクリック')
+                    handleClearSearch()
+                  }}
                   className="px-4 py-3 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-bold transition-colors"
                 >
                   クリア

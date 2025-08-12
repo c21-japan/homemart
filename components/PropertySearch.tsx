@@ -264,6 +264,8 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
 
   // 検索実行
   const handleSearch = () => {
+    console.log('詳細検索実行:', searchConditions) // デバッグ用
+    
     // 検索条件を親コンポーネントに渡す
     const searchParams = {
       area: selectedArea,
@@ -279,6 +281,8 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
       buildingAreaMax: searchConditions.buildingAreaMax,
       walkingTime: searchConditions.walkingTime
     }
+    
+    console.log('検索パラメータ:', searchParams)
     
     // 検索モーダルを閉じる
     onClose()
@@ -306,9 +310,13 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
     // 現在のページのURLを更新（ページ遷移なし）
     window.history.pushState({}, '', `/properties?${params.toString()}`)
     
-    // 検索条件を親コンポーネントに渡すためのカスタムイベント
-    const searchEvent = new CustomEvent('propertySearch', { detail: searchParams })
-    window.dispatchEvent(searchEvent)
+    // 少し遅延を入れてからイベントを発火（モーダルが完全に閉じるのを待つ）
+    setTimeout(() => {
+      console.log('カスタムイベント発火:', searchParams)
+      // 検索条件を親コンポーネントに渡すためのカスタムイベント
+      const searchEvent = new CustomEvent('propertySearch', { detail: searchParams })
+      window.dispatchEvent(searchEvent)
+    }, 100)
   }
 
   // 条件クリア

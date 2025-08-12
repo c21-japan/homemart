@@ -337,7 +337,12 @@ export default function ReformProjectsPage() {
                       <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
                     </div>
                   ) : (
-                    <ImageUpload onImageUploaded={handleBeforeImageUploaded} />
+                    <div>
+                      <ImageUpload onImageUploaded={handleBeforeImageUploaded} />
+                      <p className="text-xs text-gray-500 mt-1">
+                        画像アップロードに問題がある場合は、管理者に連絡してください
+                      </p>
+                    </div>
                   )}
                 </div>
 
@@ -366,7 +371,12 @@ export default function ReformProjectsPage() {
                       <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像をアップロードしてください</p>
                     </div>
                   ) : (
-                    <ImageUpload onImageUploaded={handleAfterImageUploaded} />
+                    <div>
+                      <ImageUpload onImageUploaded={handleAfterImageUploaded} />
+                      <p className="text-xs text-gray-500 mt-1">
+                        画像アップロードに問題がある場合は、管理者に連絡してください
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
