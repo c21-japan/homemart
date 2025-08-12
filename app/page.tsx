@@ -19,7 +19,6 @@ export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     fetchFeaturedProperties()
@@ -52,63 +51,16 @@ export default function HomePage() {
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <>
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-[#121212] z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between py-6">
-            <Link href="/" className="flex items-center gap-4 text-decoration-none">
-              <div className="w-12 h-12 bg-[#BEAF87] rounded-lg flex items-center justify-center">
-                <i className="fas fa-home text-[#121212]"></i>
-              </div>
-              <div>
-                <div className="text-xl font-bold text-white mb-0">ホームマート</div>
-                <div className="text-sm text-[#BEAF87] font-medium">CENTURY 21</div>
-              </div>
-            </Link>
-            
-            <nav className="hidden md:flex items-center gap-12">
-              <ul className="flex list-none gap-8">
-                <li><a href="#catalog" className="text-white font-medium relative pb-1 hover:text-[#BEAF87] transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full">物件検索</a></li>
-                <li><a href="#comparison" className="text-white font-medium relative pb-1 hover:text-[#BEAF87] transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full">売却査定</a></li>
-                <li><a href="#features" className="text-white font-medium relative pb-1 hover:text-[#BEAF87] transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full">リフォーム</a></li>
-                <li><a href="#footer" className="text-white font-medium relative pb-1 hover:text-[#BEAF87] transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full">会社概要</a></li>
-              </ul>
-              
-              <div className="flex gap-4">
-                <a href="tel:0120-43-8639" className="inline-flex items-center justify-center px-8 py-3 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-0.5 hover:shadow-lg min-h-12">
-                  <i className="fas fa-phone mr-2"></i>
-                  無料相談
-                </a>
-              </div>
-            </nav>
-            
-            <button 
-              className="md:hidden bg-none border-none text-white cursor-pointer p-2"
-              onClick={toggleMobileMenu}
-              aria-label={isMobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
-            >
-              <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-24 left-0 right-0 bg-[#121212] flex flex-col p-6 shadow-xl">
-            <ul className="flex flex-col gap-6 mb-6">
-              <li><a href="#catalog" className="text-white font-medium" onClick={toggleMobileMenu}>物件検索</a></li>
-              <li><a href="#comparison" className="text-white font-medium" onClick={toggleMobileMenu}>売却査定</a></li>
-              <li><a href="#features" className="text-white font-medium" onClick={toggleMobileMenu}>リフォーム</a></li>
-                              <li><Link href="/about" className="text-white font-medium" onClick={toggleMobileMenu}>会社概要</Link></li>
-            </ul>
-          </div>
-        )}
-      </header>
-
       {/* Hero Section */}
       <section className="min-h-screen bg-gradient-to-br from-[#121212] to-[#252526] flex items-center relative mt-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10 max-w-4xl">
@@ -513,13 +465,21 @@ export default function HomePage() {
             </button>
           </div>
           
+          <div className="mb-8">
+            <Link 
+              href="/about" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-transparent text-white border border-white/30 rounded-full font-medium transition-all duration-300 hover:bg-white/10 hover:border-white/50"
+            >
+              <i className="fas fa-info-circle mr-2"></i>
+              会社概要を見る
+            </Link>
+          </div>
+          
           <p className="text-white/80 text-sm">
             営業時間: 9:00〜22:00 | 土日祝も対応
           </p>
         </div>
       </section>
-
-
 
       {/* Contact Form Modal */}
       {isModalOpen && (

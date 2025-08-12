@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { deleteCookie } from 'cookies-next'
 
 interface Property {
   id: string
@@ -47,6 +48,11 @@ export default function AdminDashboard() {
     totalReformProjects: 0
   })
   const [loading, setLoading] = useState(true)
+
+  const handleLogout = () => {
+    deleteCookie('admin-auth')
+    router.push('/admin/login')
+  }
 
   useEffect(() => {
     fetchDashboardData()
@@ -237,6 +243,12 @@ export default function AdminDashboard() {
               >
                 サイトを確認
               </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                ログアウト
+              </button>
             </div>
           </div>
         </div>
