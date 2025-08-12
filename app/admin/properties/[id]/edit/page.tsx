@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
-import { ImageUpload } from '@/components/ImageUpload'
+
 import Link from 'next/link'
 
 export default function EditProperty() {
@@ -133,10 +133,33 @@ export default function EditProperty() {
               <label className="block text-sm font-medium mb-2">
                 物件画像
               </label>
-              <ImageUpload
-                value={imageUrl}
-                onChange={setImageUrl}
-              />
+              {imageUrl ? (
+                <div className="space-y-2">
+                  <div className="relative">
+                    <img
+                      src={imageUrl}
+                      alt="物件画像"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl('')}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600">画像を変更する場合は、新しい画像URLを入力してください</p>
+                </div>
+              ) : (
+                <input
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="画像URLを入力してください"
+                  className="w-full p-3 border rounded-lg"
+                />
+              )}
             </div>
             
             {/* 物件名 */}
