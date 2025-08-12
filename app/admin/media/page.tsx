@@ -18,7 +18,9 @@ export default function MediaManagement() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
+  const [maxFiles] = useState(20)
 
   useEffect(() => {
     fetchMediaFiles()
@@ -89,48 +91,91 @@ export default function MediaManagement() {
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
+    if (e.target.files) {
+      const files = Array.from(e.target.files)
+      
+      // 最大20枚まで制限
+      if (files.length > maxFiles) {
+        alert(`一度にアップロードできるのは最大${maxFiles}枚までです。`)
+        return
+      }
+      
+      // 画像ファイルのみフィルタリング
+      const imageFiles = files.filter(file => file.type.startsWith('image/'))
+      
+      if (imageFiles.length !== files.length) {
+        alert('画像ファイル以外は除外されました。')
+      }
+      
+      setSelectedFiles(imageFiles)
     }
   }
 
   const handleUpload = async () => {
-    if (!selectedFile) return
+    if (selectedFiles.length === 0) return
 
     try {
       setUploading(true)
       
-      // ファイルサイズチェック（5MB以下）
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        alert('ファイルサイズは5MB以下にしてください。')
-        return
+      // 各ファイルのチェック
+      for (const file of selectedFiles) {
+        // ファイルサイズチェック（5MB以下）
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`${file.name}: ファイルサイズは5MB以下にしてください。`)
+          continue
+        }
+
+        // ファイルタイプチェック
+        if (!file.type.startsWith('image/')) {
+          alert(`${file.name}: 画像ファイルのみアップロード可能です。`)
+          continue
+        }
       }
 
-      // ファイルタイプチェック
-      if (!selectedFile.type.startsWith('image/')) {
-        alert('画像ファイルのみアップロード可能です。')
-        return
+      // 一括アップロード処理
+      const uploadPromises = selectedFiles.map(async (file, index) => {
+        try {
+          // プログレスバーの初期化
+          setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
+          
+          // ここでCloudinaryへのアップロード処理を実装
+          // 現在はダミーのアップロード処理（プログレスバー付き）
+          for (let i = 0; i <= 100; i += 10) {
+            await new Promise(resolve => setTimeout(resolve, 50))
+            setUploadProgress(prev => ({ ...prev, [file.name]: i }))
+          }
+
+          const newFile: MediaFile = {
+            id: `${Date.now()}-${index}`,
+            name: file.name,
+            url: `https://res.cloudinary.com/dowleg3za/image/upload/v1/${file.name}`,
+            type: file.type,
+            size: file.size,
+            created_at: new Date().toISOString()
+          }
+
+          return newFile
+        } catch (error) {
+          console.error(`Upload error for ${file.name}:`, error)
+          return null
+        }
+      })
+
+      const uploadedFiles = await Promise.all(uploadPromises)
+      const successfulUploads = uploadedFiles.filter(file => file !== null) as MediaFile[]
+
+      if (successfulUploads.length > 0) {
+        setMediaFiles(prev => [...successfulUploads, ...prev])
+        alert(`${successfulUploads.length}枚の画像のアップロードが完了しました。`)
       }
 
-      // ここでCloudinaryへのアップロード処理を実装
-      // 現在はダミーのアップロード処理
-      const newFile: MediaFile = {
-        id: Date.now().toString(),
-        name: selectedFile.name,
-        url: `https://res.cloudinary.com/dowleg3za/image/upload/v1/${selectedFile.name}`,
-        type: selectedFile.type,
-        size: selectedFile.size,
-        created_at: new Date().toISOString()
-      }
-
-      setMediaFiles(prev => [newFile, ...prev])
-      setSelectedFile(null)
+      setSelectedFiles([])
+      setUploadProgress({})
       
       // ファイル入力フィールドをリセット
       const fileInput = document.getElementById('file-upload') as HTMLInputElement
       if (fileInput) fileInput.value = ''
 
-      alert('アップロードが完了しました。')
     } catch (error) {
       console.error('Upload error:', error)
       alert('アップロードに失敗しました。')
@@ -207,28 +252,81 @@ export default function MediaManagement() {
         {/* アップロードセクション */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">画像アップロード</h2>
-          <div className="flex items-center gap-4">
-            <input
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="flex-1 p-2 border border-gray-300 rounded-lg"
-            />
-            <button
-              onClick={handleUpload}
-              disabled={!selectedFile || uploading}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                !selectedFile || uploading
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {uploading ? 'アップロード中...' : 'アップロード'}
-            </button>
+                      <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="flex-1 p-2 border border-gray-300 rounded-lg"
+                />
+                <button
+                  onClick={handleUpload}
+                  disabled={selectedFiles.length === 0 || uploading}
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    selectedFiles.length === 0 || uploading
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {uploading ? 'アップロード中...' : `アップロード (${selectedFiles.length}枚)`}
+                </button>
+              </div>
+              
+              {/* 選択されたファイル一覧 */}
+              {selectedFiles.length > 0 && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-3">選択されたファイル ({selectedFiles.length}枚)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {selectedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-white rounded border">
+                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                          <span className="text-gray-500 text-sm">📷</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" title={file.name}>
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== index))}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* プログレスバー */}
+              {Object.keys(uploadProgress).length > 0 && (
+                <div className="space-y-2">
+                  {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                    <div key={fileName} className="bg-white p-3 rounded border">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium truncate">{fileName}</span>
+                        <span className="text-sm text-gray-600">{progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
           <p className="text-sm text-gray-600 mt-2">
-            対応形式: JPG, PNG, GIF / 最大サイズ: 5MB
+            対応形式: JPG, PNG, GIF / 最大サイズ: 5MB / 一度に最大20枚までアップロード可能
           </p>
         </div>
 
