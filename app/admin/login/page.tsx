@@ -12,26 +12,44 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('フォーム送信開始:', { password: password ? '***' : '空' })
+    
     setIsLoading(true)
     setError('')
 
-    // パスワードをチェック
-    if (password === 'homemart2024') {
-      // 認証成功：クッキーを設定
-      setCookie('admin-auth', 'authenticated', {
-        maxAge: 60 * 60 * 24, // 24時間
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      })
-      
-      // 管理画面にリダイレクト
-      router.push('/admin')
-    } else {
-      setError('パスワードが正しくありません')
+    try {
+      // パスワードをチェック
+      if (password === 'homemart2024') {
+        console.log('パスワード認証成功')
+        
+        // 認証成功：クッキーを設定
+        setCookie('admin-auth', 'authenticated', {
+          maxAge: 60 * 60 * 24, // 24時間
+          path: '/',
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        })
+        
+        console.log('クッキー設定完了、管理画面にリダイレクト')
+        
+        // 管理画面にリダイレクト
+        router.push('/admin')
+      } else {
+        console.log('パスワード認証失敗')
+        setError('パスワードが正しくありません')
+      }
+    } catch (err) {
+      console.error('ログイン処理エラー:', err)
+      setError('ログイン処理中にエラーが発生しました')
+    } finally {
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    console.log('パスワード入力:', value ? '***' : '空')
+    setPassword(value)
   }
 
   return (
@@ -57,7 +75,7 @@ export default function AdminLogin() {
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#BEAF87] focus:border-[#BEAF87] sm:text-sm"
                   placeholder="パスワードを入力してください"
                 />
@@ -75,6 +93,7 @@ export default function AdminLogin() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#BEAF87] hover:bg-[#BEAF87]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#BEAF87] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                onClick={() => console.log('ボタンクリック')}
               >
                 {isLoading ? 'ログイン中...' : 'ログイン'}
               </button>

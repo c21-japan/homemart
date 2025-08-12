@@ -264,6 +264,26 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
 
   // 検索実行
   const handleSearch = () => {
+    // 検索条件を親コンポーネントに渡す
+    const searchParams = {
+      area: selectedArea,
+      types: searchConditions.propertyTypes,
+      layouts: searchConditions.layouts,
+      priceMin: searchConditions.priceMin,
+      priceMax: searchConditions.priceMax,
+      ageMin: searchConditions.ageMin,
+      ageMax: searchConditions.ageMax,
+      landAreaMin: searchConditions.landAreaMin,
+      landAreaMax: searchConditions.landAreaMax,
+      buildingAreaMin: searchConditions.buildingAreaMin,
+      buildingAreaMax: searchConditions.buildingAreaMax,
+      walkingTime: searchConditions.walkingTime
+    }
+    
+    // 検索モーダルを閉じる
+    onClose()
+    
+    // 検索条件をURLパラメータとして設定（履歴に残す）
     const params = new URLSearchParams()
     params.append('area', selectedArea)
     
@@ -283,7 +303,12 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
     if (searchConditions.buildingAreaMax) params.append('buildingAreaMax', searchConditions.buildingAreaMax)
     if (searchConditions.walkingTime) params.append('walkingTime', searchConditions.walkingTime)
 
-    router.push(`/properties/search?${params.toString()}`)
+    // 現在のページのURLを更新（ページ遷移なし）
+    window.history.pushState({}, '', `/properties?${params.toString()}`)
+    
+    // 検索条件を親コンポーネントに渡すためのカスタムイベント
+    const searchEvent = new CustomEvent('propertySearch', { detail: searchParams })
+    window.dispatchEvent(searchEvent)
   }
 
   // 条件クリア
