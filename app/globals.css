@@ -98,27 +98,24 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
-  transition: transform 0.3s ease;
 }
 
-.property-image:hover {
-  transform: scale(1.05);
+/* プルダウンの文字サイズを固定 */
+select, select option {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
 }
 
-.property-image-container {
-  overflow: hidden;
-  position: relative;
+/* プルダウンのフォーカス時の文字サイズも固定 */
+select:focus, select:focus option {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
 }
 
-/* レスポンシブ調整 */
+/* モバイルでのプルダウン文字サイズも固定 */
 @media (max-width: 768px) {
-  .nav-tab {
-    clip-path: none;
-    margin-right: 0;
-  }
-  
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+  select, select option {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
   }
 }

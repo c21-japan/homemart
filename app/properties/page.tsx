@@ -263,10 +263,10 @@ export default function PropertiesPage() {
                 <select
                   value={simpleSearch.area}
                   onChange={(e) => setSimpleSearch(prev => ({ ...prev, area: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                 >
                   {areaOptions.map(area => (
-                    <option key={area} value={area}>{area}</option>
+                    <option key={area} value={area} className="text-base">{area}</option>
                   ))}
                 </select>
               </div>
@@ -277,10 +277,10 @@ export default function PropertiesPage() {
                 <select
                   value={simpleSearch.propertyType}
                   onChange={(e) => setSimpleSearch(prev => ({ ...prev, propertyType: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                 >
                   {propertyTypeOptions.map(type => (
-                    <option key={type} value={type}>{type || 'すべて'}</option>
+                    <option key={type} value={type} className="text-base">{type || 'すべて'}</option>
                   ))}
                 </select>
               </div>
