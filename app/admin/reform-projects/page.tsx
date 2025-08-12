@@ -212,7 +212,8 @@ export default function ReformProjectsPage() {
                           src={project.before_image_url}
                           alt={`${project.title} - 施工前`}
                           fill
-                          className="object-cover"
+                          className="object-contain"
+                          sizes="(max-width: 768px) 50vw, 33vw"
                         />
                         <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-2 py-1 rounded">
                           施工前
@@ -223,7 +224,8 @@ export default function ReformProjectsPage() {
                           src={project.after_image_url}
                           alt={`${project.title} - 施工後`}
                           fill
-                          className="object-cover"
+                          className="object-contain"
+                          sizes="(max-width: 768px) 50vw, 33vw"
                         />
                         <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
                           施工後
@@ -239,9 +241,6 @@ export default function ReformProjectsPage() {
                           {project.description}
                         </p>
                       )}
-                      <div className="text-xs text-gray-500 mb-4">
-                        登録日: {new Date(project.created_at).toLocaleDateString('ja-JP')}
-                      </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEdit(project)}

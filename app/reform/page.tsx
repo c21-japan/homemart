@@ -555,23 +555,25 @@ export default function ReformPage() {
                   <div key={project.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                     {/* 施工前後の画像を横並びで表示 */}
                     <div className="grid grid-cols-2 gap-0">
-                      <div className="relative h-64">
+                      <div className="relative h-64 bg-gray-100">
                         <Image
                           src={project.before_image_url}
                           alt={`${project.title} - 施工前`}
                           fill
-                          className="object-cover"
+                          className="object-contain"
+                          sizes="(max-width: 1024px) 50vw, 33vw"
                         />
                         <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                           施工前
                         </div>
                       </div>
-                      <div className="relative h-64">
+                      <div className="relative h-64 bg-gray-100">
                         <Image
                           src={project.after_image_url}
                           alt={`${project.title} - 施工後`}
                           fill
-                          className="object-cover"
+                          className="object-contain"
+                          sizes="(max-width: 1024px) 50vw, 33vw"
                         />
                         <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                           施工後
@@ -587,9 +589,6 @@ export default function ReformPage() {
                           {project.description}
                         </p>
                       )}
-                      <div className="text-sm text-gray-500">
-                        施工完了: {new Date(project.created_at).toLocaleDateString('ja-JP')}
-                      </div>
                     </div>
                   </div>
                 ))}
