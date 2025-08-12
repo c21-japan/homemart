@@ -4,6 +4,12 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   // 管理画面のパスかどうかをチェック
   if (request.nextUrl.pathname.startsWith('/admin')) {
+
+    // ログインページは認証チェックから除外
+    if (request.nextUrl.pathname === '/admin/login') {
+      return NextResponse.next()
+    }
+    
     // セッションクッキーをチェック
     const isAuthenticated = request.cookies.get('admin-auth')
     

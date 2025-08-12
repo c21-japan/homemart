@@ -1,5 +1,9 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import PropertyCard from '@/components/PropertyCard'
+import PropertySearch from '@/components/PropertySearch'
 
 interface Property {
   id: string
@@ -22,17 +26,46 @@ interface Property {
   created_at: string
 }
 
-export default async function PropertiesPage() {
-  // プロパティデータを取得
-  const { data: properties, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
+export default function PropertiesPage() {
+  const [properties, setProperties] = useState<Property[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [showSearch, setShowSearch] = useState(false)
+  const [selectedArea, setSelectedArea] = useState('奈良県')
 
-  if (error) {
-    console.error('Error fetching properties:', error)
-    return <div>エラーが発生しました</div>
+  // プロパティデータを取得
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('status', 'published')
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching properties:', error)
+        } else {
+          setProperties(data || [])
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProperties()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -41,7 +74,15 @@ export default async function PropertiesPage() {
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">物件一覧</h1>
-          <p className="text-gray-600">お客様に最適な物件をご紹介します</p>
+          <p className="text-gray-600 mb-6">お客様に最適な物件をご紹介します</p>
+          
+          {/* 検索ボタン */}
+          <button
+            onClick={() => setShowSearch(true)}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-bold transition-colors shadow-md"
+          >
+            🔍 詳細検索
+          </button>
         </div>
       </div>
 
@@ -61,6 +102,14 @@ export default async function PropertiesPage() {
           </div>
         )}
       </div>
+
+      {/* 検索モーダル */}
+      {showSearch && (
+        <PropertySearch
+          selectedArea={selectedArea}
+          onClose={() => setShowSearch(false)}
+        />
+      )}
     </div>
   )
 }
