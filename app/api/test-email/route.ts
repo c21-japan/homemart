@@ -1,29 +1,48 @@
 import { NextResponse } from 'next/server'
-import sgMail from '@sendgrid/mail'
+import Mailjet from 'node-mailjet'
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
+// Mailjetの設定（環境変数から取得、フォールバック付き）
+const mailjet = new Mailjet({
+  apiKey: process.env.MAILJET_API_KEY || 'ea8a23b22f6f39c9a114fff4aae38816',
+  apiSecret: process.env.MAILJET_SECRET_KEY || '6c1009b39b7856b4e970e1a0143a5259'
+})
+
+// 送信者メールアドレス（環境変数から取得、フォールバック付き）
+const fromEmail = process.env.MAILJET_FROM_EMAIL || 'y-inui@century21.group'
 
 export async function GET() {
   try {
     const msg = {
-      to: process.env.EMAIL_TO!,
-      from: process.env.EMAIL_FROM!,
-      subject: 'テストメール',
-      text: 'これはテストメールです',
-      html: '<strong>これはテストメールです</strong>',
+      Messages: [
+        {
+          From: {
+            Email: fromEmail,
+            Name: 'センチュリー21ホームマート'
+          },
+          To: [
+            {
+              Email: fromEmail,
+              Name: 'テスト受信者'
+            }
+          ],
+          Subject: 'テストメール',
+          TextPart: 'これはテストメールです',
+          HTMLPart: '<strong>これはテストメールです</strong>',
+        }
+      ]
     }
 
-    const result = await sgMail.send(msg)
-    console.log('送信成功:', result)
+    const result = await mailjet.post('send', { version: 'v3.1' }).request(msg)
+    console.log('送信成功:', result.body)
     
     return NextResponse.json({ 
       success: true, 
-      statusCode: result[0].statusCode 
+      statusCode: result.response.status 
     })
   } catch (error: any) {
     console.error('エラー詳細:', error)
     if (error.response) {
-      console.error('SendGrid Response:', error.response.body)
+      console.error('Mailjet Response:', error.response.body)
     }
     return NextResponse.json({ 
       error: error.message,
