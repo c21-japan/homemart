@@ -1,44 +1,79 @@
 [1;33m🤔 Claudeに聞いています...[0m
-確かにnpmレジストリにはclaudeCliというパッケージは見つかりませんでした。代わりに、Next.jsの基本的なコンポーネントを TypeScript で書いてみましょう。エラーハンドリングも含めたコードを提供します。
-
-まず、`pages/index.tsx` というファイルを作成し、以下のコードを記述します:
+分かりました。Next.jsのコンポーネントまたは機能を、TypeScriptを使って作成し、エラーハンドリングも行います。以下にサンプルコードを示します。
 
 ```typescript
+import React, { FC, useState, useEffect } from 'react';
 import { NextPage } from 'next';
-import { useState, ChangeEvent, FormEvent } from 'react';
 
-interface FormData {
-  name: string;
-  email: string;
+interface MyComponentProps {
+  initialData: string;
 }
 
-const Home: NextPage = () => {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-  });
+const MyComponent: FC<MyComponentProps> = ({ initialData }) => {
+  const [data, setData] = useState<string>(initialData);
   const [error, setError] = useState<string | null>(null);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      // ここでバックエンドAPIなどに formData を送信する処理を実装する
-      console.log('Submitted form data:', formData);
-      setError(null);
-    } catch (error) {
-      setError('An error occurred while submitting the form.');
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/mydata');
+        const data = await response.json();
+        setData(data.message);
+      } catch (err) {
+        setError('Error fetching data');
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
-      <h1>Welcome to my Next.js app</h1>
-      <form onSubmit={handleSubmit}>
+      {error ? (
         <div>
-          <label htmlFor=\
+          <h2>Error</h2>
+          <p>{error}</p>
+        </div>
+      ) : (
+        <div>
+          <h2>My Component</h2>
+          <p>{data}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MyPage: NextPage<MyComponentProps> = ({ initialData }) => {
+  return (
+    <div>
+      <MyComponent initialData={initialData} />
+    </div>
+  );
+};
+
+export async function getStaticProps() {
+  try {
+    const response = await fetch('https://api.example.com/data');
+    const data = await response.json();
+    return {
+      props: {
+        initialData: data.message,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        initialData: 'Error fetching data',
+      },
+    };
+  }
+}
+
+export default MyPage;
+```
+
+この例では、`MyComponent`というReactコンポーネントを作成しています。このコンポーネントは、初期データを受け取り、サーバーからデータを非同期で取得します。取得中にエラーが発生した場合は、エラーメッセージを表示します。
+
+また、`MyPage`というNext.jsページコンポーネントを作成し、`MyComponent`をレンダーしています。`getStaticProps`関数を使って、初期データを取得し、`MyPage`にpropsとして渡しています。
+
+この例では、TypeScriptを使って型定義を行い、エラーハンドリングも行っています。

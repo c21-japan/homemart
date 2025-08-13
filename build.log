@@ -6,7 +6,7 @@
    - Environments: .env.local
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 2000ms
+ ⚠ Compiled with warnings in 6.0s
 
 ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
 Critical dependency: the request of a dependency is an expression
@@ -20,7 +20,7 @@ Import trace for requested module:
 ./lib/supabase/server.ts
 ./app/(secure)/actions/agreements.ts
 
- ✓ Compiled successfully in 2000ms
+ ✓ Compiled successfully in 6.0s
    Skipping linting
    Checking validity of types ...
 Failed to compile.
