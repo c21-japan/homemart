@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 import { 
   createChecklistSchema, 
   updateChecklistItemSchema,
@@ -15,8 +14,7 @@ import { revalidatePath } from 'next/cache'
 // チェックリストを作成
 export async function createChecklist(leadId: string, type: ChecklistType) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -83,8 +81,7 @@ export async function createChecklist(leadId: string, type: ChecklistType) {
 // チェックリストを取得
 export async function getChecklist(leadId: string, type: ChecklistType) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -150,8 +147,7 @@ export async function getChecklist(leadId: string, type: ChecklistType) {
 // チェックリスト項目を更新
 export async function updateChecklistItem(itemId: string, updates: { checked: boolean; note?: string; file_path?: string }) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -205,8 +201,7 @@ export async function updateChecklistItem(itemId: string, updates: { checked: bo
 // チェックリストの進捗率を更新
 async function updateChecklistProgress(checklistId: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // チェックリスト項目を取得
     const { data: items, error: itemsError } = await supabase
@@ -238,8 +233,7 @@ async function updateChecklistProgress(checklistId: string) {
 // 顧客の全チェックリストを取得
 export async function getCustomerChecklists(leadId: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -282,8 +276,7 @@ export async function getCustomerChecklists(leadId: string) {
 // チェックリスト統計を取得
 export async function getChecklistStats() {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -352,8 +345,7 @@ export async function getChecklistStats() {
 // チェックリスト項目にファイルを添付
 export async function attachFileToChecklistItem(itemId: string, file: File) {
   try {
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
