@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
@@ -12,6 +12,12 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
+
+  // ログインページの場合はレイアウトを適用しない
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
 
   useEffect(() => {
     // セッションストレージから認証状態をチェック

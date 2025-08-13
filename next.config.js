@@ -11,6 +11,12 @@ const nextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
     // 画像最適化の設定
     formats: ['image/webp', 'image/avif'],
@@ -19,7 +25,7 @@ const nextConfig = {
   // 圧縮設定
   compress: true,
   // 静的アセットの最適化
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://homemart-one.vercel.app' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://homemart-74221jg44-c21japans-projects.vercel.app' : '',
   // ヘッダー設定
   async headers() {
     return [
