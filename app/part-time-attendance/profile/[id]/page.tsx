@@ -58,7 +58,7 @@ export default function EmployeeProfilePage() {
   
   const [employee, setEmployee] = useState<PartTimeEmployee | null>(null)
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
-  const [shiftRequests, setShiftRequests] = useState<ShiftRequest[]>([])
+  const [shiftRequests, setShiftRequests] = useState<ShiftRequestData[]>([])
   const [salaryCalculations, setSalaryCalculations] = useState<SalaryCalculation[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())

@@ -14,7 +14,7 @@ interface PartTimeEmployee {
   is_active: boolean
 }
 
-interface ShiftRequest {
+interface ShiftRequestData {
   employee_id: string
   request_type: 'shift_request' | 'availability' | 'time_off'
   start_date: string

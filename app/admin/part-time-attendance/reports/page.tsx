@@ -190,7 +190,7 @@ export default function AttendanceReportsPage() {
       // 給与計算
       let totalRegularHours = 0
       let totalOvertimeHours = 0
-      let totalHolidayHours = 0
+      const totalHolidayHours = 0
 
       records.forEach(record => {
         if (record.total_hours) {
