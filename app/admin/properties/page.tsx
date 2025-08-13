@@ -643,8 +643,8 @@ export default function NewProperty() {
     } catch (error) {
       console.error('Error:', error)
       // エラーが既にalertで表示されている場合は追加で表示しない
-      if (!(error as any).message?.includes('登録に失敗しました')) {
-        alert(`予期しないエラーが発生しました: ${error}`)
+      if (error instanceof Error && !error.message.includes('登録に失敗しました')) {
+        alert(`予期しないエラーが発生しました: ${error.message}`)
       }
     } finally {
       setIsSubmitting(false)

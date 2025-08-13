@@ -13,26 +13,19 @@ export default function SickLeaveForm() {
     end_date: '',
     days: 1,
     reason: '',
-    title: '',
-    doctor_note: false,
-    symptoms: ''
+    symptoms: '',
+    doctor_note_file: null as File | null
   })
   const [loading, setLoading] = useState(false)
 
+  const EMPLOYEE_NAMES = ['豊田', '今津', '山尾']
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked
-      setFormData(prev => ({
-        ...prev,
-        [name]: checked
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }))
-    }
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
 
     // 日数計算
     if (name === 'start_date' || name === 'end_date') {
@@ -49,15 +42,46 @@ export default function SickLeaveForm() {
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        doctor_note_file: file
+      }))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!formData.doctor_note_file) {
+      alert('医師の診断書を添付してください')
+      return
+    }
+
     setLoading(true)
 
     try {
+      // ファイルをアップロード
+      const fileName = `doctor_notes/${Date.now()}_${formData.doctor_note_file.name}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('internal-applications')
+        .upload(fileName, formData.doctor_note_file)
+
+      if (uploadError) throw uploadError
+
+      // 申請データを保存
       const { error } = await supabase
         .from('internal_applications')
         .insert({
-          ...formData,
+          employee_name: formData.employee_name,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          days: formData.days,
+          reason: formData.reason,
+          symptoms: formData.symptoms,
+          doctor_note_file: fileName,
           application_type: 'sick_leave',
           status: 'pending',
           created_at: new Date().toISOString()
@@ -102,30 +126,18 @@ export default function SickLeaveForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   申請者名 <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   name="employee_name"
                   value={formData.employee_name}
                   onChange={handleInputChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="山田太郎"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  申請タイトル <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="風邪による病気休暇申請"
-                />
+                >
+                  <option value="">申請者を選択してください</option>
+                  {EMPLOYEE_NAMES.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -225,18 +237,21 @@ export default function SickLeaveForm() {
               />
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="doctor_note"
-                id="doctor_note"
-                checked={formData.doctor_note}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-              />
-              <label htmlFor="doctor_note" className="ml-2 block text-sm text-gray-900">
-                医師の診断書を添付する
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                医師の診断書 <span className="text-red-500">*</span>
               </label>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={handleFileChange}
+                required
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+              <p className="text-sm text-gray-500 mt-1">画像ファイル（JPG、PNG）またはPDFファイルを選択してください</p>
+              {formData.doctor_note_file && (
+                <p className="text-sm text-green-600 mt-1">✓ {formData.doctor_note_file.name} が選択されました</p>
+              )}
             </div>
 
             <div className="flex justify-end gap-4 pt-6 border-t">

@@ -12,10 +12,11 @@ export default function PaidLeaveForm() {
     start_date: '',
     end_date: '',
     days: 1,
-    reason: '',
-    title: ''
+    reason: ''
   })
   const [loading, setLoading] = useState(false)
+
+  const EMPLOYEE_NAMES = ['豊田', '今津', '山尾']
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -92,30 +93,18 @@ export default function PaidLeaveForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   申請者名 <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   name="employee_name"
                   value={formData.employee_name}
                   onChange={handleInputChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="山田太郎"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  申請タイトル <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="夏季有給休暇申請"
-                />
+                >
+                  <option value="">申請者を選択してください</option>
+                  {EMPLOYEE_NAMES.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 

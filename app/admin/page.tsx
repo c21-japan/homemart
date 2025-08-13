@@ -324,6 +324,20 @@ export default function AdminDashboard() {
               </div>
             </div>
           </Link>
+
+          <Link href="/admin/part-time-attendance" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">アルバイト勤怠</p>
+                <p className="text-3xl font-bold text-pink-600">管理</p>
+              </div>
+              <div className="bg-pink-100 p-3 rounded-full">
+                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* クイックアクセス - 画像管理と社内申請を追加 */}
@@ -408,6 +422,20 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="font-bold text-lg">社内申請管理</h3>
                 <p className="text-sm text-gray-600">従業員の申請を管理</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/admin/part-time-attendance" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-pink-100 p-3 rounded-full">
+                <svg className="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">アルバイト勤怠管理</h3>
+                <p className="text-sm text-gray-600">アルバイトの勤怠を管理</p>
               </div>
             </div>
           </Link>

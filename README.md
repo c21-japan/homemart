@@ -74,6 +74,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    - `database-setup.sql` - 基本的なテーブル構造
    - `database-update-reform-projects.sql` - リフォーム施工実績テーブル
    - `database-internal-applications.sql` - 社内申請管理テーブル
+   - `database-part-time-attendance.sql` - アルバイト勤怠管理テーブル
+   - `database-shift-requests.sql` - シフト申請・給与計算テーブル
    - `supabase-storage-policies.sql` - 画像アップロード用のストレージポリシー
 3. 認証設定を有効化
 4. Storageで`images`バケットを作成し、公開設定を有効化
@@ -124,6 +126,42 @@ npm run dev
 - 申請の承認・却下処理
 - フィルタリング機能（種別、ステータス）
 - 申請詳細の表示と編集
+
+## アルバイト勤怠管理機能
+
+#### 管理画面
+- `/admin/part-time-attendance` でアルバイトの勤怠記録を管理
+- カドタニとトヤマの出社・退社時間を同じ行に表示
+- 名前や年月でフィルタリング可能
+- 統計情報（総勤務日数、総勤務時間、平均勤務時間）の表示
+
+#### 勤怠フォーム
+- `/admin/part-time-attendance/form` で管理画面用の勤怠フォーム
+- `/part-time-attendance` でアルバイト専用の勤怠フォーム
+- 従業員名をプルダウンで選択
+- 出社・退社を選択して記録
+- GPS位置情報の自動取得と住所表示
+- 申請フォームを送信した時間で勤怠記録
+- 同じ日に複数回の記録がある場合は自動更新
+
+#### シフト申請・管理
+- `/admin/part-time-attendance/shift-request` でシフト申請フォーム
+- カレンダーから複数日を一括選択
+- シフト申請、勤務可能日、休暇申請の3種類
+- 複数日一括申請で効率的なシフト管理
+
+#### 勤怠レポート・給与計算
+- `/admin/part-time-attendance/reports` で月次・年次レポート
+- 従業員別統計情報の表示
+- 給与計算の自動生成（通常勤務・残業・祝日）
+- CSVエクスポート機能
+
+#### 個人ページ
+- `/part-time-attendance/profile/[id]` でアルバイト個人の勤怠状況
+- 月別勤怠記録の確認
+- シフト申請状況の確認
+- 給与計算結果の表示
+- モバイル対応の美しいUI
 
 ## デプロイ
 

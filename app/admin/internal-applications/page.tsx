@@ -61,8 +61,9 @@ export default function InternalApplications() {
     }
   }
 
-  const handleStatusUpdate = async (id: string, newStatus: string) => {
+  const handleStatusUpdate = async (id: string, newStatus: string, employeeName: string, applicationType: string) => {
     try {
+      // ステータスを更新
       const { error } = await supabase
         .from('internal_applications')
         .update({ status: newStatus })
@@ -70,7 +71,31 @@ export default function InternalApplications() {
 
       if (error) throw error
 
-      alert('ステータスを更新しました')
+      // メール送信
+      try {
+        const response = await fetch('/api/send-application-status-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            applicationId: id,
+            newStatus,
+            employeeName,
+            applicationType
+          }),
+        })
+
+        if (response.ok) {
+          alert('ステータスを更新し、申請者にメールを送信しました')
+        } else {
+          alert('ステータスは更新されましたが、メール送信に失敗しました')
+        }
+      } catch (emailError) {
+        console.error('Email sending error:', emailError)
+        alert('ステータスは更新されましたが、メール送信に失敗しました')
+      }
+
       fetchApplications()
     } catch (error) {
       console.error('Error updating status:', error)
@@ -100,7 +125,7 @@ export default function InternalApplications() {
     switch (type) {
       case 'paid_leave': return '有給申請'
       case 'sick_leave': return '病気休暇'
-      case 'overtime': return '残業申請'
+
       case 'expense': return '経費申請'
       case 'other': return 'その他'
       default: return type
@@ -155,7 +180,7 @@ export default function InternalApplications() {
                 <option value="all">すべて</option>
                 <option value="paid_leave">有給申請</option>
                 <option value="sick_leave">病気休暇</option>
-                <option value="overtime">残業申請</option>
+
                 <option value="expense">経費申請</option>
                 <option value="other">その他</option>
               </select>
@@ -249,13 +274,13 @@ export default function InternalApplications() {
                           {application.status === 'pending' && (
                             <>
                               <button
-                                onClick={() => handleStatusUpdate(application.id, 'approved')}
+                                onClick={() => handleStatusUpdate(application.id, 'approved', application.employee_name, application.application_type)}
                                 className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded text-xs"
                               >
                                 承認
                               </button>
                               <button
-                                onClick={() => handleStatusUpdate(application.id, 'rejected')}
+                                onClick={() => handleStatusUpdate(application.id, 'rejected', application.employee_name, application.application_type)}
                                 className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-xs"
                               >
                                 却下
@@ -312,20 +337,6 @@ export default function InternalApplications() {
                 <div>
                   <h3 className="font-bold text-lg text-red-800">病気休暇</h3>
                   <p className="text-sm text-red-600">病気休暇の申請フォーム</p>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/admin/internal-applications/forms/overtime" className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 hover:bg-yellow-100 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="bg-yellow-100 p-3 rounded-full">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-yellow-800">残業申請</h3>
-                  <p className="text-sm text-yellow-600">残業時間の申請フォーム</p>
                 </div>
               </div>
             </Link>

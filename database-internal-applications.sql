@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS internal_applications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   employee_name VARCHAR(255) NOT NULL,
   application_type VARCHAR(50) NOT NULL,
-  title VARCHAR(500) NOT NULL,
   description TEXT,
   status VARCHAR(20) DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -14,21 +13,13 @@ CREATE TABLE IF NOT EXISTS internal_applications (
   days INTEGER,
   reason TEXT,
   symptoms TEXT,
-  doctor_note BOOLEAN DEFAULT FALSE,
-  
-  -- 残業申請用フィールド
-  date DATE,
-  start_time TIME,
-  end_time TIME,
-  hours DECIMAL(4,2),
-  project_name VARCHAR(255),
-  approval_required BOOLEAN DEFAULT TRUE,
+  doctor_note_file VARCHAR(500), -- 医師の診断書ファイルパス
   
   -- 経費申請用フィールド
   expense_date DATE,
   amount DECIMAL(10,2),
   category VARCHAR(100),
-  receipt_attached BOOLEAN DEFAULT FALSE,
+  receipt_file VARCHAR(500), -- レシート・領収書ファイルパス
   payment_method VARCHAR(50),
   
   -- その他共通フィールド
@@ -44,8 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_internal_applications_employee ON internal_applic
 -- コメントの追加
 COMMENT ON TABLE internal_applications IS '社内申請テーブル';
 COMMENT ON COLUMN internal_applications.employee_name IS '申請者名';
-COMMENT ON COLUMN internal_applications.application_type IS '申請種別（paid_leave, sick_leave, overtime, expense, other）';
-COMMENT ON COLUMN internal_applications.title IS '申請タイトル';
+COMMENT ON COLUMN internal_applications.application_type IS '申請種別（paid_leave, sick_leave, expense, other）';
 COMMENT ON COLUMN internal_applications.description IS '詳細説明';
 COMMENT ON COLUMN internal_applications.status IS 'ステータス（pending, approved, rejected）';
 COMMENT ON COLUMN internal_applications.created_at IS '申請作成日時';
@@ -54,17 +44,11 @@ COMMENT ON COLUMN internal_applications.end_date IS '終了日（休暇申請用
 COMMENT ON COLUMN internal_applications.days IS '日数（休暇申請用）';
 COMMENT ON COLUMN internal_applications.reason IS '申請理由';
 COMMENT ON COLUMN internal_applications.symptoms IS '症状・病名（病気休暇用）';
-COMMENT ON COLUMN internal_applications.doctor_note IS '医師の診断書添付（病気休暇用）';
-COMMENT ON COLUMN internal_applications.date IS '残業日（残業申請用）';
-COMMENT ON COLUMN internal_applications.start_time IS '開始時間（残業申請用）';
-COMMENT ON COLUMN internal_applications.end_time IS '終了時間（残業申請用）';
-COMMENT ON COLUMN internal_applications.hours IS '残業時間（残業申請用）';
-COMMENT ON COLUMN internal_applications.project_name IS 'プロジェクト名（残業申請用）';
-COMMENT ON COLUMN internal_applications.approval_required IS '事前承認必要（残業申請用）';
+COMMENT ON COLUMN internal_applications.doctor_note_file IS '医師の診断書ファイルパス（病気休暇用）';
 COMMENT ON COLUMN internal_applications.expense_date IS '経費発生日（経費申請用）';
 COMMENT ON COLUMN internal_applications.amount IS '金額（経費申請用）';
 COMMENT ON COLUMN internal_applications.category IS '経費カテゴリ（経費申請用）';
-COMMENT ON COLUMN internal_applications.receipt_attached IS 'レシート添付（経費申請用）';
+COMMENT ON COLUMN internal_applications.receipt_file IS 'レシート・領収書ファイルパス（経費申請用）';
 COMMENT ON COLUMN internal_applications.payment_method IS '支払い方法（経費申請用）';
 COMMENT ON COLUMN internal_applications.urgency IS '緊急度（low, normal, high, urgent）';
 
@@ -72,7 +56,6 @@ COMMENT ON COLUMN internal_applications.urgency IS '緊急度（low, normal, hig
 INSERT INTO internal_applications (
   employee_name,
   application_type,
-  title,
   description,
   status,
   start_date,
@@ -82,10 +65,9 @@ INSERT INTO internal_applications (
   created_at
 ) VALUES 
 (
-  '田中太郎',
+  '豊田',
   'paid_leave',
-  '夏季有給休暇申請',
-  '家族旅行のため夏季有給休暇を申請します。',
+  '夏季有給休暇の申請です。',
   'pending',
   '2025-08-15',
   '2025-08-17',
@@ -94,10 +76,9 @@ INSERT INTO internal_applications (
   NOW() - INTERVAL '2 days'
 ),
 (
-  '佐藤花子',
+  '今津',
   'sick_leave',
-  '風邪による病気休暇申請',
-  '発熱と咳の症状があり、医師の指示で自宅療養が必要です。',
+  '風邪による病気休暇の申請です。',
   'approved',
   '2025-01-20',
   '2025-01-22',
@@ -106,22 +87,9 @@ INSERT INTO internal_applications (
   NOW() - INTERVAL '5 days'
 ),
 (
-  '山田次郎',
-  'overtime',
-  'プロジェクト完了のための残業申請',
-  'Webサイトリニューアルプロジェクトの納期が迫っており、品質確保のため残業が必要です。',
-  'pending',
-  NULL,
-  NULL,
-  NULL,
-  'プロジェクトの納期が迫っており、品質を確保するために残業が必要です。',
-  NOW() - INTERVAL '1 day'
-),
-(
-  '鈴木美咲',
+  '山尾',
   'expense',
-  '会議用備品購入費',
-  '来週の顧客プレゼンテーション用にホワイトボードとマーカーを購入しました。',
+  '会議用備品購入費の申請です。',
   'pending',
   NULL,
   NULL,

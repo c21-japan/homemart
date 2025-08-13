@@ -9,42 +9,67 @@ export default function ExpenseForm() {
   const router = useRouter()
   const [formData, setFormData] = useState({
     employee_name: '',
-    title: '',
     expense_date: '',
     amount: '',
     category: '',
     description: '',
-    receipt_attached: false,
+    receipt_file: null as File | null,
     payment_method: 'reimbursement',
     urgency: 'normal'
   })
   const [loading, setLoading] = useState(false)
 
+  const EMPLOYEE_NAMES = ['豊田', '今津', '山尾']
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
       setFormData(prev => ({
         ...prev,
-        [name]: checked
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
+        receipt_file: file
       }))
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!formData.receipt_file) {
+      alert('レシート・領収書を添付してください')
+      return
+    }
+
     setLoading(true)
 
     try {
+      // ファイルをアップロード
+      const fileName = `receipts/${Date.now()}_${formData.receipt_file.name}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('internal-applications')
+        .upload(fileName, formData.receipt_file)
+
+      if (uploadError) throw uploadError
+
+      // 申請データを保存
       const { error } = await supabase
         .from('internal_applications')
         .insert({
-          ...formData,
+          employee_name: formData.employee_name,
+          expense_date: formData.expense_date,
+          amount: formData.amount,
+          category: formData.category,
+          description: formData.description,
+          receipt_file: fileName,
+          payment_method: formData.payment_method,
+          urgency: formData.urgency,
           application_type: 'expense',
           status: 'pending',
           created_at: new Date().toISOString()
@@ -89,30 +114,18 @@ export default function ExpenseForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   申請者名 <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   name="employee_name"
                   value={formData.employee_name}
                   onChange={handleInputChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="山田太郎"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  申請タイトル <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="会議用備品購入費"
-                />
+                >
+                  <option value="">申請者を選択してください</option>
+                  {EMPLOYEE_NAMES.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -226,18 +239,21 @@ export default function ExpenseForm() {
                 </select>
               </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="receipt_attached"
-                  id="receipt_attached"
-                  checked={formData.receipt_attached}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label htmlFor="receipt_attached" className="ml-2 block text-sm text-gray-900">
-                  レシート・領収書を添付する
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  レシート・領収書 <span className="text-red-500">*</span>
                 </label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  required
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <p className="text-sm text-gray-500 mt-1">画像ファイル（JPG、PNG）またはPDFファイルを選択してください</p>
+                {formData.receipt_file && (
+                  <p className="text-sm text-green-600 mt-1">✓ {formData.receipt_file.name} が選択されました</p>
+                )}
               </div>
             </div>
 
