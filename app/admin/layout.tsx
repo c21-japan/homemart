@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import AdminNavigation from '@/components/AdminNavigation'
+// import AdminNavigation from '@/components/AdminNavigation'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 export default function AdminLayout({
@@ -92,15 +92,10 @@ export default function AdminLayout({
         </div>
       </header>
 
-      <div className="flex">
-        {/* サイドバーナビゲーション */}
-        <AdminNavigation userId={user.id} />
-        
-        {/* メインコンテンツ */}
-        <main className="flex-1 min-h-screen">
-          {children}
-        </main>
-      </div>
+      {/* メインコンテンツ */}
+      <main className="min-h-screen">
+        {children}
+      </main>
 
       {/* PWAインストール促進 */}
       <PWAInstallPrompt />

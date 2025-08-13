@@ -2,265 +2,219 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [headerHeight, setHeaderHeight] = useState(0)
-  const pathname = usePathname()
-  
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
+  const [user, setUser] = useState<any>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const isActive = (path: string) => pathname === path
-  const isHomePage = pathname === '/'
-
-  // ヘッダーの高さを計算し、CSS変数として設定
   useEffect(() => {
-    const updateHeaderHeight = () => {
-      const header = document.querySelector('header')
-      if (header) {
-        const height = header.offsetHeight
-        setHeaderHeight(height)
-        document.documentElement.style.setProperty('--header-height', `${height}px`)
-      }
-    }
-
-    updateHeaderHeight()
-    window.addEventListener('resize', updateHeaderHeight)
+    checkUser()
     
-    return () => window.removeEventListener('resize', updateHeaderHeight)
-  }, [isMobileMenuOpen])
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null)
+    })
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      const headerHeight = document.documentElement.style.getPropertyValue('--header-height')
-      const offset = parseInt(headerHeight) || 0
-      const elementPosition = element.offsetTop - offset
-      window.scrollTo({
-        top: elementPosition,
-        behavior: 'smooth'
-      })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    } catch (error) {
+      console.error('ユーザー認証チェックエラー:', error)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      setUser(null)
+    } catch (error) {
+      console.error('ログアウトエラー:', error)
     }
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-[#121212] z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between py-6">
-          <Link href="/" className="flex items-center gap-4 text-decoration-none">
-            <div className="w-12 h-12 bg-[#BEAF87] rounded-lg flex items-center justify-center">
-              <i className="fas fa-home text-[#121212]"></i>
-            </div>
-            <div>
-              <div className="text-xl font-bold text-white mb-0">ホームマート</div>
-              <div className="text-sm text-[#BEAF87] font-medium">CENTURY 21</div>
-            </div>
-          </Link>
-          
-          <nav className="hidden md:flex items-center gap-12">
-            <ul className="flex list-none gap-8">
-              {isHomePage ? (
-                // トップページの場合はセクション間ナビゲーション
-                <>
-                  <li>
-                    <button 
-                      onClick={() => scrollToSection('catalog')}
-                      className="text-white font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full hover:text-[#BEAF87]"
-                    >
-                      物件検索
-                    </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => scrollToSection('comparison')}
-                      className="text-white font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full hover:text-[#BEAF87]"
-                    >
-                      売却査定
-                    </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => scrollToSection('features')}
-                      className="text-white font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full hover:text-[#BEAF87]"
-                    >
-                      リフォーム
-                    </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => scrollToSection('contact')}
-                      className="text-white font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full hover:text-[#BEAF87]"
-                    >
-                      お問い合わせ
-                    </button>
-                  </li>
-                </>
-              ) : (
-                // 他のページの場合は通常のナビゲーション
-                <>
-                  <li>
-                    <Link 
-                      href="/properties" 
-                      className={`font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full ${
-                        isActive('/properties') ? 'text-[#BEAF87] after:w-full' : 'text-white hover:text-[#BEAF87]'
-                      }`}
-                    >
-                      物件検索
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/sell" 
-                      className={`font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full ${
-                        isActive('/sell') ? 'text-[#BEAF87] after:w-full' : 'text-white hover:text-[#BEAF87]'
-                      }`}
-                    >
-                      売却査定
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/reform" 
-                      className={`font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full ${
-                        isActive('/reform') ? 'text-[#BEAF87] after:w-full' : 'text-white hover:text-[#BEAF87]'
-                      }`}
-                    >
-                      リフォーム
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/about" 
-                      className={`font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full ${
-                        isActive('/about') ? 'text-[#BEAF87] after:w-full' : 'text-white hover:text-[#BEAF87]'
-                      }`}
-                    >
-                      会社概要
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/contact" 
-                      className={`font-medium relative pb-1 transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#BEAF87] after:transition-all after:duration-300 hover:after:w-full ${
-                        isActive('/contact') ? 'text-[#BEAF87] after:w-full' : 'text-white hover:text-[#BEAF87]'
-                      }`}
-                    >
-                      お問い合わせ
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-            
-            <div className="flex gap-4">
-              <a href="tel:0120-43-8639" className="inline-flex items-center justify-center px-8 py-3 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-0.5 hover:shadow-lg min-h-12">
-                <i className="fas fa-phone mr-2"></i>
-                無料相談
-              </a>
-            </div>
+    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* ロゴ */}
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold text-gray-900">ホームマート</span>
+            </Link>
+          </div>
+
+          {/* デスクトップナビゲーション */}
+          <nav className="hidden md:flex space-x-8">
+            <Link href="/properties" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              物件検索
+            </Link>
+            <Link href="/buy" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              購入
+            </Link>
+            <Link href="/sell" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              売却
+            </Link>
+            <Link href="/reform" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              リフォーム
+            </Link>
+            <Link href="/contact" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              お問い合わせ
+            </Link>
+            <Link href="/about" className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+              会社概要
+            </Link>
           </nav>
-          
-          <button 
-            className="md:hidden bg-none border-none text-white cursor-pointer p-2"
-            onClick={toggleMobileMenu}
-            aria-label={isMobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
-          >
-            <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
-          </button>
+
+          {/* ユーザーメニュー */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/member"
+                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  マイページ
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  ログアウト
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/member/login"
+                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  会員ログイン
+                </Link>
+                <Link
+                  href="/contact"
+                  className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
+                >
+                  無料相談
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* モバイルメニューボタン */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 hover:text-orange-600 p-2"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-24 left-0 right-0 bg-[#121212] flex flex-col p-6 shadow-xl">
-            <ul className="flex flex-col gap-6 mb-6">
-              {isHomePage ? (
-                // トップページの場合はセクション間ナビゲーション
-                <>
-                  <li>
-                    <button 
-                      onClick={() => { scrollToSection('catalog'); toggleMobileMenu(); }}
-                      className="text-white font-medium"
+        {/* モバイルメニュー */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t border-gray-200">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                href="/properties"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                物件検索
+              </Link>
+              <Link
+                href="/buy"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                購入
+              </Link>
+              <Link
+                href="/sell"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                売却
+              </Link>
+              <Link
+                href="/reform"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                リフォーム
+              </Link>
+              <Link
+                href="/contact"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                お問い合わせ
+              </Link>
+              <Link
+                href="/about"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                会社概要
+              </Link>
+              
+              {/* モバイル用ユーザーメニュー */}
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                {user ? (
+                  <div className="space-y-1">
+                    <Link
+                      href="/member"
+                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      物件検索
+                      マイページ
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout()
+                        setIsMenuOpen(false)
+                      }}
+                      className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      ログアウト
                     </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => { scrollToSection('comparison'); toggleMobileMenu(); }}
-                      className="text-white font-medium"
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <Link
+                      href="/member/login"
+                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      売却査定
-                    </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => { scrollToSection('features'); toggleMobileMenu(); }}
-                      className="text-white font-medium"
-                    >
-                      リフォーム
-                    </button>
-                  </li>
-                  <li>
-                    <button 
-                      onClick={() => { scrollToSection('contact'); toggleMobileMenu(); }}
-                      className="text-white font-medium"
-                    >
-                      お問い合わせ
-                    </button>
-                  </li>
-                </>
-              ) : (
-                // 他のページの場合は通常のナビゲーション
-                <>
-                  <li>
-                    <Link 
-                      href="/properties" 
-                      className={`font-medium ${isActive('/properties') ? 'text-[#BEAF87]' : 'text-white'}`} 
-                      onClick={toggleMobileMenu}
-                    >
-                      物件検索
+                      会員ログイン
                     </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/sell" 
-                      className={`font-medium ${isActive('/sell') ? 'text-[#BEAF87]' : 'text-white'}`} 
-                      onClick={toggleMobileMenu}
+                    <Link
+                      href="/contact"
+                      className="block px-3 py-2 text-base font-medium bg-orange-600 text-white hover:bg-orange-700 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      売却査定
+                      無料相談
                     </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/reform" 
-                      className={`font-medium ${isActive('/reform') ? 'text-[#BEAF87]' : 'text-white'}`} 
-                      onClick={toggleMobileMenu}
-                    >
-                      リフォーム
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/about" 
-                      className={`font-medium ${isActive('/about') ? 'text-[#BEAF87]' : 'text-white'}`} 
-                      onClick={toggleMobileMenu}
-                    >
-                      会社概要
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/contact" 
-                      className={`font-medium ${isActive('/contact') ? 'text-[#BEAF87]' : 'text-white'}`} 
-                      onClick={toggleMobileMenu}
-                    >
-                      お問い合わせ
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

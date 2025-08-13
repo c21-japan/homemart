@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { deleteCookie } from 'cookies-next'
 import { getLeadStats } from '@/lib/supabase/leads'
+import GoogleWorkspace from '@/components/GoogleWorkspace'
 
 interface Property {
   id: string
@@ -648,6 +649,9 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
+
+          {/* Google Workspace */}
+          <GoogleWorkspace />
         </div>
       </div>
     </div>

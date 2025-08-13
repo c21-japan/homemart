@@ -1,4 +1,4 @@
-import { supabase } from './server'
+import { supabase } from './supabase'
 import { useState, useEffect, useCallback } from 'react'
 
 export interface StaffMember {
