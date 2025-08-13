@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
 
 interface PartTimeEmployee {
   id: string
@@ -446,21 +445,21 @@ export default function PartTimeAttendancePublicPage() {
           </ul>
         </div>
 
-        {/* 個人ページへのリンク */}
+        {/* 勤怠状況の確認（プロフィール機能は一時的に無効化） */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mt-8">
           <h3 className="text-xl font-bold mb-4 text-center">勤怠状況の確認</h3>
           <p className="text-center text-gray-600 mb-4">
-            勤怠記録や給与計算結果を確認したい場合は、個人ページにアクセスしてください
+            プロフィール機能は現在開発中です。詳細な勤怠状況は管理者にお問い合わせください。
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {employees.map((employee) => (
-              <Link
+              <button
                 key={employee.id}
-                href={`/part-time-attendance/profile/${employee.id}`}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all text-center font-bold shadow-lg"
+                onClick={() => alert(`${employee.name}の勤怠状況\n\nこの機能は現在開発中です。\n詳細は管理者にお問い合わせください。`)}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all text-center font-bold shadow-lg cursor-pointer"
               >
-                {employee.name}の勤怠ページ
-              </Link>
+                {employee.name}の詳細
+              </button>
             ))}
           </div>
         </div>

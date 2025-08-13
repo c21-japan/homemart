@@ -55,12 +55,13 @@ async function sendStatusEmail(application: Record<string, unknown>, newStatus: 
     const statusText = newStatus === 'approved' ? '承認' : '却下'
     const statusColor = newStatus === 'approved' ? '#10B981' : '#EF4444'
     
-    const applicationTypeText = {
+    const applicationTypeMap: Record<string, string> = {
       'paid_leave': '有給申請',
       'sick_leave': '病気休暇申請',
       'expense': '経費申請',
       'other': 'その他申請'
-    }[application.application_type] || '申請'
+    }
+    const applicationTypeText = applicationTypeMap[String(application.application_type)] || '申請'
 
     const emailContent = `
       <!DOCTYPE html>
