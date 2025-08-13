@@ -98,14 +98,14 @@ export default function EditProperty() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 'var(--header-height, 0px)' }}>
         <p>読み込み中...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ paddingTop: 'var(--header-height, 0px)' }}>
       {/* ヘッダー */}
       <div className="bg-white shadow-sm mb-8">
         <div className="max-w-4xl mx-auto px-4 py-4">

@@ -368,7 +368,7 @@ export default function MediaManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-6" style={{ paddingTop: 'var(--header-height, 0px)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -382,7 +382,7 @@ export default function MediaManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6" style={{ paddingTop: 'var(--header-height, 0px)' }}>
       <div className="max-w-7xl mx-auto">
         {/* ヘッダー */}
         <div className="mb-8">

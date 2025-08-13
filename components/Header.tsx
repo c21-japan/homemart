@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [headerHeight, setHeaderHeight] = useState(0)
   const pathname = usePathname()
   
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -13,10 +14,33 @@ export default function Header() {
   const isActive = (path: string) => pathname === path
   const isHomePage = pathname === '/'
 
+  // ヘッダーの高さを計算し、CSS変数として設定
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const header = document.querySelector('header')
+      if (header) {
+        const height = header.offsetHeight
+        setHeaderHeight(height)
+        document.documentElement.style.setProperty('--header-height', `${height}px`)
+      }
+    }
+
+    updateHeaderHeight()
+    window.addEventListener('resize', updateHeaderHeight)
+    
+    return () => window.removeEventListener('resize', updateHeaderHeight)
+  }, [isMobileMenuOpen])
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      const headerHeight = document.documentElement.style.getPropertyValue('--header-height')
+      const offset = parseInt(headerHeight) || 0
+      const elementPosition = element.offsetTop - offset
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      })
     }
   }
 
