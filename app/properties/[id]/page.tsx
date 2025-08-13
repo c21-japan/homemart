@@ -565,8 +565,8 @@ export default function PropertyDetail() {
           </div>
         </div>
 
-        {/* 最近見た物件と関連物件の統合表示 */}
-        {(recentlyViewed.length > 0 || relatedProperties.length > 0) && (
+        {/* 最近見た物件の表示（関連物件は一時的に無効化） */}
+        {recentlyViewed.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-6 text-[#36454F]">おすすめ物件</h2>
             
@@ -616,38 +616,7 @@ export default function PropertyDetail() {
                   </Link>
                 ))}
                 
-                {/* 最近見た物件が6物件未満の場合、関連物件で残りのスロットを埋める */}
-                {Array.from({ length: Math.max(0, 10 - recentlyViewed.length) }).map((_, index) => {
-                  const relatedProperty = relatedProperties[index] as any;
-                  if (!relatedProperty) return null;
-                  
-                  return (
-                    <Link key={`related-${relatedProperty.id}`} href={`/properties/${relatedProperty.id}`} className="group">
-                      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden min-w-[200px] md:min-w-0">
-                        <div className="h-32 md:h-40 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
-                          {relatedProperty.image_url || (relatedProperty.images && relatedProperty.images[0]) ? (
-                            <img
-                              src={relatedProperty.image_url || relatedProperty.images[0]}
-                              alt={relatedProperty.name}
-                              className="w-full h-full object-contain object-center"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <span className="text-4xl text-gray-400">🏠</span>
-                          )}
-                        </div>
-                        <div className="p-3">
-                          <h3 className="font-bold text-sm mb-1 line-clamp-2">{relatedProperty.name}</h3>
-                          <p className="text-lg font-bold text-red-600 mb-1">
-                            {relatedProperty.price.toLocaleString()}万円
-                          </p>
-                          <p className="text-xs text-gray-600 line-clamp-1">{relatedProperty.address}</p>
-                          <p className="text-xs text-green-500 font-medium">関連物件</p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+
               </div>
             )}
           </div>
