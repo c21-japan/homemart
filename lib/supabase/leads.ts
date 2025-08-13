@@ -1,79 +1,44 @@
 import { supabase } from '@/lib/supabase'
-import { LeadType, LeadStatus } from '@/types/leads'
+import { 
+  CustomerLead, 
+  LeadType, 
+  LeadStatus, 
+  LeadFilter, 
+  LeadStats,
+  createLeadSchema,
+  updateLeadSchema
+} from '@/types/leads'
 
 // 型を再エクスポート
-export type { LeadType, LeadStatus }
-
-export interface Lead {
-  id: string
-  name: string
-  email?: string
-  phone?: string
-  lead_type: LeadType
-  status: LeadStatus
-  source?: string
-  budget_min?: number
-  budget_max?: number
-  preferred_area?: string
-  property_type?: string
-  urgency: 'low' | 'normal' | 'high' | 'urgent'
-  notes?: string
-  assigned_staff?: string
-  next_action?: string
-  next_action_date?: string
-  created_at: string
-  updated_at: string
-}
-
-export interface LeadHistory {
-  id: string
-  lead_id: string
-  action_type: 'call' | 'email' | 'meeting' | 'visit' | 'proposal' | 'other'
-  action_date: string
-  summary: string
-  details?: string
-  next_action?: string
-  next_action_date?: string
-  created_by?: string
-  created_at: string
-}
-
-export interface LeadAttachment {
-  id: string
-  lead_id: string
-  file_name: string
-  file_path: string
-  file_type?: string
-  file_size?: number
-  description?: string
-  uploaded_at: string
-  uploaded_by?: string
-}
+export type { LeadType, LeadStatus, CustomerLead }
 
 // リード一覧を取得
-export async function getLeads(filters?: {
-  status?: LeadStatus
-  lead_type?: LeadType
-  assigned_staff?: string
-  urgency?: string
-}) {
+export async function getLeads(filters?: LeadFilter): Promise<CustomerLead[]> {
   try {
     let query = supabase
-      .from('leads')
+      .from('customer_leads')
       .select('*')
       .order('created_at', { ascending: false })
 
+    if (filters?.type) {
+      query = query.eq('type', filters.type)
+    }
     if (filters?.status) {
       query = query.eq('status', filters.status)
     }
-    if (filters?.lead_type) {
-      query = query.eq('lead_type', filters.lead_type)
+    if (filters?.assigned_to) {
+      query = query.eq('assigned_to', filters.assigned_to)
     }
-    if (filters?.assigned_staff) {
-      query = query.eq('assigned_staff', filters.assigned_staff)
+    if (filters?.created_by) {
+      query = query.eq('created_by', filters.created_by)
     }
-    if (filters?.urgency) {
-      query = query.eq('urgency', filters.urgency)
+    if (filters?.month) {
+      const [year, month] = filters.month.split('-')
+      query = query.gte('created_at', `${year}-${month}-01`)
+      query = query.lt('created_at', `${year}-${parseInt(month) + 1}-01`)
+    }
+    if (filters?.search) {
+      query = query.or(`last_name.ilike.%${filters.search}%,first_name.ilike.%${filters.search}%,extra->>building_name.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
     }
 
     const { data, error } = await query
@@ -87,10 +52,10 @@ export async function getLeads(filters?: {
 }
 
 // リード詳細を取得
-export async function getLead(id: string) {
+export async function getLead(id: string): Promise<CustomerLead | null> {
   try {
     const { data, error } = await supabase
-      .from('leads')
+      .from('customer_leads')
       .select('*')
       .eq('id', id)
       .single()
@@ -138,11 +103,14 @@ export async function getLeadAttachments(leadId: string) {
 }
 
 // リードを作成
-export async function createLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>) {
+export async function createLead(leadData: any): Promise<CustomerLead> {
   try {
+    // バリデーション
+    const validatedData = createLeadSchema.parse(leadData)
+
     const { data, error } = await supabase
-      .from('leads')
-      .insert([leadData])
+      .from('customer_leads')
+      .insert([validatedData])
       .select()
       .single()
 
@@ -155,11 +123,14 @@ export async function createLead(leadData: Omit<Lead, 'id' | 'created_at' | 'upd
 }
 
 // リードを更新
-export async function updateLead(id: string, updates: Partial<Lead>) {
+export async function updateLead(id: string, updates: any): Promise<CustomerLead> {
   try {
+    // バリデーション
+    const validatedData = updateLeadSchema.parse({ id, ...updates })
+
     const { data, error } = await supabase
-      .from('leads')
-      .update(updates)
+      .from('customer_leads')
+      .update(validatedData)
       .eq('id', id)
       .select()
       .single()
@@ -173,10 +144,10 @@ export async function updateLead(id: string, updates: Partial<Lead>) {
 }
 
 // リードを削除
-export async function deleteLead(id: string) {
+export async function deleteLead(id: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('leads')
+      .from('customer_leads')
       .delete()
       .eq('id', id)
 
@@ -206,11 +177,22 @@ export async function addLeadHistory(historyData: Omit<LeadHistory, 'id' | 'crea
 }
 
 // リード添付ファイルを追加
-export async function addLeadAttachment(attachmentData: Omit<LeadAttachment, 'id' | 'uploaded_at'>) {
+export async function addLeadAttachment(leadId: string, filePath: string): Promise<CustomerLead> {
   try {
+    // 現在の添付ファイルを取得
+    const { data: currentLead } = await supabase
+      .from('customer_leads')
+      .select('attachments')
+      .eq('id', leadId)
+      .single()
+
+    const currentAttachments = currentLead?.attachments || []
+    const newAttachments = [...currentAttachments, filePath]
+
     const { data, error } = await supabase
-      .from('lead_attachments')
-      .insert([attachmentData])
+      .from('customer_leads')
+      .update({ attachments: newAttachments })
+      .eq('id', leadId)
       .select()
       .single()
 
@@ -223,38 +205,109 @@ export async function addLeadAttachment(attachmentData: Omit<LeadAttachment, 'id
 }
 
 // リード統計を取得
-export async function getLeadStats() {
+export async function getLeadStats(): Promise<LeadStats> {
   try {
     const { data: leads, error } = await supabase
-      .from('leads')
-      .select('status, lead_type, urgency')
+      .from('customer_leads')
+      .select('type, status, created_at')
 
     if (error) throw error
 
-    const stats = {
+    const stats: LeadStats = {
       total: leads?.length || 0,
       byStatus: {
-        new: leads?.filter(l => l.status === 'new').length || 0,
-        in_progress: leads?.filter(l => l.status === 'in_progress').length || 0,
-        won: leads?.filter(l => l.status === 'won').length || 0,
-        lost: leads?.filter(l => l.status === 'lost').length || 0
+        new: 0,
+        in_progress: 0,
+        won: 0,
+        lost: 0
       },
       byType: {
-        purchase: leads?.filter(l => l.lead_type === 'purchase').length || 0,
-        sell: leads?.filter(l => l.lead_type === 'sell').length || 0,
-        reform: leads?.filter(l => l.lead_type === 'reform').length || 0
+        purchase: 0,
+        sell: 0,
+        reform: 0
       },
-      byUrgency: {
-        urgent: leads?.filter(l => l.urgency === 'urgent').length || 0,
-        high: leads?.filter(l => l.urgency === 'high').length || 0,
-        normal: leads?.filter(l => l.urgency === 'normal').length || 0,
-        low: leads?.filter(l => l.urgency === 'low').length || 0
-      }
+      byMonth: {}
     }
+
+    leads?.forEach(lead => {
+      // ステータス別カウント
+      stats.byStatus[lead.status as LeadStatus]++
+      
+      // 種別別カウント
+      stats.byType[lead.type as LeadType]++
+      
+      // 月別カウント
+      const month = lead.created_at.substring(0, 7) // YYYY-MM
+      stats.byMonth[month] = (stats.byMonth[month] || 0) + 1
+    })
 
     return stats
   } catch (error) {
     console.error('Error fetching lead stats:', error)
+    throw error
+  }
+}
+
+// 担当者をアサイン
+export async function assignLead(leadId: string, userId: string): Promise<CustomerLead> {
+  try {
+    const { data, error } = await supabase
+      .from('customer_leads')
+      .update({ assigned_to: userId })
+      .eq('id', leadId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error assigning lead:', error)
+    throw error
+  }
+}
+
+// ステータスを更新
+export async function updateLeadStatus(leadId: string, status: LeadStatus): Promise<CustomerLead> {
+  try {
+    const { data, error } = await supabase
+      .from('customer_leads')
+      .update({ status })
+      .eq('id', leadId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error updating lead status:', error)
+    throw error
+  }
+}
+
+// 添付ファイルを削除
+export async function removeLeadAttachment(leadId: string, filePath: string): Promise<CustomerLead> {
+  try {
+    // 現在の添付ファイルを取得
+    const { data: currentLead } = await supabase
+      .from('customer_leads')
+      .select('attachments')
+      .eq('id', leadId)
+      .single()
+
+    const currentAttachments = currentLead?.attachments || []
+    const newAttachments = currentAttachments.filter(path => path !== filePath)
+
+    const { data, error } = await supabase
+      .from('customer_leads')
+      .update({ attachments: newAttachments })
+      .eq('id', leadId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error removing lead attachment:', error)
     throw error
   }
 }

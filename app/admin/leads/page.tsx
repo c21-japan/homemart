@@ -3,35 +3,38 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { getLeads, getLeadStats, Lead, LeadType, LeadStatus } from '@/lib/supabase/leads'
+import { getLeads, getLeadStats, CustomerLead, LeadType, LeadStatus } from '@/lib/supabase/leads'
 
 function LeadsContent() {
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get('status')
   const typeFilter = searchParams.get('type')
-  const urgencyFilter = searchParams.get('urgency')
+  const monthFilter = searchParams.get('month')
+  const searchFilter = searchParams.get('search')
   
-  const [leads, setLeads] = useState<Lead[]>([])
+  const [leads, setLeads] = useState<CustomerLead[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     total: 0,
     byStatus: { new: 0, in_progress: 0, won: 0, lost: 0 },
     byType: { purchase: 0, sell: 0, reform: 0 },
-    byUrgency: { urgent: 0, high: 0, normal: 0, low: 0 }
+    byMonth: {}
   })
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [selectedLead, setSelectedLead] = useState<CustomerLead | null>(null)
+  const [searchTerm, setSearchTerm] = useState(searchFilter || '')
 
   useEffect(() => {
     fetchLeads()
     fetchStats()
-  }, [statusFilter, typeFilter, urgencyFilter])
+  }, [statusFilter, typeFilter, monthFilter, searchFilter])
 
   const fetchLeads = async () => {
     try {
       const filters: any = {}
       if (statusFilter) filters.status = statusFilter
-      if (typeFilter) filters.lead_type = typeFilter
-      if (urgencyFilter) filters.urgency = urgencyFilter
+      if (typeFilter) filters.type = typeFilter
+      if (monthFilter) filters.month = monthFilter
+      if (searchFilter) filters.search = searchFilter
 
       const data = await getLeads(filters)
       setLeads(data)
@@ -51,7 +54,21 @@ function LeadsContent() {
     }
   }
 
-  const handleViewLead = (lead: Lead) => {
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+    if (searchTerm) params.set('search', searchTerm)
+    if (statusFilter) params.set('status', statusFilter)
+    if (typeFilter) params.set('type', typeFilter)
+    if (monthFilter) params.set('month', monthFilter)
+    
+    const queryString = params.toString()
+    const url = queryString ? `/admin/leads?${queryString}` : '/admin/leads'
+    window.history.pushState({}, '', url)
+    
+    fetchLeads()
+  }
+
+  const handleViewLead = (lead: CustomerLead) => {
     setSelectedLead(lead)
   }
 
@@ -74,16 +91,6 @@ function LeadsContent() {
     }
   }
 
-  const getUrgencyBadgeColor = (urgency: string) => {
-    switch (urgency) {
-      case 'urgent': return 'bg-red-100 text-red-800'
-      case 'high': return 'bg-orange-100 text-orange-800'
-      case 'normal': return 'bg-blue-100 text-blue-800'
-      case 'low': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
   }
@@ -91,6 +98,20 @@ function LeadsContent() {
   const formatCurrency = (amount?: number) => {
     if (!amount) return '-'
     return new Intl.NumberFormat('ja-JP').format(amount) + '円'
+  }
+
+  const getExtraSummary = (lead: CustomerLead) => {
+    const extra = lead.extra
+    switch (extra.type) {
+      case 'purchase':
+        return extra.budget ? `予算: ${formatCurrency(extra.budget)}` : '予算未定'
+      case 'sell':
+        return extra.expected_price ? `希望価格: ${formatCurrency(extra.expected_price)}` : '価格要相談'
+      case 'reform':
+        return extra.rough_budget ? `概算予算: ${formatCurrency(extra.rough_budget)}` : '予算要相談'
+      default:
+        return ''
+    }
   }
 
   if (loading) {
@@ -116,7 +137,7 @@ function LeadsContent() {
               </span>
             </div>
             <Link
-              href="/admin/leads/new"
+              href="/leads/new"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               新規顧客登録
@@ -146,14 +167,33 @@ function LeadsContent() {
           </div>
         </div>
 
-        {/* フィルター */}
+        {/* 検索・フィルター */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">フィルター</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">検索・フィルター</h3>
+          
+          {/* 検索バー */}
+          <div className="flex gap-3 mb-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="氏名、建物名、電話番号で検索"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleSearch}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              検索
+            </button>
+          </div>
+
+          {/* フィルター */}
           <div className="flex flex-wrap gap-4">
             <Link
               href="/admin/leads"
               className={`px-4 py-2 rounded ${
-                !statusFilter && !typeFilter && !urgencyFilter
+                !statusFilter && !typeFilter && !monthFilter
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -201,6 +241,40 @@ function LeadsContent() {
               失注
             </Link>
           </div>
+
+          {/* 種別フィルター */}
+          <div className="flex flex-wrap gap-4 mt-4">
+            <Link
+              href="/admin/leads?type=purchase"
+              className={`px-4 py-2 rounded ${
+                typeFilter === 'purchase'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              購入 ({stats.byType.purchase})
+            </Link>
+            <Link
+              href="/admin/leads?type=sell"
+              className={`px-4 py-2 rounded ${
+                typeFilter === 'sell'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              売却 ({stats.byType.sell})
+            </Link>
+            <Link
+              href="/admin/leads?type=reform"
+              className={`px-4 py-2 rounded ${
+                typeFilter === 'reform'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              リフォーム ({stats.byType.reform})
+            </Link>
+          </div>
         </div>
 
         {/* 顧客一覧 */}
@@ -219,13 +293,10 @@ function LeadsContent() {
                     ステータス
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    緊急度
+                    詳細
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    予算
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    担当者
+                    添付
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     登録日
@@ -240,14 +311,16 @@ function LeadsContent() {
                   <tr key={lead.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{lead.name}</div>
-                        <div className="text-sm text-gray-500">{lead.email}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {lead.last_name} {lead.first_name}
+                        </div>
                         <div className="text-sm text-gray-500">{lead.phone}</div>
+                        <div className="text-sm text-gray-500">{lead.email}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadgeColor(lead.lead_type)}`}>
-                        {lead.lead_type === 'purchase' ? '購入' : lead.lead_type === 'sell' ? '売却' : 'リフォーム'}
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadgeColor(lead.type)}`}>
+                        {lead.type === 'purchase' ? '購入' : lead.type === 'sell' ? '売却' : 'リフォーム'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -255,22 +328,11 @@ function LeadsContent() {
                         {lead.status === 'new' ? '新規' : lead.status === 'in_progress' ? '進行中' : lead.status === 'won' ? '成約' : '失注'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getUrgencyBadgeColor(lead.urgency)}`}>
-                        {lead.urgency === 'urgent' ? '緊急' : lead.urgency === 'high' ? '高' : lead.urgency === 'normal' ? '普通' : '低'}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {getExtraSummary(lead)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.budget_min && lead.budget_max
-                        ? `${formatCurrency(lead.budget_min)} - ${formatCurrency(lead.budget_max)}`
-                        : lead.budget_min
-                        ? `${formatCurrency(lead.budget_min)}以上`
-                        : lead.budget_max
-                        ? `${formatCurrency(lead.budget_max)}以下`
-                        : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.assigned_staff || '-'}
+                      {lead.attachments?.length || 0}件
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(lead.created_at)}
@@ -317,7 +379,9 @@ function LeadsContent() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">顧客名</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedLead.name}</p>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {selectedLead.last_name} {selectedLead.first_name}
+                  </p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -334,8 +398,8 @@ function LeadsContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">種別</label>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadgeColor(selectedLead.lead_type)}`}>
-                      {selectedLead.lead_type === 'purchase' ? '購入' : selectedLead.lead_type === 'sell' ? '売却' : 'リフォーム'}
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadgeColor(selectedLead.type)}`}>
+                      {selectedLead.type === 'purchase' ? '購入' : selectedLead.type === 'sell' ? '売却' : 'リフォーム'}
                     </span>
                   </div>
                   <div>
@@ -347,44 +411,26 @@ function LeadsContent() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">予算</label>
-                  <p className="mt-1 text-sm text-gray-900">
-                    {selectedLead.budget_min && selectedLead.budget_max
-                      ? `${formatCurrency(selectedLead.budget_min)} - ${formatCurrency(selectedLead.budget_max)}`
-                      : selectedLead.budget_min
-                      ? `${formatCurrency(selectedLead.budget_min)}以上`
-                      : selectedLead.budget_max
-                      ? `${formatCurrency(selectedLead.budget_max)}以下`
-                      : '-'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">希望エリア</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedLead.preferred_area || '-'}</p>
+                  <label className="block text-sm font-medium text-gray-700">詳細情報</label>
+                  <p className="mt-1 text-sm text-gray-900">{getExtraSummary(selectedLead)}</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">備考</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedLead.notes || '-'}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">担当者</label>
-                    <p className="mt-1 text-sm text-gray-900">{selectedLead.assigned_staff || '-'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">次のアクション</label>
-                    <p className="mt-1 text-sm text-gray-900">{selectedLead.next_action || '-'}</p>
-                  </div>
+                  <p className="mt-1 text-sm text-gray-900">{selectedLead.note || '-'}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">次のアクション予定日</label>
-                  <p className="mt-1 text-sm text-gray-900">
-                    {selectedLead.next_action_date ? formatDate(selectedLead.next_action_date) : '-'}
-                  </p>
+                  <label className="block text-sm font-medium text-gray-700">添付ファイル</label>
+                  <div className="mt-1">
+                    {selectedLead.attachments?.length ? (
+                      <div className="text-sm text-gray-900">
+                        {selectedLead.attachments.length}件のファイルが添付されています
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">添付ファイルなし</p>
+                    )}
+                  </div>
                 </div>
               </div>
 

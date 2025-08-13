@@ -1,7 +1,7 @@
 {
-  "name": "ホームマート - 不動産・リフォームサービス",
+  "name": "センチュリー21 ホームマート",
   "short_name": "ホームマート",
-  "description": "センチュリー21加盟店の不動産会社ホームマートの公式アプリ",
+  "description": "不動産・リフォームの顧客情報管理システム",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,30 +9,29 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "ja",
-  "categories": ["business", "finance", "lifestyle"],
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
       "src": "/icons/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     }
   ],
   "shortcuts": [
     {
-      "name": "顧客情報登録",
+      "name": "新規顧客登録",
       "short_name": "新規登録",
       "description": "新しい顧客情報を登録",
       "url": "/leads/new",
@@ -44,9 +43,9 @@
       ]
     },
     {
-      "name": "管理画面",
-      "short_name": "管理",
-      "description": "顧客情報の管理",
+      "name": "顧客一覧",
+      "short_name": "顧客一覧",
+      "description": "登録済み顧客の一覧を表示",
       "url": "/admin/leads",
       "icons": [
         {
@@ -54,20 +53,6 @@
           "sizes": "192x192"
         }
       ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshots/mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ]
 }

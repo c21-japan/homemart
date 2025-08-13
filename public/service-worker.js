@@ -1,9 +1,9 @@
 // ホームマート PWA サービスワーカー
-const CACHE_NAME = 'homemart-v1';
-const STATIC_CACHE = 'homemart-static-v1';
-const DYNAMIC_CACHE = 'homemart-dynamic-v1';
+const CACHE_NAME = 'homemart-v1'
+const STATIC_CACHE_NAME = 'homemart-static-v1'
+const DYNAMIC_CACHE_NAME = 'homemart-dynamic-v1'
 
-// キャッシュする静的アセット
+// キャッシュする静的リソース
 const STATIC_ASSETS = [
   '/',
   '/leads/new',
@@ -12,254 +12,240 @@ const STATIC_ASSETS = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png'
-];
+]
 
 // インストール時の処理
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing...')
   
   event.waitUntil(
-    caches.open(STATIC_CACHE)
+    caches.open(STATIC_CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        console.log('Service Worker: Caching static assets')
+        return cache.addAll(STATIC_ASSETS)
       })
       .then(() => {
-        console.log('Service Worker: Static assets cached');
-        return self.skipWaiting();
+        console.log('Service Worker: Static assets cached')
+        return self.skipWaiting()
       })
-      .catch((error) => {
-        console.error('Service Worker: Failed to cache static assets', error);
-      })
-  );
-});
+  )
+})
 
 // アクティベート時の処理
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker: Activating...')
   
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log('Service Worker: Deleting old cache', cacheName);
-              return caches.delete(cacheName);
+            if (cacheName !== STATIC_CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
+              console.log('Service Worker: Deleting old cache:', cacheName)
+              return caches.delete(cacheName)
             }
           })
-        );
+        )
       })
       .then(() => {
-        console.log('Service Worker: Activated');
-        return self.clients.claim();
+        console.log('Service Worker: Old caches cleaned up')
+        return self.clients.claim()
       })
-  );
-});
+  )
+})
 
-// フェッチ時の処理（Stale-While-Revalidate戦略）
+// フェッチ時の処理（Stale-While-Revalidate）
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+  const { request } = event
+  const url = new URL(request.url)
 
   // 同じオリジンのリクエストのみ処理
   if (url.origin !== location.origin) {
-    return;
+    return
   }
 
-  // 画像やAPIリクエストは動的キャッシュ
-  if (request.destination === 'image' || url.pathname.startsWith('/api/')) {
+  // 静的アセットのキャッシュ戦略
+  if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
-      caches.open(DYNAMIC_CACHE)
+      caches.open(STATIC_CACHE_NAME)
         .then((cache) => {
           return cache.match(request)
-            .then((response) => {
+            .then((cachedResponse) => {
               // キャッシュから返す
-              if (response) {
-                // バックグラウンドでキャッシュを更新
-                fetch(request)
-                  .then((fetchResponse) => {
-                    if (fetchResponse.ok) {
-                      cache.put(request, fetchResponse.clone());
-                    }
-                  })
-                  .catch(() => {
-                    // ネットワークエラーは無視
-                  });
-                return response;
-              }
-              
-              // キャッシュにない場合はネットワークから取得
-              return fetch(request)
-                .then((fetchResponse) => {
-                  if (fetchResponse.ok) {
-                    cache.put(request, fetchResponse.clone());
+              const fetchPromise = fetch(request)
+                .then((response) => {
+                  // キャッシュを更新
+                  if (response.ok) {
+                    cache.put(request, response.clone())
                   }
-                  return fetchResponse;
-                });
-            });
+                  return response
+                })
+                .catch(() => {
+                  // ネットワークエラーの場合はキャッシュから返す
+                  return cachedResponse
+                })
+
+              return cachedResponse || fetchPromise
+            })
         })
-    );
-    return;
+    )
+    return
   }
 
-  // ページリクエストは静的キャッシュを優先
-  if (request.destination === 'document') {
+  // APIリクエストの場合はネットワークファースト
+  if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      caches.open(STATIC_CACHE)
-        .then((cache) => {
-          return cache.match(request)
-            .then((response) => {
-              if (response) {
-                // キャッシュから返す
-                return response;
-              }
-              
-              // キャッシュにない場合はネットワークから取得
-              return fetch(request)
-                .then((fetchResponse) => {
-                  if (fetchResponse.ok) {
-                    cache.put(request, fetchResponse.clone());
-                  }
-                  return fetchResponse;
-                });
-            });
+      fetch(request)
+        .catch(() => {
+          // ネットワークエラーの場合はオフライン用のレスポンス
+          return new Response(
+            JSON.stringify({ error: 'オフラインです。後で再試行してください。' }),
+            {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: { 'Content-Type': 'application/json' }
+            }
+          )
         })
-    );
-    return;
+    )
+    return
   }
 
   // その他のリクエストはネットワークファースト
   event.respondWith(
     fetch(request)
-      .catch(() => {
-        // ネットワークエラー時はキャッシュから取得を試行
-        return caches.match(request);
+      .then((response) => {
+        // 成功したレスポンスをキャッシュに保存
+        if (response.ok && response.status === 200) {
+          const responseClone = response.clone()
+          caches.open(DYNAMIC_CACHE_NAME)
+            .then((cache) => {
+              cache.put(request, responseClone)
+            })
+        }
+        return response
       })
-  );
-});
+      .catch(() => {
+        // ネットワークエラーの場合はキャッシュから返す
+        return caches.match(request)
+          .then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse
+            }
+            
+            // キャッシュにもない場合はオフライン用のレスポンス
+            if (request.destination === 'document') {
+              return caches.match('/')
+            }
+            
+            return new Response('オフラインです', { status: 503 })
+          })
+      })
+  )
+})
 
-// バックグラウンド同期（オフライン時のデータ同期）
+// バックグラウンド同期（対応している場合）
 self.addEventListener('sync', (event) => {
-  console.log('Service Worker: Background sync triggered', event.tag);
+  console.log('Service Worker: Background sync event:', event.tag)
   
   if (event.tag === 'lead-sync') {
-    event.waitUntil(
-      syncOfflineLeads()
-    );
+    event.waitUntil(syncOfflineLeads())
   }
-});
+})
 
-// オフラインリードの同期処理
+// オフラインリードの同期
 async function syncOfflineLeads() {
   try {
-    // IndexedDBからオフラインキューを取得
-    const offlineData = await getOfflineLeads();
+    // IndexedDBからオフラインリードを取得
+    const offlineLeads = await getOfflineLeads()
     
-    if (offlineData.length === 0) {
-      console.log('Service Worker: No offline leads to sync');
-      return;
-    }
-
-    console.log(`Service Worker: Syncing ${offlineData.length} offline leads`);
-
-    for (const lead of offlineData) {
+    for (const lead of offlineLeads) {
       try {
-        // APIに送信
+        // サーバーに送信
         const response = await fetch('/api/leads', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(lead.data),
-        });
+          body: JSON.stringify(lead)
+        })
 
         if (response.ok) {
-          // 成功時はキューから削除
-          await removeOfflineLead(lead.id);
-          console.log('Service Worker: Lead synced successfully', lead.id);
-          
-          // 成功通知を送信
-          self.registration.showNotification('同期完了', {
-            body: 'オフラインで保存した顧客情報が同期されました',
-            icon: '/icons/icon-192.png',
-            badge: '/icons/icon-192.png',
-            tag: 'lead-sync-success'
-          });
-        } else {
-          console.error('Service Worker: Failed to sync lead', lead.id, response.status);
+          // 成功したらオフラインストレージから削除
+          await removeOfflineLead(lead.id)
+          console.log('Offline lead synced successfully:', lead.id)
         }
       } catch (error) {
-        console.error('Service Worker: Error syncing lead', lead.id, error);
+        console.error('Failed to sync offline lead:', error)
       }
     }
   } catch (error) {
-    console.error('Service Worker: Error in syncOfflineLeads', error);
+    console.error('Error in background sync:', error)
   }
 }
 
-// IndexedDBからオフラインリードを取得
+// IndexedDBからオフラインリードを取得（簡易実装）
 async function getOfflineLeads() {
-  // 実際の実装では、IndexedDBからデータを取得
-  // ここでは簡略化のため空配列を返す
-  return [];
+  // 実際の実装では IndexedDB を使用
+  // ここでは簡易的に空配列を返す
+  return []
 }
 
-// IndexedDBからオフラインリードを削除
+// オフラインリードを削除（簡易実装）
 async function removeOfflineLead(id) {
-  // 実際の実装では、IndexedDBからデータを削除
-  console.log('Service Worker: Removing offline lead', id);
+  // 実際の実装では IndexedDB から削除
+  console.log('Removing offline lead:', id)
 }
 
 // プッシュ通知の処理
 self.addEventListener('push', (event) => {
-  console.log('Service Worker: Push notification received');
+  console.log('Service Worker: Push event received')
   
   if (event.data) {
-    const data = event.data.json();
-    
-    const options = {
-      body: data.body || '新しい通知があります',
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      tag: data.tag || 'notification',
-      data: data.data || {},
-      actions: data.actions || [],
-      requireInteraction: data.requireInteraction || false
-    };
+    try {
+      const data = event.data.json()
+      const options = {
+        body: data.body || '新しい通知があります',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
+        data: data.data || {},
+        actions: data.actions || [],
+        requireInteraction: true
+      }
 
-    event.waitUntil(
-      self.registration.showNotification(data.title || 'ホームマート', options)
-    );
+      event.waitUntil(
+        self.registration.showNotification(data.title || 'ホームマート', options)
+      )
+    } catch (error) {
+      console.error('Error parsing push data:', error)
+      
+      // フォールバック
+      const options = {
+        body: '新しい通知があります',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png'
+      }
+
+      event.waitUntil(
+        self.registration.showNotification('ホームマート', options)
+      )
+    }
   }
-});
+})
 
 // 通知クリック時の処理
 self.addEventListener('notificationclick', (event) => {
-  console.log('Service Worker: Notification clicked', event.notification.tag);
+  console.log('Service Worker: Notification clicked')
   
-  event.notification.close();
+  event.notification.close()
   
   if (event.action) {
-    // アクションボタンがクリックされた場合の処理
-    console.log('Service Worker: Action clicked', event.action);
+    // アクションボタンがクリックされた場合
+    console.log('Action clicked:', event.action)
   } else {
     // 通知自体がクリックされた場合
     event.waitUntil(
       clients.openWindow('/admin/leads')
-    );
+    )
   }
-});
-
-// メッセージ受信時の処理
-self.addEventListener('message', (event) => {
-  console.log('Service Worker: Message received', event.data);
-  
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  if (event.data && event.data.type === 'GET_VERSION') {
-    event.ports[0].postMessage({ version: CACHE_NAME });
-  }
-});
+})

@@ -395,7 +395,7 @@ export default function AreaSearch() {
         </div>
 
         {/* エリアボタン一覧 */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6">
           {areaData[selectedPrefecture].map((area) => {
             const count = getAreaCount(area.prefecture, area.name)
             return (
@@ -418,6 +418,68 @@ export default function AreaSearch() {
               </button>
             )
           })}
+        </div>
+
+        {/* 路線・駅選択セクション（エリア選択の下に追加） */}
+        <div className="border-t pt-6">
+          <h3 className="font-bold mb-3">路線・駅で絞り込み</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">路線</label>
+              <select 
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+                value={selectedRoute}
+                onChange={(e) => setSelectedRoute(e.target.value)}
+              >
+                <option value="">路線を選択</option>
+                {Object.keys(routeStations).map(route => (
+                  <option key={route} value={route} className="text-base">{route}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">最寄り駅</label>
+              <select 
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+                value={selectedStation}
+                onChange={(e) => setSelectedStation(e.target.value)}
+                disabled={!selectedRoute}
+              >
+                <option value="">
+                  {selectedRoute ? '駅を選択してください' : '先に路線を選択してください'}
+                </option>
+                {availableStations.map(station => (
+                  <option key={station} value={station} className="text-base">{station}駅</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* 路線・駅選択後のアクションボタン */}
+          {(selectedRoute || selectedStation) && (
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={() => {
+                  // 選択された条件で検索を実行
+                  console.log('路線・駅検索:', { route: selectedRoute, station: selectedStation })
+                  // ここで検索処理を実行
+                }}
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+              >
+                この条件で検索
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedRoute('')
+                  setSelectedStation('')
+                }}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                クリア
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -269,6 +269,34 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* 検索ボックス */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">全データ検索</h2>
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              const searchTerm = (e.currentTarget.search as HTMLInputElement).value.trim()
+              if (searchTerm) {
+                router.push(`/admin/search?q=${encodeURIComponent(searchTerm)}`)
+              }
+            }} className="flex gap-2">
+              <input
+                type="text"
+                name="search"
+                placeholder="物件名、顧客名、メールアドレス、電話番号などで検索..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                検索
+              </button>
+            </form>
+          </div>
+        </div>
+
         {/* 統計カード */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Link href="/admin/properties-list?view=all" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
