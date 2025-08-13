@@ -93,9 +93,8 @@ async function sendReportEmail(toEmail: string, subject: string, body: string) {
 // 送信ログの保存
 async function saveReportLog(agreementId: string, subject: string, body: string, toEmail: string, success: boolean, error?: string) {
   try {
-    const cookieStore = await import('next/headers').then(m => m.cookies())
     const { createClient } = await import('@/lib/supabase/server')
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     const metrics = {
       pageViews: Math.floor(Math.random() * 100) + 10, // 仮のデータ
@@ -207,7 +206,7 @@ export async function GET(request: NextRequest) {
       success: true,
       message: '自動報告送信処理完了',
       processed: dueAgreements.length,
-      success: successCount,
+      successCount: successCount,
       errors: errorCount
     })
 

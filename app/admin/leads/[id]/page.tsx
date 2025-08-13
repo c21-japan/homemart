@@ -39,6 +39,9 @@ export default function LeadDetailPage() {
       
       // 顧客情報を取得
       const leadData = await getLead(leadId)
+      if (!leadData) {
+        throw new Error('顧客情報が見つかりません')
+      }
       setLead(leadData)
 
       // 媒介契約を取得（売却の場合）

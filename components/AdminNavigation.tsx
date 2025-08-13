@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { usePermissions, PERMISSIONS } from '@/lib/supabase/staff-permissions'
+import { PERMISSIONS, checkUserPermissions } from '@/lib/supabase/staff-permissions'
 
 interface NavigationItem {
   id: string
@@ -16,8 +16,32 @@ interface NavigationItem {
 
 export default function AdminNavigation({ userId }: { userId: string }) {
   const pathname = usePathname()
-  const { permissions, role, loading } = usePermissions(userId)
+  const [permissions, setPermissions] = useState<string[]>([])
+  const [role, setRole] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
   const [expandedSections, setExpandedSections] = useState<string[]>([])
+
+  // 権限情報を読み込み
+  useEffect(() => {
+    async function loadPermissions() {
+      if (!userId) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const userPermissions = await checkUserPermissions(userId)
+        setPermissions(userPermissions.permissions)
+        setRole(userPermissions.role)
+      } catch (error) {
+        console.error('権限読み込みエラー:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadPermissions()
+  }, [userId])
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 

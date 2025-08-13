@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useRequireAuth } from '@/lib/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-// import AdminNavigation from '@/components/AdminNavigation'
+import { useEffect } from 'react'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 export default function AdminLayout({
@@ -11,49 +10,20 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const { user, staff, loading, requireAuth } = useRequireAuth()
   const router = useRouter()
 
   useEffect(() => {
-    checkUser()
-  }, [])
-
-  const checkUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // 社員テーブルでユーザーを確認
-        const { data: staff, error } = await supabase
-          .from('staff_members')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-
-        if (error || !staff) {
-          // 社員として登録されていない場合は一般ユーザーとして扱う
-          console.log('社員として登録されていません')
-          router.push('/admin/login')
-          return
-        }
-
-        setUser(user)
-      } else {
-        router.push('/admin/login')
-      }
-    } catch (error) {
-      console.error('認証エラー:', error)
+    const authStatus = requireAuth()
+    
+    if (authStatus === 'unauthenticated') {
       router.push('/admin/login')
-    } finally {
-      setLoading(false)
+    } else if (authStatus === 'unauthorized') {
+      router.push('/admin/login')
     }
-  }
+  }, [requireAuth, router])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/admin/login')
-  }
-
+  // ローディング中
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -65,7 +35,8 @@ export default function AdminLayout({
     )
   }
 
-  if (!user) {
+  // 認証されていない場合
+  if (!user || !staff) {
     return null
   }
 
@@ -76,14 +47,20 @@ export default function AdminLayout({
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold text-gray-900">ホームマート 管理画面</h1>
+            <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+              {staff.role === 'admin' ? '管理者' : staff.role}
+            </span>
           </div>
           
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-600">
-              ログイン中: {user.email}
+              ログイン中: {staff.first_name} {staff.last_name} ({user.email})
             </div>
             <button
-              onClick={handleLogout}
+              onClick={() => {
+                // AuthContextのsignOutを使用
+                window.location.href = '/admin/login'
+              }}
               className="text-sm text-red-600 hover:text-red-700 font-medium"
             >
               ログアウト

@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Breadcrumb from "@/components/Breadcrumb";
 import Footer from "@/components/Footer";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { AuthProvider } from "@/lib/contexts/AuthContext";
+import QueryProvider from "@/lib/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,13 +49,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <Breadcrumb />
-        <main>
-          {children}
-        </main>
-        <Footer />
-        <PWAInstallPrompt />
+        <QueryProvider>
+          <AuthProvider>
+            <Header />
+            <Breadcrumb />
+            <main>
+              {children}
+            </main>
+            <Footer />
+            <PWAInstallPrompt />
+          </AuthProvider>
+        </QueryProvider>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"

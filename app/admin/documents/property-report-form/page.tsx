@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function PropertyReportFormPage() {
   const [currentSection, setCurrentSection] = useState(1)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, any>>({
     // 基本情報
     propertyName: '',
     sellerName: '',
@@ -85,13 +85,18 @@ export default function PropertyReportFormPage() {
   }
 
   const handleNestedChange = (parent: string, field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent as keyof typeof prev],
-        [field]: value
-      }
-    }))
+    setFormData(prev => {
+      const key = parent as keyof typeof prev;
+      const parentObj = (prev[key] ?? {}) as Record<string, any>;
+
+      return {
+        ...prev,
+        [parent]: {
+          ...parentObj,
+          [field]: value,
+        },
+      };
+    });
   }
 
   const validateSection = (sectionNumber: number) => {

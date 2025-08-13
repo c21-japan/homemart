@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import PropertyCard from '@/components/PropertyCard'
 import PropertySearch from '@/components/PropertySearch'
+import PerformanceMonitor from '@/components/PerformanceMonitor'
+import { Suspense, useState, useEffect } from 'react'
 
 interface Property {
   id: string
@@ -26,12 +27,54 @@ interface Property {
   created_at: string
 }
 
-export default function PropertiesPage() {
-  const [properties, setProperties] = useState<Property[]>([])
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+// スケルトンローダーコンポーネント
+const PropertySkeleton = () => (
+  <div className="animate-pulse bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-gray-200 h-48 w-full"></div>
+    <div className="p-4">
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+      <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+    </div>
+  </div>
+)
+
+// スケルトンローダー配列
+const PropertySkeletonGrid = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <PropertySkeleton key={index} />
+    ))}
+  </div>
+)
+
+// プロパティデータを事前取得（SSG）
+async function getProperties(): Promise<Property[]> {
+  try {
+    const { data, error } = await supabase
+      .from('properties')
+      .select('id, name, price, prefecture, city, address, station, walking_time, property_type, land_area, building_area, layout, building_age, image_url, images, is_new, staff_comment, created_at')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(50) // 初期表示件数を制限
+
+    if (error) {
+      console.error('Error fetching properties:', error)
+      return []
+    }
+    
+    return data || []
+  } catch (error) {
+    console.error('Error:', error)
+    return []
+  }
+}
+
+// クライアントサイド検索コンポーネント
+function PropertySearchClient({ initialProperties }: { initialProperties: Property[] }) {
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>(initialProperties)
   const [showSearch, setShowSearch] = useState(false)
-  const [searchHistory, setSearchHistory] = useState<Property[]>([])
+  const [searchHistory, setSearchHistory] = useState<Property[]>(initialProperties)
   
   // かんたん検索の状態
   const [simpleSearch, setSimpleSearch] = useState({
@@ -57,37 +100,10 @@ export default function PropertiesPage() {
   // 種別の選択肢
   const propertyTypeOptions = ['', '新築戸建', '中古戸建', '中古マンション', '土地']
 
-  // プロパティデータを取得
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('status', 'published')
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error('Error fetching properties:', error)
-        } else {
-          setProperties(data || [])
-          setFilteredProperties(data || [])
-          setSearchHistory(data || [])
-        }
-      } catch (error) {
-        console.error('Error:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchProperties()
-  }, [])
-
   // かんたん検索の実行
   const handleSimpleSearch = () => {
     console.log('かんたん検索実行:', simpleSearch) // デバッグ用
-    let filtered = properties
+    let filtered = initialProperties
 
     // エリアで絞り込み
     if (simpleSearch.area) {
@@ -115,7 +131,7 @@ export default function PropertiesPage() {
       )
     }
 
-    console.log('絞り込み前:', properties.length, '件')
+    console.log('絞り込み前:', initialProperties.length, '件')
     console.log('絞り込み後:', filtered.length, '件')
     setFilteredProperties(filtered)
   }
@@ -127,7 +143,7 @@ export default function PropertiesPage() {
       propertyType: '',
       keyword: ''
     })
-    setFilteredProperties(properties)
+    setFilteredProperties(initialProperties)
   }
 
   // 詳細検索の結果を受け取る
@@ -135,7 +151,7 @@ export default function PropertiesPage() {
     const handlePropertySearch = (event: CustomEvent) => {
       console.log('詳細検索イベント受信:', event.detail) // デバッグ用
       const searchParams = event.detail
-      let filtered = [...properties] // 配列のコピーを作成
+      let filtered = [...initialProperties] // 配列のコピーを作成
 
       console.log('詳細検索開始 - 元の物件数:', filtered.length)
 
@@ -228,7 +244,7 @@ export default function PropertiesPage() {
         console.log('徒歩時間絞り込み後:', filtered.length, '件')
       }
 
-      console.log('詳細検索絞り込み前:', properties.length, '件')
+      console.log('詳細検索絞り込み前:', initialProperties.length, '件')
       console.log('詳細検索絞り込み後:', filtered.length, '件')
       console.log('最終絞り込み結果:', filtered.map(p => ({ id: p.id, name: p.name, type: p.property_type })))
       
@@ -242,18 +258,7 @@ export default function PropertiesPage() {
     return () => {
       window.removeEventListener('propertySearch', handlePropertySearch as EventListener)
     }
-  }, [properties])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    )
-  }
+  }, [initialProperties])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -355,7 +360,7 @@ export default function PropertiesPage() {
             <div className="text-gray-400 text-6xl mb-4">🏠</div>
             <h3 className="text-xl font-semibold text-gray-600 mb-2">物件が見つかりません</h3>
             <p className="text-gray-500">
-              {properties.length > 0 ? '検索条件に合う物件がありません' : '現在、表示可能な物件がありません'}
+              {initialProperties.length > 0 ? '検索条件に合う物件がありません' : '現在、表示可能な物件がありません'}
             </p>
           </div>
         )}
@@ -371,5 +376,20 @@ export default function PropertiesPage() {
         />
       )}
     </div>
+  )
+}
+
+// メインのページコンポーネント（SSG）
+export default async function PropertiesPage() {
+  // プロパティデータを事前取得
+  const properties = await getProperties()
+
+  return (
+    <>
+      <Suspense fallback={<PropertySkeletonGrid />}>
+        <PropertySearchClient initialProperties={properties} />
+      </Suspense>
+      <PerformanceMonitor />
+    </>
   )
 }

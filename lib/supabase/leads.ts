@@ -6,7 +6,8 @@ import {
   LeadFilter, 
   LeadStats,
   createLeadSchema,
-  updateLeadSchema
+  updateLeadSchema,
+  LeadHistory
 } from '@/types/leads'
 
 // 型を再エクスポート
@@ -75,7 +76,7 @@ export async function getLeadHistory(leadId: string) {
       .from('lead_history')
       .select('*')
       .eq('lead_id', leadId)
-      .order('action_date', { ascending: false })
+      .order('created_at', { ascending: false })
 
     if (error) throw error
     return data || []
@@ -89,13 +90,13 @@ export async function getLeadHistory(leadId: string) {
 export async function getLeadAttachments(leadId: string) {
   try {
     const { data, error } = await supabase
-      .from('lead_attachments')
-      .select('*')
-      .eq('lead_id', leadId)
-      .order('uploaded_at', { ascending: false })
+      .from('customer_leads')
+      .select('attachments')
+      .eq('id', leadId)
+      .single()
 
     if (error) throw error
-    return data || []
+    return data?.attachments || []
   } catch (error) {
     console.error('Error fetching lead attachments:', error)
     throw error
@@ -186,7 +187,11 @@ export async function addLeadAttachment(leadId: string, filePath: string): Promi
       .eq('id', leadId)
       .single()
 
-    const currentAttachments = currentLead?.attachments || []
+    if (!currentLead) {
+      throw new Error('リードが見つかりません')
+    }
+
+    const currentAttachments = currentLead.attachments || []
     const newAttachments = [...currentAttachments, filePath]
 
     const { data, error } = await supabase
@@ -294,8 +299,12 @@ export async function removeLeadAttachment(leadId: string, filePath: string): Pr
       .eq('id', leadId)
       .single()
 
-    const currentAttachments = currentLead?.attachments || []
-    const newAttachments = currentAttachments.filter(path => path !== filePath)
+    if (!currentLead) {
+      throw new Error('リードが見つかりません')
+    }
+
+    const currentAttachments = currentLead.attachments || []
+    const newAttachments = currentAttachments.filter((path: string) => path !== filePath)
 
     const { data, error } = await supabase
       .from('customer_leads')

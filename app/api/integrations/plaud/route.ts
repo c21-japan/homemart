@@ -12,8 +12,7 @@ const PLAUD_CONFIG = {
 // PLAUD音声記録の処理
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -118,8 +117,7 @@ async function fileToBase64(file: any): Promise<string> {
 // 音声記録をデータベースに保存
 async function saveAudioRecord(leadId: string, audioFile: any, transcription: string, context: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // 音声ファイルをSupabase Storageに保存
     const fileName = `${Date.now()}-${audioFile.name}`
@@ -159,8 +157,7 @@ async function saveAudioRecord(leadId: string, audioFile: any, transcription: st
 // 音声内容を分析してチェックリストを自動更新
 async function analyzeAndUpdateChecklist(leadId: string, transcription: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // 顧客のチェックリストを取得
     const { data: checklists, error: fetchError } = await supabase
@@ -291,8 +288,7 @@ function analyzeContentMatch(transcription: string, item: any) {
 // 音声記録の取得
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()

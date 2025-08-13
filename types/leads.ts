@@ -390,3 +390,14 @@ export const updateChecklistItemSchema = z.object({
   note: z.string().optional(),
   file_path: z.string().optional()
 })
+
+// リード履歴の型定義
+export interface LeadHistory {
+  id: string
+  lead_id: string
+  action: string
+  description: string
+  created_by?: string
+  created_at: string
+  metadata?: Record<string, any>
+}

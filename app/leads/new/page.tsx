@@ -13,22 +13,52 @@ import { CameraIcon, PhotoIcon, XMarkIcon, MapPinIcon, ChevronDownIcon, ChevronU
 // フォームデータの型
 type FormData = {
   type: LeadType
-  source: string
+  source?: string
   last_name: string
   first_name: string
-  last_name_kana: string
-  first_name_kana: string
-  email: string
-  phone: string
-  postal_code: string
-  prefecture: string
-  city: string
-  address1: string
-  address2: string
-  residence_structure: string
-  household: string
-  note: string
+  last_name_kana?: string
+  first_name_kana?: string
+  email?: string
+  phone?: string
+  postal_code?: string
+  prefecture?: string
+  city?: string
+  address1?: string
+  address2?: string
+  residence_structure?: string
+  household?: string
+  note?: string
   location?: { lat: number; lng: number }
+  extra: LeadExtra
+  // 購入関連フィールド
+  budget?: string
+  desired_area?: string
+  layout?: string
+  move_in_timing?: string
+  loan_preapproved?: string
+  // 売却関連フィールド
+  property_type?: string
+  building_name?: string
+  room_no?: string
+  land_size?: string
+  floor_area?: string
+  year_built?: string
+  remaining_loan?: string
+  expected_price?: string
+  psychological_defect?: string
+  parking_state?: string
+  hoa_fee?: string
+  reason?: string
+  current_status?: string
+  // リフォーム関連フィールド
+  target_rooms?: string
+  wish_items?: string
+  rough_budget?: string
+  desired_deadline?: string
+  visit_request?: string
+  // 契約関連フィールド
+  contract_type?: string
+  signed_at?: string
 }
 
 export default function NewLeadForm() {

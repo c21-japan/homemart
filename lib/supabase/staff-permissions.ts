@@ -1,5 +1,4 @@
-import { supabase } from './supabase'
-import { useState, useEffect, useCallback } from 'react'
+import { createClient } from './server'
 
 export interface StaffMember {
   id: string
@@ -161,6 +160,7 @@ export const ROLE_PERMISSIONS = {
 // 社員の権限をチェック
 export async function checkPermission(userId: string, permission: string): Promise<boolean> {
   try {
+    const supabase = await createClient()
     const { data: staff, error } = await supabase
       .from('staff_members')
       .select('role, permissions')
@@ -193,6 +193,7 @@ export async function checkPermission(userId: string, permission: string): Promi
 // 社員の全権限を取得
 export async function getUserPermissions(userId: string): Promise<string[]> {
   try {
+    const supabase = await createClient()
     const { data: staff, error } = await supabase
       .from('staff_members')
       .select('role, permissions')
@@ -222,6 +223,7 @@ export async function getUserPermissions(userId: string): Promise<string[]> {
 // 社員の役職を取得
 export async function getUserRole(userId: string): Promise<string | null> {
   try {
+    const supabase = await createClient()
     const { data: staff, error } = await supabase
       .from('staff_members')
       .select('role')
@@ -242,6 +244,7 @@ export async function getUserRole(userId: string): Promise<string | null> {
 // 社員の基本情報を取得
 export async function getStaffMember(userId: string): Promise<StaffMember | null> {
   try {
+    const supabase = await createClient()
     const { data: staff, error } = await supabase
       .from('staff_members')
       .select('*')
@@ -273,55 +276,31 @@ export function filterMenuItemsByPermissions(
   })
 }
 
-// 権限チェック用のReactフック（クライアントサイド用）
-export function usePermissions(userId: string) {
-  const [permissions, setPermissions] = useState<string[]>([])
-  const [role, setRole] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadPermissions() {
-      if (!userId) {
-        setLoading(false)
-        return
-      }
-
-      try {
-        const [userPerms, userRole] = await Promise.all([
-          getUserPermissions(userId),
-          getUserRole(userId)
-        ])
-        
-        setPermissions(userPerms)
-        setRole(userRole)
-      } catch (error) {
-        console.error('権限読み込みエラー:', error)
-      } finally {
-        setLoading(false)
-      }
+// 権限チェック用のユーティリティ関数（サーバーサイド用）
+export async function checkUserPermissions(userId: string) {
+  try {
+    const [permissions, role] = await Promise.all([
+      getUserPermissions(userId),
+      getUserRole(userId)
+    ])
+    
+    return {
+      permissions,
+      role,
+      hasPermission: (permission: string) => permissions.includes(permission),
+      hasAnyPermission: (requiredPermissions: string[]) => 
+        requiredPermissions.some(permission => permissions.includes(permission)),
+      hasAllPermissions: (requiredPermissions: string[]) => 
+        requiredPermissions.every(permission => permissions.includes(permission))
     }
-
-    loadPermissions()
-  }, [userId])
-
-  const hasPermission = useCallback((permission: string) => {
-    return permissions.includes(permission)
-  }, [permissions])
-
-  const hasAnyPermission = useCallback((requiredPermissions: string[]) => {
-    return requiredPermissions.some(permission => permissions.includes(permission))
-  }, [permissions])
-
-  const hasAllPermissions = useCallback((requiredPermissions: string[]) => {
-    return requiredPermissions.every(permission => permissions.includes(permission))
-  }, [permissions])
-
-  return {
-    permissions,
-    role,
-    loading,
-    hasPermission,
-    hasAnyPermission,
-    hasAllPermissions
+  } catch (error) {
+    console.error('権限読み込みエラー:', error)
+    return {
+      permissions: [],
+      role: null,
+      hasPermission: () => false,
+      hasAnyPermission: () => false,
+      hasAllPermissions: () => false
+    }
   }
 }

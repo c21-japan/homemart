@@ -13,13 +13,12 @@ const CENTURY21_CONFIG = {
 // 物件登録
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
+      throw new Error('認証が必要です')
     }
 
     const { leadId, propertyData } = await request.json()
@@ -73,13 +72,12 @@ export async function POST(request: NextRequest) {
 // 物件反響取得
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
+      throw new Error('認証が必要です')
     }
 
     const { searchParams } = new URL(request.url)
@@ -229,13 +227,12 @@ async function fetchInquiriesFromCentury21(propertyId: string) {
 // 物件情報更新
 export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
+      throw new Error('認証が必要です')
     }
 
     const { propertyId, updateData } = await request.json()

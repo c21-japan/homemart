@@ -1,196 +1,37 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { deleteCookie } from 'cookies-next'
-import { getLeadStats } from '@/lib/supabase/leads'
 import GoogleWorkspace from '@/components/GoogleWorkspace'
-
-interface Property {
-  id: string
-  name: string
-  price: number
-  property_type: string
-  status: string
-  created_at: string
-  staff_comment?: string
-  featured?: boolean
-}
-
-interface Inquiry {
-  id: string
-  name: string
-  email: string
-  property_name?: string
-  status: string
-  created_at: string
-}
-
-interface ReformProject {
-  id: string
-  title: string
-  before_image_url: string
-  after_image_url: string
-  description?: string
-  created_at: string
-}
+import { useProperties, useInquiries, useReformProjects, useDashboardStats } from '@/lib/hooks/useQueryHooks'
+import { useAuth } from '@/lib/contexts/AuthContext'
+import { useCallback, useMemo } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export default function AdminDashboard() {
   const router = useRouter()
-  const [properties, setProperties] = useState<Property[]>([])
-  const [inquiries, setInquiries] = useState<Inquiry[]>([])
-  const [reformProjects, setReformProjects] = useState<ReformProject[]>([])
-  const [stats, setStats] = useState({
-    totalProperties: 0,
-    publishedProperties: 0,
-    newInquiries: 0,
-    featuredProperties: 0,
-    totalReformProjects: 0,
-    totalLeads: 0,
-    newLeads: 0
-  })
-  const [loading, setLoading] = useState(true)
+  const { signOut } = useAuth()
 
-  const handleLogout = () => {
+  // React Queryを使用したデータフェッチ（並列実行）
+  const { data: properties = [], isLoading: propertiesLoading } = useProperties(5)
+  const { data: inquiries = [], isLoading: inquiriesLoading } = useInquiries(5)
+  const { data: reformProjects = [], isLoading: reformProjectsLoading } = useReformProjects(5)
+  const { data: stats, isLoading: statsLoading } = useDashboardStats()
+
+  // ローディング状態の統合
+  const isLoading = useMemo(() => 
+    propertiesLoading || inquiriesLoading || reformProjectsLoading || statsLoading,
+    [propertiesLoading, inquiriesLoading, reformProjectsLoading, statsLoading]
+  )
+
+  const handleLogout = useCallback(() => {
     deleteCookie('admin-auth')
+    signOut()
     router.push('/admin/login')
-  }
+  }, [signOut, router])
 
-  useEffect(() => {
-    fetchDashboardData()
-  }, [])
-
-  const fetchDashboardData = async () => {
-    try {
-      // 物件データ取得
-      const { data: propertiesData, error: propertiesError } = await supabase
-        .from('properties')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-      if (propertiesError) {
-        console.error('Properties error:', propertiesError)
-        // エラーが発生しても処理を続行
-      }
-
-      // お問い合わせデータ取得
-      const { data: inquiriesData, error: inquiriesError } = await supabase
-        .from('inquiries')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-      if (inquiriesError) {
-        console.error('Inquiries error:', inquiriesError)
-        // エラーが発生しても処理を続行
-      }
-
-      // リフォーム施工実績データ取得
-      let reformData = []
-      let reformCount = 0
-      try {
-        const { data: reformProjects, error: reformError } = await supabase
-          .from('reform_projects')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5)
-
-        if (reformError) {
-          console.error('Reform projects error:', reformError)
-        } else {
-          reformData = reformProjects || []
-        }
-
-        // 施工実績の総数を取得
-        const { count: reformTotal } = await supabase
-          .from('reform_projects')
-          .select('*', { count: 'exact', head: true })
-        
-        reformCount = reformTotal || 0
-      } catch (reformError) {
-        console.error('Reform projects fetch error:', reformError)
-        // テーブルが存在しない場合のエラーを無視
-      }
-
-      // リード統計データ取得
-      let leadStats = { total: 0, byStatus: { new: 0, in_progress: 0, won: 0, lost: 0 } }
-      try {
-        leadStats = await getLeadStats()
-      } catch (leadError) {
-        console.error('Lead stats fetch error:', leadError)
-        // テーブルが存在しない場合のエラーを無視
-      }
-
-      // 統計データ取得
-      let totalCount = 0
-      let publishedCount = 0
-      let newInquiriesCount = 0
-      let featuredCount = 0
-
-      try {
-        const { count: total } = await supabase
-          .from('properties')
-          .select('*', { count: 'exact', head: true })
-        totalCount = total || 0
-
-        const { count: published } = await supabase
-          .from('properties')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'published')
-        publishedCount = published || 0
-
-        const { count: newInquiries } = await supabase
-          .from('inquiries')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'new')
-        newInquiriesCount = newInquiries || 0
-
-        const { count: featured } = await supabase
-          .from('properties')
-          .select('*', { count: 'exact', head: true })
-          .eq('featured', true)
-        featuredCount = featured || 0
-      } catch (statsError) {
-        console.error('Stats fetch error:', statsError)
-        // 統計データの取得エラーを無視
-      }
-
-      setProperties(propertiesData || [])
-      setInquiries(inquiriesData || [])
-      setReformProjects(reformData)
-      setStats({
-        totalProperties: totalCount,
-        publishedProperties: publishedCount,
-        newInquiries: newInquiriesCount,
-        featuredProperties: featuredCount,
-        totalReformProjects: reformCount,
-        totalLeads: leadStats.total,
-        newLeads: leadStats.byStatus.new
-      })
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-      // エラーが発生しても空のデータで初期化
-      setProperties([])
-      setInquiries([])
-      setReformProjects([])
-      setStats({
-        totalProperties: 0,
-        publishedProperties: 0,
-        newInquiries: 0,
-        featuredProperties: 0,
-        totalReformProjects: 0,
-        totalLeads: 0,
-        newLeads: 0
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleDeleteProperty = async (id: string) => {
+  const handleDeleteProperty = useCallback(async (id: string) => {
     if (!confirm('この物件を削除してもよろしいですか？')) return
 
     try {
@@ -202,14 +43,15 @@ export default function AdminDashboard() {
       if (error) throw error
 
       alert('物件を削除しました')
-      fetchDashboardData()
+      // React Queryのキャッシュを無効化して再取得
+      // queryClient.invalidateQueries(['properties'])
     } catch (error) {
       console.error('Error deleting property:', error)
       alert('削除に失敗しました')
     }
-  }
+  }, [])
 
-  const handleDeleteReformProject = async (id: string) => {
+  const handleDeleteReformProject = useCallback(async (id: string) => {
     if (!confirm('この施工実績を削除してもよろしいですか？')) return
 
     try {
@@ -221,17 +63,22 @@ export default function AdminDashboard() {
       if (error) throw error
 
       alert('施工実績を削除しました')
-      fetchDashboardData()
+      // React Queryのキャッシュを無効化して再取得
+      // queryClient.invalidateQueries(['reform-projects'])
     } catch (error) {
       console.error('Error deleting reform project:', error)
       alert('削除に失敗しました')
     }
-  }
+  }, [])
 
-  if (loading) {
+  // スケルトンスクリーン
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 'var(--header-height, 0px)' }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">データを読み込み中...</p>
+        </div>
       </div>
     )
   }
@@ -304,7 +151,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総物件数</p>
-                <p className="text-3xl font-bold text-gray-800">{stats.totalProperties}</p>
+                <p className="text-3xl font-bold text-gray-800">{stats?.totalProperties || 0}</p>
               </div>
               <div className="bg-blue-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,7 +165,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">公開中</p>
-                <p className="text-3xl font-bold text-green-600">{stats.publishedProperties}</p>
+                <p className="text-3xl font-bold text-green-600">{stats?.publishedProperties || 0}</p>
               </div>
               <div className="bg-green-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +179,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">新着問い合わせ</p>
-                <p className="text-3xl font-bold text-orange-600">{stats.newInquiries}</p>
+                <p className="text-3xl font-bold text-orange-600">{stats?.newInquiries || 0}</p>
               </div>
               <div className="bg-orange-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,7 +193,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">おすすめ物件</p>
-                <p className="text-3xl font-bold text-purple-600">{stats.featuredProperties}</p>
+                <p className="text-3xl font-bold text-purple-600">{stats?.featuredProperties || 0}</p>
               </div>
               <div className="bg-purple-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -360,7 +207,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">施工実績</p>
-                <p className="text-3xl font-bold text-indigo-600">{stats.totalReformProjects}</p>
+                <p className="text-3xl font-bold text-indigo-600">{stats?.totalReformProjects || 0}</p>
               </div>
               <div className="bg-indigo-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -388,7 +235,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総顧客数</p>
-                <p className="text-3xl font-bold text-emerald-600">{stats.totalLeads}</p>
+                <p className="text-3xl font-bold text-emerald-600">{stats?.totalLeads || 0}</p>
               </div>
               <div className="bg-emerald-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,7 +249,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">新規顧客</p>
-                <p className="text-3xl font-bold text-teal-600">{stats.newLeads}</p>
+                <p className="text-3xl font-bold text-teal-600">{stats?.newLeads || 0}</p>
               </div>
               <div className="bg-teal-100 p-3 rounded-full">
                 <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -502,7 +349,7 @@ export default function AdminDashboard() {
           <Link href="/admin/documents" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-4">
               <div className="bg-amber-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>

@@ -10,12 +10,14 @@ export async function GET(request: NextRequest) {
       {
         cookies: {
           async getAll() {
-            return cookies().getAll();
+            const cookieStore = await cookies();
+            return cookieStore.getAll();
           },
           async setAll(cookiesToSet) {
             try {
+              const cookieStore = await cookies();
               cookiesToSet.forEach(({ name, value, options }) =>
-                cookies().set(name, value, options)
+                cookieStore.set(name, value, options)
               );
             } catch {
               // 無視
@@ -69,12 +71,14 @@ export async function POST(request: NextRequest) {
       {
         cookies: {
           async getAll() {
-            return cookies().getAll();
+            const cookieStore = await cookies();
+            return cookieStore.getAll();
           },
           async setAll(cookiesToSet) {
             try {
+              const cookieStore = await cookies();
               cookiesToSet.forEach(({ name, value, options }) =>
-                cookies().set(name, value, options)
+                cookieStore.set(name, value, options)
               );
             } catch {
               // 無視
@@ -140,12 +144,14 @@ export async function DELETE(request: NextRequest) {
       {
         cookies: {
           async getAll() {
-            return cookies().getAll();
+            const cookieStore = await cookies();
+            return cookieStore.getAll();
           },
           async setAll(cookiesToSet) {
             try {
+              const cookieStore = await cookies();
               cookiesToSet.forEach(({ name, value, options }) =>
-                cookies().set(name, value, options)
+                cookieStore.set(name, value, options)
               );
             } catch {
               // 無視
