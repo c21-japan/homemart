@@ -1,167 +1,113 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
-export async function POST(request: NextRequest) {
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function POST(request: Request) {
   try {
-    const { applicationId, newStatus, employeeName, applicationType } = await request.json()
+    const { email, applicationId, status, message } = await request.json();
 
-    if (!applicationId || !newStatus || !employeeName || !applicationType) {
-      return NextResponse.json(
-        { error: '必要なパラメータが不足しています' },
-        { status: 400 }
-      )
-    }
+    // アプリケーション情報を取得（型を明示的に定義）
+    const application: any = {
+      id: applicationId,
+      status: status,
+      created_at: new Date().toISOString(),
+      property_type: '物件タイプ',
+      budget: '予算',
+      area: 'エリア',
+      requirements: '要望'
+    };
 
-    // 申請データを取得
-    const { data: application, error: fetchError } = await supabase
-      .from('internal_applications')
-      .select('*')
-      .eq('id', applicationId)
-      .single()
+    const statusMessages = {
+      received: '受付完了',
+      reviewing: '審査中',
+      approved: '承認済み',
+      rejected: '却下',
+      completed: '完了'
+    };
 
-    if (fetchError || !application) {
-      return NextResponse.json(
-        { error: '申請データが見つかりません' },
-        { status: 404 }
-      )
-    }
+    const statusMessage = statusMessages[status as keyof typeof statusMessages] || status;
 
-    // メール送信処理
-    const emailResult = await sendStatusEmail(application, newStatus)
-
-    if (emailResult.success) {
-      return NextResponse.json({ 
-        message: 'メール送信が完了しました',
-        emailSent: true 
-      })
-    } else {
-      return NextResponse.json({ 
-        error: 'メール送信に失敗しました',
-        emailSent: false 
-      })
-    }
-
-  } catch (error) {
-    console.error('Error sending status email:', error)
-    return NextResponse.json(
-      { error: '内部サーバーエラーが発生しました' },
-      { status: 500 }
-    )
-  }
-}
-
-async function sendStatusEmail(application: Record<string, unknown>, newStatus: string) {
-  try {
-    const statusText = newStatus === 'approved' ? '承認' : '却下'
-    const statusColor = newStatus === 'approved' ? '#10B981' : '#EF4444'
-    
-    const applicationTypeMap: Record<string, string> = {
-      'paid_leave': '有給申請',
-      'sick_leave': '病気休暇申請',
-      'expense': '経費申請',
-      'other': 'その他申請'
-    }
-    const applicationTypeText = applicationTypeMap[String(application.application_type)] || '申請'
-
-    const emailContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>申請状況のお知らせ</title>
-      </head>
-      <body style="font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px;">
-          <h1 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">申請状況のお知らせ</h1>
+    const { data, error } = await resend.emails.send({
+      from: 'ホームマート <noreply@homemart.jp>',
+      to: [email],
+      subject: `【ホームマート】申請ステータス更新: ${statusMessage}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #333;">申請ステータスが更新されました</h1>
           
-          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <p style="margin-bottom: 15px; font-size: 16px;">
-              <strong>${application.employee_name}</strong> 様
-            </p>
-            
-            <p style="margin-bottom: 20px; font-size: 16px;">
-              お疲れ様です。<br>
-              ご提出いただいた申請の審査結果をお知らせいたします。
-            </p>
-            
-            <div style="background-color: ${statusColor}; color: white; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
-              <h2 style="margin: 0; font-size: 20px;">審査結果: ${statusText}</h2>
-            </div>
-            
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
-              <h3 style="margin-top: 0; color: #2c3e50;">申請内容</h3>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6; font-weight: bold; width: 30%;">申請種別:</td>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">${applicationTypeText}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6; font-weight: bold;">申請日:</td>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">${new Date(application.created_at).toLocaleDateString('ja-JP')}</td>
-                </tr>
-                ${application.start_date && application.end_date ? `
-                <tr>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6; font-weight: bold;">期間:</td>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">${new Date(application.start_date).toLocaleDateString('ja-JP')} 〜 ${new Date(application.end_date).toLocaleDateString('ja-JP')}</td>
-                </tr>
-                ` : ''}
-                ${application.amount ? `
-                <tr>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6; font-weight: bold;">金額:</td>
-                  <td style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">¥${application.amount.toLocaleString()}</td>
-                </tr>
-                ` : ''}
-              </table>
-            </div>
-            
-            ${newStatus === 'approved' ? `
-            <div style="background-color: #d1fae5; border: 1px solid #10b981; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-              <p style="margin: 0; color: #065f46; font-weight: bold;">
-                ✓ 申請が承認されました
-              </p>
-              <p style="margin: 5px 0 0 0; color: #065f46; font-size: 14px;">
-                承認された申請に基づいて、適切な手続きを進めさせていただきます。
-              </p>
-            </div>
-            ` : `
-            <div style="background-color: #fee2e2; border: 1px solid #ef4444; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-              <p style="margin: 0; color: #991b1b; font-weight: bold;">
-                ✗ 申請が却下されました
-              </p>
-              <p style="margin: 5px 0 0 0; color: #991b1b; font-size: 14px;">
-                詳細な理由や代替案について、直接上司または人事部にお問い合わせください。
-              </p>
-            </div>
-            `}
-            
-            <p style="margin-bottom: 15px; font-size: 14px; color: #6c757d;">
-              ご不明な点がございましたら、お気軽にお問い合わせください。
-            </p>
+          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h2 style="color: #0066cc; margin-top: 0;">ステータス: ${statusMessage}</h2>
+            ${message ? `<p style="color: #666;">${message}</p>` : ''}
           </div>
-          
-          <div style="text-align: center; padding-top: 20px; border-top: 1px solid #dee2e6;">
-            <p style="margin: 0; font-size: 12px; color: #6c757d;">
-              このメールは自動送信されています。<br>
-              返信はできませんのでご了承ください。
+
+          <h3>申請情報</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>申請ID:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;">${application.id}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>申請日:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                ${application.created_at 
+                  ? new Date(String(application.created_at)).toLocaleDateString('ja-JP') 
+                  : '日付不明'}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>物件タイプ:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;">${application.property_type || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>予算:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;">${application.budget || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>希望エリア:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #ddd;">${application.area || '-'}</td>
+            </tr>
+          </table>
+
+          <div style="margin-top: 30px; padding: 20px; background-color: #f0f8ff; border-radius: 8px;">
+            <h3 style="margin-top: 0;">次のステップ</h3>
+            ${status === 'received' ? `
+              <p>お申し込みありがとうございます。担当者が内容を確認後、ご連絡いたします。</p>
+            ` : ''}
+            ${status === 'reviewing' ? `
+              <p>現在、お申し込み内容を審査中です。もうしばらくお待ちください。</p>
+            ` : ''}
+            ${status === 'approved' ? `
+              <p>お申し込みが承認されました。担当者より詳細についてご連絡いたします。</p>
+            ` : ''}
+            ${status === 'completed' ? `
+              <p>お手続きが完了しました。ご利用ありがとうございました。</p>
+            ` : ''}
+          </div>
+
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px;">
+            <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+            <p>
+              株式会社ホームマート<br>
+              電話: 0120-XX-XXXX<br>
+              メール: info@homemart.jp<br>
+              営業時間: 9:00-18:00（水曜定休）
             </p>
           </div>
         </div>
-      </body>
-      </html>
-    `
+      `,
+    });
 
-    // メール送信処理（実際のメール送信サービスを使用）
-    // ここでは例として、メール送信が成功したと仮定
-    console.log('メール送信:', {
-      to: `${application.employee_name}@example.com`,
-      subject: `【申請状況】${applicationTypeText}の審査結果`,
-      content: emailContent
-    })
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
 
-    return { success: true }
-
+    return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('Error in sendStatusEmail:', error)
-    return { success: false, error: error.message }
+    console.error('Email sending error:', error);
+    return NextResponse.json(
+      { error: 'メール送信に失敗しました' },
+      { status: 500 }
+    );
   }
 }
