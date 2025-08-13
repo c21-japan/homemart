@@ -7,15 +7,18 @@ import { supabase } from '@/lib/supabase'
 interface PropertySearchProps {
   selectedArea: string
   onClose: () => void
+  areaOptions: string[]
+  onReturnToSearch: () => void
 }
 
-export default function PropertySearch({ selectedArea, onClose }: PropertySearchProps) {
+export default function PropertySearch({ selectedArea, onClose, areaOptions, onReturnToSearch }: PropertySearchProps) {
   const router = useRouter()
   const [matchCount, setMatchCount] = useState<number>(0)
   const [isLoading, setIsLoading] = useState(false)
   
   // 各検索条件の状態管理
   const [searchConditions, setSearchConditions] = useState({
+    area: '',
     propertyTypes: [] as string[],
     layouts: [] as string[],
     priceMin: '',
@@ -268,7 +271,7 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
     
     // 検索条件を親コンポーネントに渡す
     const searchParams = {
-      area: selectedArea,
+      area: searchConditions.area || selectedArea,
       types: searchConditions.propertyTypes,
       layouts: searchConditions.layouts,
       priceMin: searchConditions.priceMin,
@@ -289,7 +292,7 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
     
     // 検索条件をURLパラメータとして設定（履歴に残す）
     const params = new URLSearchParams()
-    params.append('area', selectedArea)
+    params.append('area', searchConditions.area || selectedArea)
     
     if (searchConditions.propertyTypes.length > 0) {
       params.append('types', searchConditions.propertyTypes.join(','))
@@ -322,6 +325,7 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
   // 条件クリア
   const handleClear = () => {
     setSearchConditions({
+      area: '',
       propertyTypes: [],
       layouts: [],
       priceMin: '',
@@ -339,7 +343,7 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
   // 閉じるボタンの処理
   const handleClose = () => {
     onClose()
-    router.push('/')
+    onReturnToSearch() // 検索前の状態に戻す
   }
 
   return (
@@ -363,6 +367,21 @@ export default function PropertySearch({ selectedArea, onClose }: PropertySearch
           </div>
 
           <div className="p-6 space-y-6">
+            {/* エリア選択 */}
+            <div>
+              <h3 className="font-bold mb-3">エリア</h3>
+              <select
+                value={searchConditions.area}
+                onChange={(e) => setSearchConditions(prev => ({ ...prev, area: e.target.value }))}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              >
+                <option value="">エリアを選択</option>
+                {areaOptions.map(area => (
+                  <option key={area} value={area} className="text-base">{area}</option>
+                ))}
+              </select>
+            </div>
+
             {/* 種別 */}
             <div>
               <h3 className="font-bold mb-3">種別（複数選択可）</h3>
