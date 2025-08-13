@@ -31,17 +31,28 @@ export default function PropertiesPage() {
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
-
+  const [searchHistory, setSearchHistory] = useState<Property[]>([])
   
-  // 簡易検索の状態
+  // かんたん検索の状態
   const [simpleSearch, setSimpleSearch] = useState({
-    area: '奈良県',
+    area: '',
     propertyType: '',
     keyword: ''
   })
 
-  // エリアの選択肢
-  const areaOptions = ['奈良県', '大阪府', '京都府', '兵庫県']
+  // エリアの選択肢（市区町村レベル）
+  const areaOptions = [
+    // 奈良県
+    '奈良市', '天理市', '香芝市', '大和高田市', '橿原市', '葛城市', '大和郡山市', '桜井市', '生駒市',
+    '生駒郡三郷町', '生駒郡安堵町', '生駒郡平群町', '生駒郡斑鳩町', '磯城郡田原本町', '磯城郡三宅町', '磯城郡川西町',
+    '北葛城郡広陵町', '北葛城郡王寺町', '北葛城郡河合町', '北葛城郡上牧町',
+    // 大阪府
+    '堺市堺区', '堺市中区', '堺市東区', '堺市西区', '堺市南区', '堺市北区', '堺市美原区',
+    '岸和田市', '吹田市', '貝塚市', '茨木市', '富田林市', '松原市', '箕面市', '門真市',
+    '藤井寺市', '四條畷市', '泉大津市', '守口市', '八尾市', '寝屋川市', '大東市', '柏原市',
+    '摂津市', '交野市', '池田市', '高槻市', '枚方市', '泉佐野市', '河内長野市', '和泉市',
+    '羽曳野市', '高石市', '泉南市', '大阪狭山市'
+  ]
 
   // 種別の選択肢
   const propertyTypeOptions = ['', '新築戸建', '中古戸建', '中古マンション', '土地']
@@ -61,6 +72,7 @@ export default function PropertiesPage() {
         } else {
           setProperties(data || [])
           setFilteredProperties(data || [])
+          setSearchHistory(data || [])
         }
       } catch (error) {
         console.error('Error:', error)
@@ -72,16 +84,15 @@ export default function PropertiesPage() {
     fetchProperties()
   }, [])
 
-  // 簡易検索の実行
+  // かんたん検索の実行
   const handleSimpleSearch = () => {
-    console.log('簡易検索実行:', simpleSearch) // デバッグ用
+    console.log('かんたん検索実行:', simpleSearch) // デバッグ用
     let filtered = properties
 
     // エリアで絞り込み
-    if (simpleSearch.area && simpleSearch.area !== '奈良県') {
+    if (simpleSearch.area) {
       filtered = filtered.filter(property => 
-        property.prefecture === simpleSearch.area || 
-        property.city.includes(simpleSearch.area) ||
+        property.city === simpleSearch.area || 
         property.address.includes(simpleSearch.area)
       )
     }
@@ -112,7 +123,7 @@ export default function PropertiesPage() {
   // 検索条件をクリア
   const handleClearSearch = () => {
     setSimpleSearch({
-      area: '奈良県',
+      area: '',
       propertyType: '',
       keyword: ''
     })
@@ -131,8 +142,7 @@ export default function PropertiesPage() {
       // エリアで絞り込み
       if (searchParams.area) {
         filtered = filtered.filter(property => 
-          property.prefecture === searchParams.area || 
-          property.city.includes(searchParams.area) ||
+          property.city === searchParams.area || 
           property.address.includes(searchParams.area)
         )
         console.log('エリア絞り込み後:', filtered.length, '件')
@@ -253,9 +263,9 @@ export default function PropertiesPage() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">物件一覧</h1>
           <p className="text-gray-600 mb-6">お客様に最適な物件をご紹介します</p>
           
-          {/* 簡易検索 */}
+          {/* かんたん検索 */}
           <div className="bg-gray-50 p-6 rounded-lg mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">簡易検索</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">かんたん検索</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               {/* エリア選択 */}
               <div>
@@ -265,6 +275,7 @@ export default function PropertiesPage() {
                   onChange={(e) => setSimpleSearch(prev => ({ ...prev, area: e.target.value }))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                 >
+                  <option value="">エリアを選択</option>
                   {areaOptions.map(area => (
                     <option key={area} value={area} className="text-base">{area}</option>
                   ))}
@@ -355,6 +366,8 @@ export default function PropertiesPage() {
         <PropertySearch
           onClose={() => setShowSearch(false)}
           selectedArea=""
+          areaOptions={areaOptions}
+          onReturnToSearch={() => setFilteredProperties(searchHistory)}
         />
       )}
     </div>
