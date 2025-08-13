@@ -42,6 +42,7 @@ interface GoogleEvent {
 }
 
 export default function GoogleWorkspace() {
+  const { isAuthenticated, isLoading: authLoading, error: authError, authenticate, logout } = useGoogleAuth()
   const [activeTab, setActiveTab] = useState<'drive' | 'gmail' | 'sheets' | 'calendar'>('drive')
   const [driveFiles, setDriveFiles] = useState<GoogleFile[]>([])
   const [emails, setEmails] = useState<GoogleEmail[]>([])
@@ -89,68 +90,46 @@ export default function GoogleWorkspace() {
   }
 
   const fetchData = async (tab: typeof activeTab) => {
+    if (!isAuthenticated) {
+      setError('Googleアカウントの認証が必要です')
+      return
+    }
+
     setLoading(true)
     setError(null)
     
     try {
-      // 実際の実装では、ここでGoogle APIを呼び出します
-      // 現在はモックデータを使用
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Google APIから実際のデータを取得
+      const response = await fetch('/api/google/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: tab,
+          maxResults: 10,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('データの取得に失敗しました')
+      }
+
+      const { data } = await response.json()
       
       switch (tab) {
         case 'drive':
-          setDriveFiles([
-            {
-              id: '1',
-              name: '営業資料2024.pdf',
-              mimeType: 'application/pdf',
-              webViewLink: '#',
-              modifiedTime: new Date().toISOString(),
-              size: '2048576'
-            },
-            {
-              id: '2',
-              name: '物件写真',
-              mimeType: 'application/vnd.google-apps.folder',
-              webViewLink: '#',
-              modifiedTime: new Date().toISOString()
-            }
-          ])
+          setDriveFiles(data || [])
           break
         case 'gmail':
-          setEmails([
-            {
-              id: '1',
-              subject: '物件のお問い合わせについて',
-              from: 'customer@example.com',
-              snippet: '先日お問い合わせした物件について、詳細を教えていただけますでしょうか...',
-              date: new Date().toISOString(),
-              isRead: false
-            }
-          ])
+          setEmails(data || [])
           break
         case 'sheets':
-          setDriveFiles([
-            {
-              id: '3',
-              name: '営業実績管理表',
-              mimeType: 'application/vnd.google-apps.spreadsheet',
-              webViewLink: '#',
-              modifiedTime: new Date().toISOString()
-            }
-          ])
+          setDriveFiles(data || [])
           break
         case 'calendar':
-          setEvents([
-            {
-              id: '1',
-              summary: '物件内見',
-              start: new Date().toISOString(),
-              end: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-              description: '新築マンションの内見',
-              location: '東京都渋谷区'
-            }
-          ])
+          setEvents(data || [])
           break
       }
     } catch (err) {
@@ -168,8 +147,20 @@ export default function GoogleWorkspace() {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Google Workspace</h2>
-        <p className="text-gray-600">Googleの各種サービスに素早くアクセス</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Google Workspace</h2>
+            <p className="text-gray-600">Googleの各種サービスに素早くアクセス</p>
+          </div>
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              ログアウト
+            </button>
+          )}
+        </div>
       </div>
 
       {/* タブナビゲーション */}
@@ -194,6 +185,34 @@ export default function GoogleWorkspace() {
           })}
         </nav>
       </div>
+
+      {/* 認証状態の表示 */}
+      {!isAuthenticated && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-800 font-medium">Googleアカウントの認証が必要です</p>
+              <p className="text-blue-600 text-sm mt-1">
+                Googleドライブ、Gmail、カレンダーなどのサービスにアクセスするには認証を行ってください
+              </p>
+            </div>
+            <button
+              onClick={authenticate}
+              disabled={authLoading}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              {authLoading ? '認証中...' : 'Googleで認証'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 認証エラーメッセージ */}
+      {authError && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-800">{authError}</p>
+        </div>
+      )}
 
       {/* エラーメッセージ */}
       {error && (

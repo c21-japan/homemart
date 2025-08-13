@@ -205,9 +205,7 @@ async function enhanceImage(originalPath: string, enhancementPrompt: string, api
     const processedImagePath = `lead-photos/processed/${timestamp}-enhanced.jpg`
 
     // Supabase Storageに保存
-    const { createClient } = await import('@/lib/supabase/server')
-    const cookieStore = await import('next/headers').then(m => m.cookies())
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     const { error: uploadError } = await supabase.storage
       .from('lead-photos')
@@ -271,9 +269,7 @@ async function stageImage(originalPath: string, stagingPrompt: string, apiKey: s
     const stagedImagePath = `lead-photos/staged/${timestamp}-staged.jpg`
 
     // Supabase Storageに保存
-    const { createClient } = await import('@/lib/supabase/server')
-    const cookieStore = await import('next/headers').then(m => m.cookies())
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     const { error: uploadError } = await supabase.storage
       .from('lead-photos')
@@ -296,8 +292,7 @@ async function stageImage(originalPath: string, stagingPrompt: string, apiKey: s
 // 画像処理の進捗確認
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
