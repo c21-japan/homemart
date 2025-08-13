@@ -6,12 +6,14 @@ import { supabase } from '@/lib/supabase'
 
 interface PropertySearchProps {
   selectedArea: string
+  selectedRoute?: string
+  selectedStation?: string
   onClose: () => void
   areaOptions: string[]
   onReturnToSearch: () => void
 }
 
-export default function PropertySearch({ selectedArea, onClose, areaOptions, onReturnToSearch }: PropertySearchProps) {
+export default function PropertySearch({ selectedArea, selectedRoute, selectedStation, onClose, areaOptions, onReturnToSearch }: PropertySearchProps) {
   const router = useRouter()
   const [matchCount, setMatchCount] = useState<number>(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -177,6 +179,16 @@ export default function PropertySearch({ selectedArea, onClose, areaOptions, onR
           .eq('status', 'published')
           .ilike('address', `%${selectedArea}%`)
 
+        // 路線フィルタ
+        if (selectedRoute) {
+          query = query.eq('route', selectedRoute)
+        }
+
+        // 最寄駅フィルタ
+        if (selectedStation) {
+          query = query.eq('station', selectedStation)
+        }
+
         // 種別フィルタ
         if (searchConditions.propertyTypes.length > 0) {
           query = query.in('property_type', searchConditions.propertyTypes)
@@ -272,6 +284,8 @@ export default function PropertySearch({ selectedArea, onClose, areaOptions, onR
     // 検索条件を親コンポーネントに渡す
     const searchParams = {
       area: searchConditions.area || selectedArea,
+      route: selectedRoute,
+      station: selectedStation,
       types: searchConditions.propertyTypes,
       layouts: searchConditions.layouts,
       priceMin: searchConditions.priceMin,
@@ -293,6 +307,14 @@ export default function PropertySearch({ selectedArea, onClose, areaOptions, onR
     // 検索条件をURLパラメータとして設定（履歴に残す）
     const params = new URLSearchParams()
     params.append('area', searchConditions.area || selectedArea)
+    
+    // 路線と駅の情報をURLパラメータに追加
+    if (selectedRoute) {
+      params.append('route', selectedRoute)
+    }
+    if (selectedStation) {
+      params.append('station', selectedStation)
+    }
     
     if (searchConditions.propertyTypes.length > 0) {
       params.append('types', searchConditions.propertyTypes.join(','))
@@ -354,6 +376,12 @@ export default function PropertySearch({ selectedArea, onClose, areaOptions, onR
           <div className="bg-orange-500 text-white p-6 rounded-t-lg">
             <h2 className="text-2xl font-bold">物件検索</h2>
             <p className="mt-2">エリア：{selectedArea}</p>
+            {selectedRoute && (
+              <p className="mt-1 text-sm opacity-90">路線：{selectedRoute}</p>
+            )}
+            {selectedStation && (
+              <p className="mt-1 text-sm opacity-90">最寄駅：{selectedStation}駅</p>
+            )}
             <div className="mt-4 flex items-center gap-2">
               <span className="text-3xl font-bold">
                 {isLoading ? (

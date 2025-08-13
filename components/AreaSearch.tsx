@@ -5,11 +5,40 @@ import PropertySearch from './PropertySearch'
 import { getPropertyCountsByArea } from '@/lib/supabase/properties'
 import { supabase } from '@/lib/supabase'
 
+// 路線と駅のデータ（管理画面と同じ）
+const routeStations: { [key: string]: string[] } = {
+  'JR大和路線': ['王寺', '法隆寺', '大和小泉', '郡山', '奈良', '平城山', '木津', '加茂'],
+  'JR和歌山線': ['王寺', '畠田', '志都美', '香芝', '高田', '大和新庄', '御所', '玉手', '掖上', '吉野口', '北宇智', '五条'],
+  'JR桜井線': ['奈良', '京終', '帯解', '櫟本', '天理', '長柄', '柳本', '巻向', '三輪', '桜井', '香久山', '畝傍', '金橋', '高田'],
+  '近鉄奈良線': ['大和西大寺', '新大宮', '近鉄奈良', '学園前', '富雄', '東生駒', '生駒', '石切', '額田', '枚岡', '瓢箪山', '東花園', '河内花園', '若江岩田', '八戸ノ里', '河内小阪', '河内永和', '俊徳道', '長瀬', '弥刀', '久宝寺口'],
+  '近鉄大阪線': ['大和八木', '耳成', '大福', '桜井', '大和朝倉', '長谷寺', '榛原', '室生口大野', '三本松', '赤目口', '名張', '桔梗が丘', '美旗', '伊賀神戸'],
+  '近鉄橿原線': ['大和西大寺', '尼ヶ辻', '西ノ京', '九条', '近鉄郡山', '筒井', '平端', 'ファミリー公園前', '結崎', '石見', '田原本', '笠縫', '新ノ口', '大和八木', '八木西口', '畝傍御陵前', '橿原神宮前'],
+  '近鉄京都線': ['大和西大寺', '平城', '高の原', '山田川', '木津川台', '新祝園', '狛田', '新田辺', '興戸', '三山木', '近鉄宮津', '小倉', '伊勢田', '大久保', '久津川', '寺田', '富野荘', '向島'],
+  '近鉄南大阪線': ['大阪阿部野橋', '河堀口', '北田辺', '今川', '針中野', '矢田', '河内天美', '布忍', '高見ノ里', '河内松原', '恵我ノ荘', '高鷲', '藤井寺', '土師ノ里', '道明寺', '古市', '駒ヶ谷', '上ノ太子', '二上山', '二上神社口', '当麻寺', '磐城', '尺土', '高田市', '浮孔', '坊城', '橿原神宮西口', '橿原神宮前'],
+  '近鉄生駒線': ['王寺', '信貴山下', '勢野北口', '竜田川', '平群', '元山上口', '東山', '萩の台', '生駒'],
+  '近鉄田原本線': ['西田原本', '黒田', '但馬', '箸尾', '池部', '佐味田川', '大輪田', '新王寺'],
+  '近鉄御所線': ['尺土', '近鉄新庄', '忍海', '近鉄御所'],
+  '近鉄吉野線': ['橿原神宮前', '岡寺', '飛鳥', '壺阪山', '市尾', '葛', '吉野口', '薬水', '大阿太', '福神', '下市口', '越部', '六田', '大和上市', '吉野神宮', '吉野'],
+  '近鉄けいはんな線': ['生駒', '白庭台', '学研北生駒', '学研奈良登美ヶ丘'],
+  '大阪メトロ御堂筋線': ['江坂', '東三国', '新大阪', '西中島南方', '中津', '梅田', '淀屋橋', '本町', '心斎橋', 'なんば', '大国町', '動物園前', '天王寺', '昭和町', '西田辺', '長居', 'あびこ', '北花田', '新金岡', 'なかもず'],
+  '大阪メトロ谷町線': ['大日', '守口', '太子橋今市', '千林大宮', '関目高殿', '野江内代', '都島', '天神橋筋六丁目', '中崎町', '東梅田', '南森町', '天満橋', '谷町四丁目', '谷町六丁目', '谷町九丁目', '四天王寺前夕陽ヶ丘', '天王寺', '阿倍野', '文の里', '田辺', '駒川中野', '平野', '喜連瓜破', '出戸', '長原', '八尾南'],
+  '大阪メトロ四つ橋線': ['西梅田', '肥後橋', '本町', '四ツ橋', 'なんば', '大国町', '花園町', '岸里', '玉出', '北加賀屋', '住之江公園'],
+  '大阪メトロ中央線': ['コスモスクエア', '大阪港', '朝潮橋', '弁天町', '九条', '阿波座', '本町', '堺筋本町', '谷町四丁目', '森ノ宮', '緑橋', '深江橋', '高井田', '長田'],
+  '大阪メトロ千日前線': ['野田阪神', '玉川', '阿波座', '西長堀', '桜川', 'なんば', '日本橋', '谷町九丁目', '鶴橋', '今里', '新深江', '小路', '北巽', '南巽'],
+  '大阪メトロ堺筋線': ['天神橋筋六丁目', '扇町', '南森町', '北浜', '堺筋本町', '長堀橋', '日本橋', '恵美須町', '動物園前', '天下茶屋'],
+  '南海本線': ['難波', '新今宮', '天下茶屋', '岸里玉出', '粉浜', '住吉大社', '住ノ江', '七道', '堺', '湊', '石津川', '諏訪ノ森', '浜寺公園', '羽衣', '高石', '北助松', '松ノ浜', '泉大津', '忠岡', '春木', '和泉大宮', '岸和田', '蛸地蔵', '貝塚', '二色浜', '鶴原', '井原里', '泉佐野', '羽倉崎', '吉見ノ里', '岡田浦', '樽井', '尾崎', '鳥取ノ荘', '箱作', '淡輪', '深日町', '深日港', '多奈川', '孝子', '和歌山大学前', '紀ノ川', '和歌山市'],
+  '南海高野線': ['難波', '今宮戎', '新今宮', '萩ノ茶屋', '天下茶屋', '岸里玉出', '帝塚山', '住吉東', '沢ノ町', '我孫子前', '浅香山', '堺東', '三国ヶ丘', '百舌鳥八幡', '中百舌鳥', '白鷺', '初芝', '萩原天神', '北野田', '狭山', '大阪狭山市', '金剛', '滝谷', '千代田', '河内長野', '三日市町', '美加の台', '千早口', '天見', '紀見峠', '林間田園都市', '御幸辻', '橋本', '紀伊清水', '学文路', '九度山', '高野下', '下古沢', '上古沢', '紀伊細川', '紀伊神谷', '極楽橋']
+}
+
 export default function AreaSearch() {
   const [selectedPrefecture, setSelectedPrefecture] = useState<'nara' | 'osaka'>('nara')
   const [selectedArea, setSelectedArea] = useState<string | null>(null)
+  const [selectedRoute, setSelectedRoute] = useState<string>('')
+  const [availableStations, setAvailableStations] = useState<string[]>([])
+  const [selectedStation, setSelectedStation] = useState<string>('')
   const [propertyCounts, setPropertyCounts] = useState<{ [key: string]: number }>({})
   const [loading, setLoading] = useState(true)
+  const [showRouteSelection, setShowRouteSelection] = useState(false)
 
   // エリアデータの定義（物件数は動的に更新される）
   const areaData = {
@@ -129,6 +158,16 @@ export default function AreaSearch() {
     }
   }, [])
 
+  // 路線が変更されたときに駅リストを更新
+  useEffect(() => {
+    if (selectedRoute && routeStations[selectedRoute]) {
+      setAvailableStations(routeStations[selectedRoute])
+    } else {
+      setAvailableStations([])
+    }
+    setSelectedStation('')
+  }, [selectedRoute])
+
   // エリアごとの物件数を取得
   const getAreaCount = (prefecture: string, city: string) => {
     const key = `${prefecture}_${city}`
@@ -140,13 +179,27 @@ export default function AreaSearch() {
     if (count === 0) {
       return // 物件数が0の場合は何もしない
     }
-    // 既存のPropertySearchコンポーネントに渡す形式に合わせる
+    // エリア選択後、路線選択画面を表示
     setSelectedArea(area.name)
+    setShowRouteSelection(true)
   }
 
   // 検索画面を閉じる関数
   const handleCloseSearch = () => {
     setSelectedArea(null)
+    setShowRouteSelection(false)
+    setSelectedRoute('')
+    setSelectedStation('')
+  }
+
+  // 路線選択をスキップして検索に進む
+  const handleSkipRouteSelection = () => {
+    setShowRouteSelection(false)
+  }
+
+  // 路線と駅の選択を完了して検索に進む
+  const handleCompleteRouteSelection = () => {
+    setShowRouteSelection(false)
   }
 
   return (
@@ -214,10 +267,85 @@ export default function AreaSearch() {
         </div>
       </div>
 
+      {/* 路線・駅選択画面 */}
+      {showRouteSelection && selectedArea && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold">路線・駅を選択</h3>
+              <button
+                onClick={handleCloseSearch}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                選択したエリア: <span className="font-medium">{selectedArea}</span>
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">路線</label>
+                <select
+                  value={selectedRoute}
+                  onChange={(e) => setSelectedRoute(e.target.value)}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                >
+                  <option value="">選択してください</option>
+                  {Object.keys(routeStations).map(route => (
+                    <option key={route} value={route}>{route}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">最寄り駅</label>
+                <select
+                  value={selectedStation}
+                  onChange={(e) => setSelectedStation(e.target.value)}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  disabled={!selectedRoute}
+                >
+                  <option value="">
+                    {selectedRoute ? '駅を選択してください' : '先に路線を選択してください'}
+                  </option>
+                  {availableStations.map(station => (
+                    <option key={station} value={station}>{station}駅</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleSkipRouteSelection}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                スキップ
+              </button>
+              <button
+                onClick={handleCompleteRouteSelection}
+                className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                検索に進む
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 既存の検索画面モーダルを使用 */}
-      {selectedArea && (
+      {selectedArea && !showRouteSelection && (
         <PropertySearch 
           selectedArea={selectedArea} 
+          selectedRoute={selectedRoute}
+          selectedStation={selectedStation}
           onClose={handleCloseSearch}
           areaOptions={[
             // 奈良県
@@ -234,6 +362,8 @@ export default function AreaSearch() {
           onReturnToSearch={() => {
             // エリア選択画面に戻る
             setSelectedArea(null)
+            setSelectedRoute('')
+            setSelectedStation('')
           }}
         />
       )}

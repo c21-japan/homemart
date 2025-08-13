@@ -252,10 +252,6 @@ export default function NewProperty() {
     building_confirmation: '',
     inspection_certificate: false,
     insurance: false,
-    performance_evaluation: false,
-    long_term_excellent: false,
-    flat35s: false,
-    energy_standard: false,
     earthquake_resistance: '',
     insulation_grade: '',
     
