@@ -6,7 +6,7 @@
    - Environments: .env.local
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 3.0s
+ ⚠ Compiled with warnings in 2000ms
 
 ./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
 Critical dependency: the request of a dependency is an expression
@@ -20,19 +20,19 @@ Import trace for requested module:
 ./lib/supabase/server.ts
 ./app/(secure)/actions/agreements.ts
 
- ✓ Compiled successfully in 4.0s
+ ✓ Compiled successfully in 2000ms
    Skipping linting
    Checking validity of types ...
 Failed to compile.
 
-./app/(secure)/actions/checklists.ts:90:65
+./app/(secure)/actions/notifications.ts:14:65
 Type error: Property 'auth' does not exist on type 'Promise<SupabaseClient<any, "public", any>>'.
 
-[0m [90m 88 |[39m
- [90m 89 |[39m     [90m// ユーザー認証チェック[39m
-[31m[1m>[22m[39m[90m 90 |[39m     [36mconst[39m { data[33m:[39m { user }[33m,[39m error[33m:[39m authError } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()
+[0m [90m 12 |[39m
+ [90m 13 |[39m     [90m// ユーザー認証チェック[39m
+[31m[1m>[22m[39m[90m 14 |[39m     [36mconst[39m { data[33m:[39m { user }[33m,[39m error[33m:[39m authError } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()
  [90m    |[39m                                                                 [31m[1m^[22m[39m
- [90m 91 |[39m     [36mif[39m (authError [33m||[39m [33m![39muser) {
- [90m 92 |[39m       [36mthrow[39m [36mnew[39m [33mError[39m([32m'認証が必要です'[39m)
- [90m 93 |[39m     }[0m
+ [90m 15 |[39m     [36mif[39m (authError [33m||[39m [33m![39muser) {
+ [90m 16 |[39m       [36mthrow[39m [36mnew[39m [33mError[39m([32m'認証が必要です'[39m)
+ [90m 17 |[39m     }[0m
 Next.js build worker exited with code: 1 and signal: null

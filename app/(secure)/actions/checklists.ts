@@ -84,7 +84,7 @@ export async function createChecklist(leadId: string, type: ChecklistType) {
 export async function getChecklist(leadId: string, type: ChecklistType) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -151,7 +151,7 @@ export async function getChecklist(leadId: string, type: ChecklistType) {
 export async function updateChecklistItem(itemId: string, updates: { checked: boolean; note?: string; file_path?: string }) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -206,7 +206,7 @@ export async function updateChecklistItem(itemId: string, updates: { checked: bo
 async function updateChecklistProgress(checklistId: string) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // チェックリスト項目を取得
     const { data: items, error: itemsError } = await supabase
@@ -239,7 +239,7 @@ async function updateChecklistProgress(checklistId: string) {
 export async function getCustomerChecklists(leadId: string) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -283,7 +283,7 @@ export async function getCustomerChecklists(leadId: string) {
 export async function getChecklistStats() {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -353,7 +353,7 @@ export async function getChecklistStats() {
 export async function attachFileToChecklistItem(itemId: string, file: File) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
