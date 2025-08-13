@@ -24,7 +24,7 @@ interface AttendanceRecord {
   notes: string
 }
 
-interface ShiftRequest {
+interface ShiftRequestData {
   id: string
   employee_id: string
   request_type: string

@@ -21,7 +21,6 @@ interface LocationData {
 }
 
 export default function PartTimeAttendanceFormPage() {
-  const router = useRouter()
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [selectedEmployee, setSelectedEmployee] = useState<string>('')
   const [attendanceType, setAttendanceType] = useState<'clock_in' | 'clock_out'>('clock_in')

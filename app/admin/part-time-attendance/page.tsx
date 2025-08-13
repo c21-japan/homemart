@@ -26,7 +26,6 @@ interface AttendanceRecord {
 }
 
 export default function PartTimeAttendancePage() {
-  const router = useRouter()
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
   const [loading, setLoading] = useState(true)

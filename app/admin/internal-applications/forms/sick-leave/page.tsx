@@ -65,7 +65,7 @@ export default function SickLeaveForm() {
     try {
       // ファイルをアップロード
       const fileName = `doctor_notes/${Date.now()}_${formData.doctor_note_file.name}`
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('internal-applications')
         .upload(fileName, formData.doctor_note_file)
 

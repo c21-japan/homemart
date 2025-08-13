@@ -33,7 +33,6 @@ interface SelectedDate {
 }
 
 export default function ShiftRequestPage() {
-  const router = useRouter()
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [selectedEmployee, setSelectedEmployee] = useState<string>('')
   const [requestType, setRequestType] = useState<'shift_request' | 'availability' | 'time_off'>('shift_request')
@@ -305,7 +304,7 @@ export default function ShiftRequestPage() {
                       type="radio"
                       value="shift_request"
                       checked={requestType === 'shift_request'}
-                      onChange={(e) => setRequestType(e.target.value as any)}
+                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
                       className="mr-2 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm">シフト申請</span>
@@ -315,7 +314,7 @@ export default function ShiftRequestPage() {
                       type="radio"
                       value="availability"
                       checked={requestType === 'availability'}
-                      onChange={(e) => setRequestType(e.target.value as any)}
+                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
                       className="mr-2 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm">勤務可能日</span>
@@ -325,7 +324,7 @@ export default function ShiftRequestPage() {
                       type="radio"
                       value="time_off"
                       checked={requestType === 'time_off'}
-                      onChange={(e) => setRequestType(e.target.value as any)}
+                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
                       className="mr-2 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm">休暇申請</span>

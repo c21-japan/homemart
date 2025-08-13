@@ -34,7 +34,6 @@ interface Application {
 }
 
 export default function ApplicationDetail() {
-  const router = useRouter()
   const params = useParams()
   const [application, setApplication] = useState<Application | null>(null)
   const [loading, setLoading] = useState(true)

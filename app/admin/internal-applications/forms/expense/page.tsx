@@ -52,7 +52,7 @@ export default function ExpenseForm() {
     try {
       // ファイルをアップロード
       const fileName = `receipts/${Date.now()}_${formData.receipt_file.name}`
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('internal-applications')
         .upload(fileName, formData.receipt_file)
 

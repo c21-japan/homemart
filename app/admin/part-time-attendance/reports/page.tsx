@@ -49,7 +49,6 @@ interface SalaryCalculation {
 }
 
 export default function AttendanceReportsPage() {
-  const router = useRouter()
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
   const [salarySettings, setSalarySettings] = useState<SalarySetting[]>([])

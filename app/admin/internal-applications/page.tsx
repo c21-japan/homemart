@@ -20,7 +20,6 @@ interface Application {
 }
 
 export default function InternalApplications() {
-  const router = useRouter()
   const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
   const [filterType, setFilterType] = useState<string>('all')
