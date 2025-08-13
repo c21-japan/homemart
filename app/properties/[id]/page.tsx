@@ -618,7 +618,7 @@ export default function PropertyDetail() {
                 
                 {/* 最近見た物件が6物件未満の場合、関連物件で残りのスロットを埋める */}
                 {Array.from({ length: Math.max(0, 10 - recentlyViewed.length) }).map((_, index) => {
-                  const relatedProperty = relatedProperties[index];
+                  const relatedProperty = relatedProperties[index] as any;
                   if (!relatedProperty) return null;
                   
                   return (
