@@ -43,6 +43,7 @@ export default function ShiftRequestPage() {
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedDates, setSelectedDates] = useState<SelectedDate[]>([])
+  const [currentMonth, setCurrentMonth] = useState(new Date())
 
 
   useEffect(() => {

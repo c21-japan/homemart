@@ -25,14 +25,7 @@ interface AttendanceRecord {
   employee_name: string
 }
 
-interface SalarySetting {
-  id: string
-  employee_id: string
-  hourly_rate: number
-  overtime_rate: number
-  holiday_rate: number
-  effective_date: string
-}
+
 
 interface SalaryCalculation {
   id: string
@@ -108,15 +101,7 @@ export default function AttendanceReportsPage() {
         console.error('Attendance error:', attendanceError)
       }
 
-      // 給与設定を取得
-      const { data: salaryData, error: salaryError } = await supabase
-        .from('salary_settings')
-        .select('*')
-        .eq('is_active', true)
 
-      if (salaryError) {
-        console.error('Salary settings error:', salaryError)
-      }
 
       // 給与計算を取得
       let salaryQuery = supabase
@@ -147,7 +132,6 @@ export default function AttendanceReportsPage() {
 
       setEmployees(employeesData || [])
       setAttendanceRecords(formattedRecords)
-      setSalarySettings(salaryData || [])
       setSalaryCalculations(salaryCalcData || [])
     } catch (error) {
       console.error('Error fetching data:', error)
