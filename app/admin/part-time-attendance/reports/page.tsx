@@ -51,7 +51,7 @@ interface SalaryCalculation {
 export default function AttendanceReportsPage() {
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
-  const [salarySettings, setSalarySettings] = useState<SalarySetting[]>([])
+
   const [salaryCalculations, setSalaryCalculations] = useState<SalaryCalculation[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEmployee, setSelectedEmployee] = useState<string>('')

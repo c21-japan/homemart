@@ -158,7 +158,17 @@ export default function PartTimeAttendanceFormPage() {
 
       if (existingRecord) {
         // 既存の記録を更新
-        const updateData: Record<string, unknown> = {
+        const updateData: {
+          updated_at: string
+          clock_in_time?: string
+          clock_out_time?: string
+          clock_in_location?: string
+          clock_out_location?: string
+          clock_in_address?: string
+          clock_out_address?: string
+          total_hours?: number
+          notes?: string
+        } = {
           updated_at: now.toISOString()
         }
 
