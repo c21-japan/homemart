@@ -505,9 +505,14 @@ export default function NewProperty() {
     const newErrors: Record<string, boolean> = {}
     
     // 必須項目のチェック
-    if (!formData.name) newErrors.name = true
-    if (!formData.price) newErrors.price = true
-    if (!formData.city) newErrors.city = true
+    if (!formData.name.trim()) newErrors.name = true
+    if (!formData.price || parseInt(formData.price) <= 0) newErrors.price = true
+    if (!formData.city.trim()) newErrors.city = true
+    
+    // 数値フィールドの検証
+    if (formData.land_area && isNaN(parseFloat(formData.land_area))) newErrors.land_area = true
+    if (formData.building_area && isNaN(parseFloat(formData.building_area))) newErrors.building_area = true
+    if (formData.floors && isNaN(parseInt(formData.floors))) newErrors.floors = true
     
     setErrors(newErrors)
     
@@ -535,7 +540,7 @@ export default function NewProperty() {
     setIsSubmitting(true)
   
     try {
-      // Supabaseのテーブルに存在するカラムのみを送信
+      // 基本的なフィールドのみを送信（データベーススキーマに合わせて）
       const submitData: Record<string, unknown> = {
         // 基本情報
         name: formData.name,
@@ -593,13 +598,13 @@ export default function NewProperty() {
         elevator: formData.elevator || false,
         auto_lock: formData.auto_lock || false,
         delivery_box: formData.delivery_box || false,
-        bicycle_parking: formData.bicycle_parking || false,
-        features: formData.features || {}
+        bicycle_parking: formData.bicycle_parking || false
       }
 
       console.log('送信データ:', submitData)
 
-      const { error } = await supabase
+      // データベースへの挿入
+      const { data, error } = await supabase
         .from('properties')
         .insert(submitData)
         .select()
@@ -608,16 +613,39 @@ export default function NewProperty() {
         console.error('Supabaseエラー詳細:', {
           message: error.message,
           code: error.code,
-          details: error.details
+          details: error.details,
+          hint: error.hint
         })
-        alert(`登録に失敗しました。\nエラー: ${error.message}`)
+        
+        // エラーメッセージをより分かりやすく表示
+        let errorMessage = '登録に失敗しました。\n'
+        if (error.code === '23505') {
+          errorMessage += 'この物件名は既に登録されています。'
+        } else if (error.code === '23502') {
+          errorMessage += '必須項目が不足しています。'
+        } else if (error.code === '23514') {
+          errorMessage += 'データの形式が正しくありません。'
+        } else {
+          errorMessage += `エラー: ${error.message}`
+        }
+        
+        alert(errorMessage)
         throw error
       }
 
-      alert('物件を登録しました')
-      router.push('/admin')
+      if (data && data.length > 0) {
+        console.log('登録成功:', data[0])
+        alert('物件を登録しました')
+        router.push('/admin')
+      } else {
+        throw new Error('登録は成功しましたが、データの取得に失敗しました')
+      }
     } catch (error) {
       console.error('Error:', error)
+      // エラーが既にalertで表示されている場合は追加で表示しない
+      if (!(error as any).message?.includes('登録に失敗しました')) {
+        alert(`予期しないエラーが発生しました: ${error}`)
+      }
     } finally {
       setIsSubmitting(false)
     }
