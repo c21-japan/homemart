@@ -176,7 +176,7 @@ async function replyLineMessage(replyToken: string, message: any) {
 }
 
 // LINEプッシュメッセージ送信
-export async function pushLineMessage(userId: string, message: any) {
+async function pushLineMessage(userId: string, message: any) {
   try {
     if (!LINE_CONFIG.channelAccessToken) {
       throw new Error('LINEチャネルアクセストークンが設定されていません')
@@ -232,8 +232,7 @@ async function getLineUserProfile(userId: string) {
 // LINEユーザー情報保存
 async function saveLineUser(userId: string, profile: any) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     await supabase
       .from('line_users')
@@ -255,8 +254,7 @@ async function saveLineUser(userId: string, profile: any) {
 // LINEユーザー情報削除
 async function removeLineUser(userId: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     await supabase
       .from('line_users')
@@ -269,10 +267,9 @@ async function removeLineUser(userId: string) {
 }
 
 // 顧客にLINE通知送信
-export async function sendLineNotificationToCustomer(leadId: string, message: string) {
+async function sendLineNotificationToCustomer(leadId: string, message: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // 顧客情報を取得
     const { data: lead, error: leadError } = await supabase

@@ -16,7 +16,7 @@ import { revalidatePath } from 'next/cache'
 export async function createChecklist(leadId: string, type: ChecklistType) {
   try {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient(cookieStore)
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
