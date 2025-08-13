@@ -1,0 +1,54 @@
+[1;33m🤔 Claudeに聞いています...[0m
+分かりました。エラー修正のためのコードを作成します。
+
+まず、TypeScriptを使用して Next.js コンポーネントを作成します。ここでは、簡単な例としてホーム ページのコンポーネントを作成します。
+
+```typescript
+// pages/index.tsx
+import React from 'react';
+
+interface HomeProps {
+  message?: string;
+}
+
+const Home: React.FC<HomeProps> = ({ message = 'Hello, World!' }) => {
+  return (
+    <div>
+      <h1>{message}</h1>
+      <p>This is the home page.</p>
+    </div>
+  );
+};
+
+export default Home;
+```
+
+次に、エラーハンドリングを行います。例として、ユーザーからの入力を受け取り、その入力が数値であることを確認するコンポーネントを作成します。
+
+```typescript
+// pages/input.tsx
+import React, { useState } from 'react';
+
+const Input: React.FC = () => {
+  const [value, setValue] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isNaN(Number(value))) {
+      setError('Input must be a number');
+    } else {
+      setError(null);
+      // Do something with the valid input
+      console.log('Valid input:', value);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Input Page</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Enter a number:
+          <input
+            type=\

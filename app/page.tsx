@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
+import type { Database } from '../types/database'
+
+// Supabaseクライアントの作成
+const supabase = createBrowserClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 interface Property {
   id: string
@@ -13,17 +20,28 @@ interface Property {
   city: string
   staff_comment?: string
   image_url?: string
+  status: string
+  featured: boolean
+}
+
+interface InquiryFormData {
+  name: string
+  email: string
+  phone: string
+  property_type: string
+  message: string
 }
 
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     fetchFeaturedProperties()
   }, [])
 
-  const fetchFeaturedProperties = async () => {
+  const fetchFeaturedProperties = async (): Promise<void> => {
     try {
       const { data, error } = await supabase
         .from('properties')
@@ -34,7 +52,8 @@ export default function HomePage() {
 
       if (error) throw error
       
-      const sortedProperties = (data || []).sort((a, b) => {
+      const typedData = data as Property[] | null
+      const sortedProperties = (typedData || []).sort((a, b) => {
         if (a.image_url && !b.image_url) return -1
         if (!a.image_url && b.image_url) return 1
         return 0
@@ -42,22 +61,52 @@ export default function HomePage() {
       
       setProperties(sortedProperties)
     } catch (error) {
-      console.error('Error:', error)
-    } finally {
-      // ローディング状態の管理は不要
+      console.error('Error fetching properties:', error)
     }
   }
 
-  const openModal = () => setIsModalOpen(true)
-  const closeModal = () => setIsModalOpen(false)
+  const openModal = (): void => setIsModalOpen(true)
+  const closeModal = (): void => setIsModalOpen(false)
 
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    const formData = new FormData(e.currentTarget)
+    
+    try {
+      const inquiryData: InquiryFormData = {
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        property_type: formData.get('property-type') as string,
+        message: formData.get('message') as string
+      }
+      
+      const { error } = await supabase
+        .from('inquiries')
+        .insert({
+          ...inquiryData,
+          created_at: new Date().toISOString()
+        })
+      
+      if (error) throw error
+      
+      alert('お問い合わせありがとうございます。担当者より連絡させていただきます。')
+      closeModal()
+    } catch (error) {
+      console.error('Error submitting inquiry:', error)
+      alert('送信に失敗しました。お電話でお問い合わせください。')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <>
       {/* Hero Section */}
       <section className="min-h-screen bg-gradient-to-br from-[#121212] to-[#252526] flex items-center relative mt-24 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 relative z-10 max-w-4xl">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-[#BEAF87] text-sm font-medium uppercase tracking-widest mb-6">CENTURY 21 HOMEMART</div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
             奈良・大阪の不動産、<br />社長直結で最適解へ。
@@ -96,7 +145,6 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Background decoration */}
         <div className="absolute top-0 -right-20 w-3/5 h-full bg-gradient-to-br from-transparent to-[#BEAF87]/10 pointer-events-none"></div>
       </section>
 
@@ -202,13 +250,13 @@ export default function HomePage() {
                   {property.image_url ? (
                     <img
                       src={property.image_url}
-                      alt={property.name}
+                      alt={`${property.name}の外観写真`}
                       className="w-full h-full object-contain object-center"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-6xl text-gray-400">🏠</span>
+                    <div className="w-full h-full flex items-center justify-center" aria-label={`${property.name}のプレースホルダー画像`}>
+                      <span className="text-6xl text-gray-400" role="img" aria-label="家の絵文字">🏠</span>
                     </div>
                   )}
                 </div>
@@ -480,7 +528,7 @@ export default function HomePage() {
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-2xl font-bold mb-6">無料査定・ご相談フォーム</h3>
-            <form onSubmit={(e) => { e.preventDefault(); closeModal(); }}>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label htmlFor="name" className="block mb-2 font-semibold">
                   お名前 <span className="text-red-600">*</span>
@@ -490,6 +538,7 @@ export default function HomePage() {
                   id="name"
                   name="name"
                   required
+                  aria-label="お名前を入力してください"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#517394] focus:outline-none focus:ring-2 focus:ring-[#517394]/20"
                 />
               </div>
@@ -503,6 +552,7 @@ export default function HomePage() {
                   id="email"
                   name="email"
                   required
+                  aria-label="メールアドレスを入力してください"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#517394] focus:outline-none focus:ring-2 focus:ring-[#517394]/20"
                 />
               </div>
@@ -516,6 +566,7 @@ export default function HomePage() {
                   id="phone"
                   name="phone"
                   required
+                  aria-label="電話番号を入力してください"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#517394] focus:outline-none focus:ring-2 focus:ring-[#517394]/20"
                 />
               </div>
@@ -525,6 +576,7 @@ export default function HomePage() {
                 <select
                   id="property-type"
                   name="property-type"
+                  aria-label="物件種別を選択してください"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#517394] focus:outline-none focus:ring-2 focus:ring-[#517394]/20"
                 >
                   <option value="">選択してください</option>
@@ -541,6 +593,7 @@ export default function HomePage() {
                   id="message"
                   name="message"
                   rows={4}
+                  aria-label="ご相談内容を入力してください"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:border-[#517394] focus:outline-none focus:ring-2 focus:ring-[#517394]/20 resize-vertical"
                 ></textarea>
               </div>
@@ -548,14 +601,16 @@ export default function HomePage() {
               <div className="flex gap-4">
                 <button
                   type="submit"
-                  className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-1 hover:shadow-lg"
+                  disabled={isLoading}
+                  className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  送信する
+                  {isLoading ? '送信中...' : '送信する'}
                 </button>
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-transparent text-[#121212] border-2 border-[#BEAF87] rounded-full font-semibold transition-all duration-300 hover:bg-[#F8F7F2] hover:-translate-y-1"
+                  disabled={isLoading}
+                  className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-transparent text-[#121212] border-2 border-[#BEAF87] rounded-full font-semibold transition-all duration-300 hover:bg-[#F8F7F2] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   閉じる
                 </button>
@@ -565,11 +620,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Font Awesome CDN */}
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      />
     </>
   )
 }

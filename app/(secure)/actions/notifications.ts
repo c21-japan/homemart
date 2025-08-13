@@ -7,8 +7,7 @@ import { revalidatePath } from 'next/cache'
 // チェックリスト完了通知
 export async function sendChecklistCompletionNotification(checklistId: string, leadId: string) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -88,8 +87,7 @@ ${process.env.NEXT_PUBLIC_SITE_URL}/admin/leads/${leadId}
 // 未完了リマインド通知
 export async function sendIncompleteReminders() {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -176,8 +174,7 @@ ${process.env.NEXT_PUBLIC_SITE_URL}/admin/leads/${lead.id}
 // 媒介契約期限切れアラート
 export async function sendAgreementDeadlineAlerts() {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     // ユーザー認証チェック
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -292,8 +289,7 @@ async function saveNotificationLog(
   recipients: string[]
 ) {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient()
 
     await supabase
       .from('notification_logs')

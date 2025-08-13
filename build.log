@@ -6,33 +6,18 @@
    - Environments: .env.local
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 6.0s
-
-./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
-Critical dependency: the request of a dependency is an expression
-
-Import trace for requested module:
-./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
-./node_modules/@supabase/realtime-js/dist/module/index.js
-./node_modules/@supabase/supabase-js/dist/module/index.js
-./node_modules/@supabase/ssr/dist/module/createBrowserClient.js
-./node_modules/@supabase/ssr/dist/module/index.js
-./lib/supabase/server.ts
-./app/(secure)/actions/agreements.ts
-
  ✓ Compiled successfully in 6.0s
    Skipping linting
    Checking validity of types ...
 Failed to compile.
 
-./app/(secure)/actions/notifications.ts:14:65
-Type error: Property 'auth' does not exist on type 'Promise<SupabaseClient<any, "public", any>>'.
+./app/(secure)/actions/checklists.ts:19:41
+Type error: Expected 0 arguments, but got 1.
 
-[0m [90m 12 |[39m
- [90m 13 |[39m     [90m// ユーザー認証チェック[39m
-[31m[1m>[22m[39m[90m 14 |[39m     [36mconst[39m { data[33m:[39m { user }[33m,[39m error[33m:[39m authError } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()
- [90m    |[39m                                                                 [31m[1m^[22m[39m
- [90m 15 |[39m     [36mif[39m (authError [33m||[39m [33m![39muser) {
- [90m 16 |[39m       [36mthrow[39m [36mnew[39m [33mError[39m([32m'認証が必要です'[39m)
- [90m 17 |[39m     }[0m
-Next.js build worker exited with code: 1 and signal: null
+[0m [90m 17 |[39m   [36mtry[39m {
+ [90m 18 |[39m     [36mconst[39m cookieStore [33m=[39m cookies()
+[31m[1m>[22m[39m[90m 19 |[39m     [36mconst[39m supabase [33m=[39m [36mawait[39m createClient(cookieStore)
+ [90m    |[39m                                         [31m[1m^[22m[39m
+ [90m 20 |[39m
+ [90m 21 |[39m     [90m// ユーザー認証チェック[39m
+ [90m 22 |[39m     [36mconst[39m { data[33m:[39m { user }[33m,[39m error[33m:[39m authError } [33m=[39m [36mawait[39m supabase[33m.[39mauth[33m.[39mgetUser()[0m

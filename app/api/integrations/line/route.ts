@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('x-line-signature')
 
     // 署名検証
-    if (!verifyLineSignature(body, signature)) {
+    if (!(await verifyLineSignature(body, signature))) {
       return NextResponse.json({ error: '署名が無効です' }, { status: 401 })
     }
 
@@ -40,11 +40,11 @@ export async function POST(request: NextRequest) {
 }
 
 // LINE署名検証
-function verifyLineSignature(body: string, signature: string | null): boolean {
+async function verifyLineSignature(body: string, signature: string | null): Promise<boolean> {
   if (!signature || !LINE_CONFIG.channelSecret) return false
   
-  const crypto = require('crypto')
-  const hash = crypto
+  const crypto = await import('crypto')
+  const hash = crypto.default
     .createHmac('SHA256', LINE_CONFIG.channelSecret)
     .update(body)
     .digest('base64')
