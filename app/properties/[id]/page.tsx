@@ -69,7 +69,7 @@ export default function PropertyDetail() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [relatedProperties, setRelatedProperties] = useState<any[]>([])
+  const [relatedProperties, setRelatedProperties] = useState<unknown[]>([])
   const [loadingRelated, setLoadingRelated] = useState(false)
 
   useEffect(() => {
