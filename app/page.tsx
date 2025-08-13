@@ -149,7 +149,7 @@ export default function HomePage() {
       </section>
 
       {/* Property Catalog Section */}
-      <section className="py-28 bg-white" id="catalog">
+      <section className="py-28 bg-white relative z-10" id="catalog">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-5xl font-bold text-[#121212] mb-6">物件を探す</h2>
@@ -158,22 +158,22 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-12">
-            <Link href="/properties?type=新築戸建" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212]">
+            <Link href="/properties?type=新築戸建" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212] pointer-events-auto relative z-20" onClick={() => console.log('新築戸建クリック')}>
               <div className="text-4xl mb-4">🏡</div>
               <h3 className="text-lg font-semibold mb-2">新築戸建</h3>
               <p className="text-[#727273]">最新設備の家</p>
             </Link>
-            <Link href="/properties?type=中古戸建" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212]">
+            <Link href="/properties?type=中古戸建" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212] pointer-events-auto relative z-20" onClick={() => console.log('中古戸建クリック')}>
               <div className="text-4xl mb-4">🏠</div>
               <h3 className="text-lg font-semibold mb-2">中古戸建</h3>
               <p className="text-[#727273]">リフォーム済み</p>
             </Link>
-            <Link href="/properties?type=マンション" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212]">
+            <Link href="/properties?type=マンション" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212] pointer-events-auto relative z-20" onClick={() => console.log('マンションクリック')}>
               <div className="text-4xl mb-4">🏢</div>
               <h3 className="text-lg font-semibold mb-2">マンション</h3>
               <p className="text-[#727273]">便利な立地</p>
             </Link>
-            <Link href="/properties?type=土地" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212]">
+            <Link href="/properties?type=土地" className="bg-white border border-[#F4F4F6] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#BEAF87] text-[#121212] pointer-events-auto relative z-20" onClick={() => console.log('土地クリック')}>
               <div className="text-4xl mb-4">🏞️</div>
               <h3 className="text-lg font-semibold mb-2">売り土地</h3>
               <p className="text-[#727273]">理想の場所</p>
@@ -181,7 +181,7 @@ export default function HomePage() {
           </div>
 
           <div className="text-center">
-            <Link href="/properties" className="inline-flex items-center justify-center px-8 py-4 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-1 hover:shadow-xl min-h-12">
+            <Link href="/properties" className="inline-flex items-center justify-center px-8 py-4 bg-[#517394] text-white font-semibold rounded-full transition-all duration-300 hover:bg-[#6E8FAF] hover:-translate-y-1 hover:shadow-xl min-h-12 pointer-events-auto relative z-20" onClick={() => console.log('すべての物件を見るクリック')}>
               すべての物件を見る →
             </Link>
           </div>

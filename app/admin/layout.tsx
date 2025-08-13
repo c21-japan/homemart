@@ -1,8 +1,7 @@
 'use client'
 
-import { useRequireAuth } from '@/lib/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 export default function AdminLayout({
@@ -10,18 +9,44 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, staff, loading, requireAuth } = useRequireAuth()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    const authStatus = requireAuth()
-    
-    if (authStatus === 'unauthenticated') {
-      router.push('/admin/login')
-    } else if (authStatus === 'unauthorized') {
-      router.push('/admin/login')
+    // セッションストレージから認証状態をチェック
+    const checkAuth = () => {
+      const authStatus = sessionStorage.getItem('admin-auth')
+      const timestamp = sessionStorage.getItem('admin-timestamp')
+      
+      if (authStatus === 'authenticated' && timestamp) {
+        const now = Date.now()
+        const authTime = parseInt(timestamp)
+        
+        // 24時間以内の認証であれば有効
+        if (now - authTime < 24 * 60 * 60 * 1000) {
+          setIsAuthenticated(true)
+        } else {
+          // 認証期限切れ
+          sessionStorage.removeItem('admin-auth')
+          sessionStorage.removeItem('admin-timestamp')
+          router.push('/admin/login')
+        }
+      } else {
+        // 認証されていない場合はログインページにリダイレクト
+        router.push('/admin/login')
+      }
+      setLoading(false)
     }
-  }, [requireAuth, router])
+
+    checkAuth()
+  }, [router])
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('admin-auth')
+    sessionStorage.removeItem('admin-timestamp')
+    router.push('/admin/login')
+  }
 
   // ローディング中
   if (loading) {
@@ -36,8 +61,15 @@ export default function AdminLayout({
   }
 
   // 認証されていない場合
-  if (!user || !staff) {
-    return null
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">認証中...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -48,19 +80,16 @@ export default function AdminLayout({
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold text-gray-900">ホームマート 管理画面</h1>
             <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-              {staff.role === 'admin' ? '管理者' : staff.role}
+              管理者
             </span>
           </div>
           
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-600">
-              ログイン中: {staff.first_name} {staff.last_name} ({user.email})
+              ログイン中: 管理者
             </div>
             <button
-              onClick={() => {
-                // AuthContextのsignOutを使用
-                window.location.href = '/admin/login'
-              }}
+              onClick={handleLogout}
               className="text-sm text-red-600 hover:text-red-700 font-medium"
             >
               ログアウト

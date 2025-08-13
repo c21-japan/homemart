@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { setCookie } from 'cookies-next'
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('')
@@ -22,15 +21,11 @@ export default function AdminLogin() {
       if (password === 'homemart2024') {
         console.log('パスワード認証成功')
         
-        // 認証成功：クッキーを設定
-        setCookie('admin-auth', 'authenticated', {
-          maxAge: 60 * 60 * 24, // 24時間
-          path: '/',
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
+        // 認証成功：セッションストレージに保存
+        sessionStorage.setItem('admin-auth', 'authenticated')
+        sessionStorage.setItem('admin-timestamp', Date.now().toString())
         
-        console.log('クッキー設定完了、管理画面にリダイレクト')
+        console.log('認証情報保存完了、管理画面にリダイレクト')
         
         // 管理画面にリダイレクト
         router.push('/admin')
@@ -47,9 +42,7 @@ export default function AdminLogin() {
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    console.log('パスワード入力:', value ? '***' : '空')
-    setPassword(value)
+    setPassword(e.target.value)
   }
 
   return (
@@ -93,24 +86,16 @@ export default function AdminLogin() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#BEAF87] hover:bg-[#BEAF87]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#BEAF87] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                onClick={() => console.log('ボタンクリック')}
               >
                 {isLoading ? 'ログイン中...' : 'ログイン'}
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  ホームマート管理画面
-                </span>
-              </div>
-            </div>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              パスワード: homemart2024
+            </p>
           </div>
         </div>
       </div>

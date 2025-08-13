@@ -2,16 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { deleteCookie } from 'cookies-next'
 import GoogleWorkspace from '@/components/GoogleWorkspace'
 import { useProperties, useInquiries, useReformProjects, useDashboardStats } from '@/lib/hooks/useQueryHooks'
-import { useAuth } from '@/lib/contexts/AuthContext'
 import { useCallback, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export default function AdminDashboard() {
   const router = useRouter()
-  const { signOut } = useAuth()
 
   // React Queryを使用したデータフェッチ（並列実行）
   const { data: properties = [], isLoading: propertiesLoading } = useProperties(5)
@@ -26,10 +23,10 @@ export default function AdminDashboard() {
   )
 
   const handleLogout = useCallback(() => {
-    deleteCookie('admin-auth')
-    signOut()
+    sessionStorage.removeItem('admin-auth')
+    sessionStorage.removeItem('admin-timestamp')
     router.push('/admin/login')
-  }, [signOut, router])
+  }, [router])
 
   const handleDeleteProperty = useCallback(async (id: string) => {
     if (!confirm('この物件を削除してもよろしいですか？')) return
