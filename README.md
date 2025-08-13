@@ -76,6 +76,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    - `database-internal-applications.sql` - 社内申請管理テーブル
    - `database-part-time-attendance.sql` - アルバイト勤怠管理テーブル
    - `database-shift-requests.sql` - シフト申請・給与計算テーブル
+   - `database-leads.sql` - リード（顧客情報）管理テーブル
    - `supabase-storage-policies.sql` - 画像アップロード用のストレージポリシー
 3. 認証設定を有効化
 4. Storageで`images`バケットを作成し、公開設定を有効化
@@ -98,6 +99,7 @@ npm run dev
 - 物件管理
 - 施工実績管理
 - お問い合わせ管理
+- リード（顧客情報）管理
 - 画像管理
 - 社内申請管理
 

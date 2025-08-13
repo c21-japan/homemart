@@ -16,7 +16,7 @@ const routeStations: { [key: string]: string[] } = {
   '近鉄京都線': ['大和西大寺', '平城', '高の原', '山田川', '木津川台', '新祝園', '狛田', '新田辺', '興戸', '三山木', '近鉄宮津', '小倉', '伊勢田', '大久保', '久津川', '寺田', '富野荘', '向島'],
   '近鉄南大阪線': ['大阪阿部野橋', '河堀口', '北田辺', '今川', '針中野', '矢田', '河内天美', '布忍', '高見ノ里', '河内松原', '恵我ノ荘', '高鷲', '藤井寺', '土師ノ里', '道明寺', '古市', '駒ヶ谷', '上ノ太子', '二上山', '二上神社口', '当麻寺', '磐城', '尺土', '高田市', '浮孔', '坊城', '橿原神宮西口', '橿原神宮前'],
   '近鉄生駒線': ['王寺', '信貴山下', '勢野北口', '竜田川', '平群', '元山上口', '東山', '萩の台', '生駒'],
-  '近鉄田原本線': ['西田原本', '黒田', '但馬', '箸尾', '池部', '佐味田川', '大輪田', '新王寺'],
+  '近鉄田原本線': ['西田原本', '黒田', '但馬', '池部', '佐味田川', '大輪田', '新王寺'],
   '近鉄御所線': ['尺土', '近鉄新庄', '忍海', '近鉄御所'],
   '近鉄吉野線': ['橿原神宮前', '岡寺', '飛鳥', '壺阪山', '市尾', '葛', '吉野口', '薬水', '大阿太', '福神', '下市口', '越部', '六田', '大和上市', '吉野神宮', '吉野'],
   '近鉄けいはんな線': ['生駒', '白庭台', '学研北生駒', '学研奈良登美ヶ丘'],
@@ -39,9 +39,20 @@ export default function AreaSearch() {
   const [propertyCounts, setPropertyCounts] = useState<{ [key: string]: number }>({})
   const [loading, setLoading] = useState(true)
   const [showRouteSelection, setShowRouteSelection] = useState(false)
+  
+  // かんたん検索用の状態
+  const [simpleSearchArea, setSimpleSearchArea] = useState<string>('')
+  const [simpleSearchType, setSimpleSearchType] = useState<string>('')
+  const [simpleSearchKeyword, setSimpleSearchKeyword] = useState<string>('')
+  const [simpleSearchRoute, setSimpleSearchRoute] = useState<string>('')
+  const [simpleSearchStation, setSimpleSearchStation] = useState<string>('')
+  const [simpleSearchAvailableStations, setSimpleSearchAvailableStations] = useState<string[]>([])
 
   // エリアデータの定義（物件数は動的に更新される）
-  const areaData = {
+  const areaData: {
+    nara: Array<{ name: string; prefecture: string }>;
+    osaka: Array<{ name: string; prefecture: string }>;
+  } = {
     nara: [
       { name: '奈良市', prefecture: '奈良県' },
       { name: '天理市', prefecture: '奈良県' },
@@ -102,6 +113,16 @@ export default function AreaSearch() {
       { name: '大阪狭山市', prefecture: '大阪府' }
     ]
   }
+
+  // かんたん検索用のエリアデータ（カテゴリー付き）
+  const simpleSearchAreaData: Array<{ name: string; prefecture: string; disabled?: boolean; isCategory?: boolean }> = [
+    // 奈良県カテゴリー
+    { name: '奈良県', prefecture: '奈良県', disabled: true, isCategory: true },
+    ...areaData.nara,
+    // 大阪府カテゴリー
+    { name: '大阪府', prefecture: '大阪府', disabled: true, isCategory: true },
+    ...areaData.osaka
+  ]
 
   // 物件数を取得する関数
   async function fetchPropertyCounts() {
@@ -168,6 +189,16 @@ export default function AreaSearch() {
     setSelectedStation('')
   }, [selectedRoute])
 
+  // かんたん検索用の路線変更時の駅リスト更新
+  useEffect(() => {
+    if (simpleSearchRoute && routeStations[simpleSearchRoute]) {
+      setSimpleSearchAvailableStations(routeStations[simpleSearchRoute])
+    } else {
+      setSimpleSearchAvailableStations([])
+    }
+    setSimpleSearchStation('')
+  }, [simpleSearchRoute])
+
   // エリアごとの物件数を取得
   const getAreaCount = (prefecture: string, city: string) => {
     const key = `${prefecture}_${city}`
@@ -202,8 +233,131 @@ export default function AreaSearch() {
     setShowRouteSelection(false)
   }
 
+  // かんたん検索の実行
+  const handleSimpleSearch = () => {
+    console.log('かんたん検索:', {
+      area: simpleSearchArea,
+      type: simpleSearchType,
+      keyword: simpleSearchKeyword,
+      route: simpleSearchRoute,
+      station: simpleSearchStation
+    })
+    // ここで検索処理を実行
+  }
+
+  // かんたん検索のクリア
+  const handleSimpleSearchClear = () => {
+    setSimpleSearchArea('')
+    setSimpleSearchType('')
+    setSimpleSearchKeyword('')
+    setSimpleSearchRoute('')
+    setSimpleSearchStation('')
+  }
+
   return (
     <>
+      {/* かんたん検索セクション */}
+      <div className="bg-gray-50 p-6 rounded-lg mb-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">かんたん検索</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">エリア</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              value={simpleSearchArea}
+              onChange={(e) => setSimpleSearchArea(e.target.value)}
+            >
+              <option value="">エリアを選択</option>
+              {simpleSearchAreaData.map((area) => (
+                <option 
+                  key={area.name} 
+                  value={area.name}
+                  disabled={area.disabled}
+                  className="text-base"
+                >
+                  {area.isCategory ? `【${area.name}】` : area.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">種別</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              value={simpleSearchType}
+              onChange={(e) => setSimpleSearchType(e.target.value)}
+            >
+              <option value="" className="text-base">すべて</option>
+              <option value="新築戸建" className="text-base">新築戸建</option>
+              <option value="中古戸建" className="text-base">中古戸建</option>
+              <option value="中古マンション" className="text-base">中古マンション</option>
+              <option value="土地" className="text-base">土地</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">キーワード</label>
+            <input 
+              placeholder="駅名・エリア名・条件など" 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              type="text" 
+              value={simpleSearchKeyword}
+              onChange={(e) => setSimpleSearchKeyword(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-bold transition-colors"
+              onClick={handleSimpleSearch}
+            >
+              検索
+            </button>
+            <button 
+              className="px-4 py-3 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-bold transition-colors"
+              onClick={handleSimpleSearchClear}
+            >
+              クリア
+            </button>
+          </div>
+        </div>
+
+        {/* 路線・駅選択（かんたん検索用） */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">路線</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              value={simpleSearchRoute}
+              onChange={(e) => setSimpleSearchRoute(e.target.value)}
+            >
+              <option value="">路線を選択</option>
+              {Object.keys(routeStations).map(route => (
+                <option key={route} value={route} className="text-base">{route}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">最寄り駅</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+              value={simpleSearchStation}
+              onChange={(e) => setSimpleSearchStation(e.target.value)}
+              disabled={!simpleSearchRoute}
+            >
+              <option value="">
+                {simpleSearchRoute ? '駅を選択してください' : '先に路線を選択してください'}
+              </option>
+              {simpleSearchAvailableStations.map(station => (
+                <option key={station} value={station} className="text-base">{station}駅</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div className="w-full max-w-7xl mx-auto p-4 bg-white rounded-lg shadow-sm">
         {/* タイトル */}
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -251,7 +405,7 @@ export default function AreaSearch() {
                 disabled={count === 0}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   count > 0
-                    ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-50 hover:shadow-md cursor-pointer'
+                    ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-500 hover:shadow-md cursor-pointer'
                     : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
                 }`}
               >
@@ -295,11 +449,11 @@ export default function AreaSearch() {
                 <select
                   value={selectedRoute}
                   onChange={(e) => setSelectedRoute(e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                 >
                   <option value="">選択してください</option>
                   {Object.keys(routeStations).map(route => (
-                    <option key={route} value={route}>{route}</option>
+                    <option key={route} value={route} className="text-base">{route}</option>
                   ))}
                 </select>
               </div>
@@ -309,14 +463,14 @@ export default function AreaSearch() {
                 <select
                   value={selectedStation}
                   onChange={(e) => setSelectedStation(e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
                   disabled={!selectedRoute}
                 >
                   <option value="">
                     {selectedRoute ? '駅を選択してください' : '先に路線を選択してください'}
                   </option>
                   {availableStations.map(station => (
-                    <option key={station} value={station}>{station}駅</option>
+                    <option key={station} value={station} className="text-base">{station}駅</option>
                   ))}
                 </select>
               </div>
