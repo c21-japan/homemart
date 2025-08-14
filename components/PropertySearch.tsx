@@ -1,507 +1,232 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 
-interface PropertySearchProps {
-  selectedArea: string
-  selectedRoute?: string
-  selectedStation?: string
-  onClose: () => void
-  areaOptions: string[]
-  onReturnToSearch: () => void
+interface SearchFilters {
+  area: string
+  types: string[]
+  priceMin: string
+  priceMax: string
+  landAreaMin: string
+  landAreaMax: string
+  buildingAreaMin: string
+  buildingAreaMax: string
+  nearStation: string
 }
 
-export default function PropertySearch({ selectedArea, selectedRoute, selectedStation, onClose, areaOptions, onReturnToSearch }: PropertySearchProps) {
-  const router = useRouter()
-  const [matchCount, setMatchCount] = useState<number>(0)
-  const [isLoading, setIsLoading] = useState(false)
-  
-  // 各検索条件の状態管理
-  const [searchConditions, setSearchConditions] = useState({
-    area: '',
-    propertyTypes: [] as string[],
-    layouts: [] as string[],
-    priceMin: '',
-    priceMax: '',
-    ageMin: '',
-    ageMax: '',
-    landAreaMin: '',
-    landAreaMax: '',
-    buildingAreaMin: '',
-    buildingAreaMax: '',
-    walkingTime: ''
-  })
+interface PropertySearchProps {
+  onSearch: (filters: SearchFilters) => void
+  initialFilters?: SearchFilters
+}
 
-  // 種別の選択肢
-  const propertyTypes = ['新築戸建', '中古戸建', '中古マンション', '土地']
-  
-  // 間取りの選択肢
-  const layouts = ['1DK/LDK', '2DK/LDK', '3DK/LDK', '4DK/LDK', '5DK/LDK〜']
-  
-  // 価格の選択肢
-  const priceOptions = {
-    min: [
-      { value: '', label: '下限なし' },
-      { value: '10000000', label: '1,000万円〜' },
-      { value: '12500000', label: '1,250万円〜' },
-      { value: '15000000', label: '1,500万円〜' },
-      { value: '17500000', label: '1,750万円〜' },
-      { value: '20000000', label: '2,000万円〜' },
-      { value: '22500000', label: '2,250万円〜' },
-      { value: '25000000', label: '2,500万円〜' },
-      { value: '27500000', label: '2,750万円〜' },
-      { value: '30000000', label: '3,000万円〜' },
-      { value: '32500000', label: '3,250万円〜' },
-      { value: '35000000', label: '3,500万円〜' },
-      { value: '37500000', label: '3,750万円〜' },
-      { value: '40000000', label: '4,000万円〜' },
-      { value: '45000000', label: '4,500万円〜' },
-      { value: '50000000', label: '5,000万円〜' }
-    ],
-    max: [
-      { value: '10000000', label: '〜1,000万円' },
-      { value: '12500000', label: '〜1,250万円' },
-      { value: '15000000', label: '〜1,500万円' },
-      { value: '17500000', label: '〜1,750万円' },
-      { value: '20000000', label: '〜2,000万円' },
-      { value: '22500000', label: '〜2,250万円' },
-      { value: '25000000', label: '〜2,500万円' },
-      { value: '27500000', label: '〜2,750万円' },
-      { value: '30000000', label: '〜3,000万円' },
-      { value: '32500000', label: '〜3,250万円' },
-      { value: '35000000', label: '〜3,500万円' },
-      { value: '37500000', label: '〜3,750万円' },
-      { value: '40000000', label: '〜4,000万円' },
-      { value: '45000000', label: '〜4,500万円' },
-      { value: '50000000', label: '〜5,000万円' },
-      { value: '', label: '上限なし' }
-    ]
-  }
-
-  // 築年数の選択肢
-  const ageOptions = {
-    min: [
-      { value: '', label: '下限なし' },
-      { value: '5', label: '5年以上〜' },
-      { value: '10', label: '10年以上〜' },
-      { value: '15', label: '15年以上〜' },
-      { value: '20', label: '20年以上〜' }
-    ],
-    max: [
-      { value: '5', label: '〜5年以内' },
-      { value: '10', label: '〜10年以内' },
-      { value: '15', label: '〜15年以内' },
-      { value: '20', label: '〜20年以内' },
-      { value: '', label: '上限なし' }
-    ]
-  }
-
-  // 土地面積の選択肢
-  const landAreaOptions = {
-    min: [
-      { value: '', label: '下限なし' },
-      { value: '50', label: '50m²〜' },
-      { value: '60', label: '60m²〜' },
-      { value: '70', label: '70m²〜' },
-      { value: '80', label: '80m²〜' },
-      { value: '90', label: '90m²〜' },
-      { value: '100', label: '100m²〜' },
-      { value: '110', label: '110m²〜' },
-      { value: '120', label: '120m²〜' },
-      { value: '150', label: '150m²〜' },
-      { value: '200', label: '200m²〜' }
-    ],
-    max: [
-      { value: '50', label: '〜50m²' },
-      { value: '60', label: '〜60m²' },
-      { value: '70', label: '〜70m²' },
-      { value: '80', label: '〜80m²' },
-      { value: '90', label: '〜90m²' },
-      { value: '100', label: '〜100m²' },
-      { value: '110', label: '〜110m²' },
-      { value: '120', label: '〜120m²' },
-      { value: '150', label: '〜150m²' },
-      { value: '200', label: '〜200m²' },
-      { value: '', label: '上限なし' }
-    ]
-  }
-
-  // 建物面積の選択肢
-  const buildingAreaOptions = {
-    min: [
-      { value: '', label: '下限なし' },
-      { value: '30', label: '30m²〜' },
-      { value: '40', label: '40m²〜' },
-      { value: '50', label: '50m²〜' },
-      { value: '60', label: '60m²〜' },
-      { value: '70', label: '70m²〜' },
-      { value: '80', label: '80m²〜' },
-      { value: '90', label: '90m²〜' },
-      { value: '100', label: '100m²〜' },
-      { value: '110', label: '110m²〜' },
-      { value: '120', label: '120m²〜' }
-    ],
-    max: [
-      { value: '30', label: '〜30m²' },
-      { value: '40', label: '〜40m²' },
-      { value: '50', label: '〜50m²' },
-      { value: '60', label: '〜60m²' },
-      { value: '70', label: '〜70m²' },
-      { value: '80', label: '〜80m²' },
-      { value: '90', label: '〜90m²' },
-      { value: '100', label: '〜100m²' },
-      { value: '110', label: '〜110m²' },
-      { value: '120', label: '〜120m²' },
-      { value: '', label: '上限なし' }
-    ]
-  }
-
-  // 徒歩時間の選択肢
-  const walkingTimeOptions = [
-    { value: '', label: '条件なし' },
-    { value: '5', label: '〜徒歩5分' },
-    { value: '10', label: '〜徒歩10分' },
-    { value: '15', label: '〜徒歩15分' }
-  ]
-
-  // 条件が変更されたら該当件数を更新
-  useEffect(() => {
-    // 初期状態でselectedAreaの値を設定
-    if (selectedArea && !searchConditions.area) {
-      setSearchConditions(prev => ({ ...prev, area: selectedArea }))
+export default function PropertySearch({ onSearch, initialFilters }: PropertySearchProps) {
+  const [isDetailedSearch, setIsDetailedSearch] = useState(false)
+  const [filters, setFilters] = useState<SearchFilters>(
+    initialFilters || {
+      area: '',
+      types: [],
+      priceMin: '',
+      priceMax: '',
+      landAreaMin: '',
+      landAreaMax: '',
+      buildingAreaMin: '',
+      buildingAreaMax: '',
+      nearStation: ''
     }
-    
-    const fetchMatchCount = async () => {
-      setIsLoading(true)
-      
-      try {
-        // Supabaseでクエリを構築
-        let query = supabase
-          .from('properties')
-          .select('id', { count: 'exact', head: true })
-          .eq('status', 'published')
-          .ilike('address', `%${selectedArea}%`)
+  )
 
-        // 路線フィルタ
-        if (selectedRoute && selectedRoute.trim()) {
-          query = query.eq('route', selectedRoute)
-        }
-
-        // 最寄駅フィルタ
-        if (selectedStation && selectedStation.trim()) {
-          query = query.eq('station', selectedStation)
-        }
-
-        // 種別フィルタ
-        if (searchConditions.propertyTypes.length > 0) {
-          query = query.in('property_type', searchConditions.propertyTypes)
-        }
-
-        // 間取りフィルタ
-        if (searchConditions.layouts.length > 0) {
-          query = query.in('layout', searchConditions.layouts)
-        }
-
-        // 価格フィルタ
-        if (searchConditions.priceMin) {
-          query = query.gte('price', parseInt(searchConditions.priceMin))
-        }
-        if (searchConditions.priceMax) {
-          query = query.lte('price', parseInt(searchConditions.priceMax))
-        }
-
-        // 築年数フィルタ（building_ageカラムがある場合）
-        if (searchConditions.ageMin) {
-          query = query.gte('building_age', parseInt(searchConditions.ageMin))
-        }
-        if (searchConditions.ageMax) {
-          query = query.lte('building_age', parseInt(searchConditions.ageMax))
-        }
-
-        // 土地面積フィルタ（land_areaカラムがある場合）
-        if (searchConditions.landAreaMin) {
-          query = query.gte('land_area', parseInt(searchConditions.landAreaMin))
-        }
-        if (searchConditions.landAreaMax) {
-          query = query.lte('land_area', parseInt(searchConditions.landAreaMax))
-        }
-
-        // 建物面積フィルタ（building_areaカラムがある場合）
-        if (searchConditions.buildingAreaMin) {
-          query = query.gte('building_area', parseInt(searchConditions.buildingAreaMin))
-        }
-        if (searchConditions.buildingAreaMax) {
-          query = query.lte('building_area', parseInt(searchConditions.buildingAreaMax))
-        }
-
-        // 徒歩時間フィルタ（walking_timeカラムがある場合）
-        if (searchConditions.walkingTime) {
-          query = query.lte('walking_time', parseInt(searchConditions.walkingTime))
-        }
-
-        const { count, error } = await query
-
-        if (error) {
-          console.error('Error fetching count:', error)
-          // エラーが出ても仮の数値を表示
-          setMatchCount(Math.floor(Math.random() * 20) + 1)
-        } else {
-          setMatchCount(count || 0)
-        }
-      } catch (error) {
-        console.error('Error:', error)
-        // エラーが出ても仮の数値を表示
-        setMatchCount(Math.floor(Math.random() * 20) + 1)
-      } finally {
-        setIsLoading(false)
+  // 初期値が変更された場合の更新
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters)
+      // 詳細検索項目が設定されている場合は詳細検索を開く
+      if (
+        initialFilters.priceMin || 
+        initialFilters.priceMax || 
+        initialFilters.landAreaMin ||
+        initialFilters.landAreaMax ||
+        initialFilters.buildingAreaMin ||
+        initialFilters.buildingAreaMax ||
+        initialFilters.nearStation
+      ) {
+        setIsDetailedSearch(true)
       }
     }
+  }, [initialFilters])
 
-    fetchMatchCount()
-  }, [searchConditions, selectedArea])
+  // エリアリスト
+  const areas = [
+    '広陵町', '香芝市', '大和高田市', '橿原市', '田原本町',
+    '上牧町', '王寺町', '河合町', '三郷町', '斑鳩町'
+  ]
 
-  // 種別の選択/解除
-  const togglePropertyType = (type: string) => {
-    setSearchConditions(prev => ({
+  // 物件種別リスト
+  const propertyTypes = [
+    '新築戸建', '中古戸建', '土地', 'マンション', '収益物件'
+  ]
+
+  // 価格オプション
+  const priceOptions = [
+    { value: '', label: '下限なし' },
+    { value: '5000000', label: '500万円' },
+    { value: '10000000', label: '1,000万円' },
+    { value: '15000000', label: '1,500万円' },
+    { value: '20000000', label: '2,000万円' },
+    { value: '25000000', label: '2,500万円' },
+    { value: '30000000', label: '3,000万円' },
+    { value: '35000000', label: '3,500万円' },
+    { value: '40000000', label: '4,000万円' },
+    { value: '50000000', label: '5,000万円' }
+  ]
+
+  // 面積オプション
+  const areaOptions = [
+    { value: '', label: '下限なし' },
+    { value: '30', label: '30㎡' },
+    { value: '50', label: '50㎡' },
+    { value: '80', label: '80㎡' },
+    { value: '100', label: '100㎡' },
+    { value: '120', label: '120㎡' },
+    { value: '150', label: '150㎡' },
+    { value: '200', label: '200㎡' },
+    { value: '250', label: '250㎡' },
+    { value: '300', label: '300㎡' }
+  ]
+
+  // フィルター変更ハンドラ
+  const handleFilterChange = (key: keyof SearchFilters, value: any) => {
+    setFilters(prev => ({
       ...prev,
-      propertyTypes: prev.propertyTypes.includes(type)
-        ? prev.propertyTypes.filter(t => t !== type)
-        : [...prev.propertyTypes, type]
+      [key]: value
     }))
   }
 
-  // 間取りの選択/解除
-  const toggleLayout = (layout: string) => {
-    setSearchConditions(prev => ({
+  // 物件種別の選択/解除
+  const togglePropertyType = (type: string) => {
+    setFilters(prev => ({
       ...prev,
-      layouts: prev.layouts.includes(layout)
-        ? prev.layouts.filter(l => l !== layout)
-        : [...prev.layouts, layout]
+      types: prev.types.includes(type)
+        ? prev.types.filter(t => t !== type)
+        : [...prev.types, type]
     }))
   }
 
   // 検索実行
   const handleSearch = () => {
-    console.log('詳細検索実行:', searchConditions) // デバッグ用
-    
-    // 検索条件を親コンポーネントに渡す
-    const searchParams = {
-      area: searchConditions.area || selectedArea,
-      route: selectedRoute,
-      station: selectedStation,
-      types: searchConditions.propertyTypes,
-      layouts: searchConditions.layouts,
-      priceMin: searchConditions.priceMin,
-      priceMax: searchConditions.priceMax,
-      ageMin: searchConditions.ageMin,
-      ageMax: searchConditions.ageMax,
-      landAreaMin: searchConditions.landAreaMin,
-      landAreaMax: searchConditions.landAreaMax,
-      buildingAreaMin: searchConditions.buildingAreaMin,
-      buildingAreaMax: searchConditions.buildingAreaMax,
-      walkingTime: searchConditions.walkingTime
-    }
-    
-    console.log('検索パラメータ:', searchParams)
-    
-    // 検索モーダルを閉じる
-    onClose()
-    
-    // 検索条件をURLパラメータとして設定（履歴に残す）
-    const params = new URLSearchParams()
-    params.append('area', searchConditions.area || selectedArea)
-    
-    // 路線と駅の情報をURLパラメータに追加
-    if (selectedRoute && selectedRoute.trim()) {
-      params.append('route', selectedRoute)
-    }
-    if (selectedStation && selectedStation.trim()) {
-      params.append('station', selectedStation)
-    }
-    
-    if (searchConditions.propertyTypes.length > 0) {
-      params.append('types', searchConditions.propertyTypes.join(','))
-    }
-    if (searchConditions.layouts.length > 0) {
-      params.append('layouts', searchConditions.layouts.join(','))
-    }
-    if (searchConditions.priceMin) params.append('priceMin', searchConditions.priceMin)
-    if (searchConditions.priceMax) params.append('priceMax', searchConditions.priceMax)
-    if (searchConditions.ageMin) params.append('ageMin', searchConditions.ageMin)
-    if (searchConditions.ageMax) params.append('ageMax', searchConditions.ageMax)
-    if (searchConditions.landAreaMin) params.append('landAreaMin', searchConditions.landAreaMin)
-    if (searchConditions.landAreaMax) params.append('landAreaMax', searchConditions.landAreaMax)
-    if (searchConditions.buildingAreaMin) params.append('buildingAreaMin', searchConditions.buildingAreaMin)
-    if (searchConditions.buildingAreaMax) params.append('buildingAreaMax', searchConditions.buildingAreaMax)
-    if (searchConditions.walkingTime) params.append('walkingTime', searchConditions.walkingTime)
-
-    // 現在のページのURLを更新（ページ遷移なし）
-    window.history.pushState({}, '', `/properties?${params.toString()}`)
-    
-    // 少し遅延を入れてからイベントを発火（モーダルが完全に閉じるのを待つ）
-    setTimeout(() => {
-      console.log('カスタムイベント発火:', searchParams)
-      // 検索条件を親コンポーネントに渡すためのカスタムイベント
-      const searchEvent = new CustomEvent('propertySearch', { detail: searchParams })
-      window.dispatchEvent(searchEvent)
-    }, 100)
+    onSearch(filters)
   }
 
-  // 条件クリア
-  const handleClear = () => {
-    setSearchConditions({
-      area: selectedArea || '',
-      propertyTypes: [],
-      layouts: [],
+  // リセット
+  const handleReset = () => {
+    const resetFilters: SearchFilters = {
+      area: '',
+      types: [],
       priceMin: '',
       priceMax: '',
-      ageMin: '',
-      ageMax: '',
       landAreaMin: '',
       landAreaMax: '',
       buildingAreaMin: '',
       buildingAreaMax: '',
-      walkingTime: ''
-    })
-  }
-
-  // 閉じるボタンの処理
-  const handleClose = () => {
-    onClose()
-    onReturnToSearch() // 検索前の状態に戻す
+      nearStation: ''
+    }
+    setFilters(resetFilters)
+    onSearch(resetFilters)
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
-      <div className="min-h-screen px-4 py-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
-          {/* ヘッダー */}
-          <div className="bg-orange-500 text-white p-6 rounded-t-lg">
-            <h2 className="text-2xl font-bold">物件検索</h2>
-            <p className="mt-2">エリア：{selectedArea || '未選択'}</p>
-            {selectedRoute && selectedRoute.trim() && (
-              <p className="mt-1 text-sm opacity-90">路線：{selectedRoute}</p>
-            )}
-            {selectedStation && selectedStation.trim() && (
-              <p className="mt-1 text-sm opacity-90">最寄駅：{selectedStation}駅</p>
-            )}
-            <div className="mt-4 flex items-center gap-2">
-              <span className="text-3xl font-bold">
-                {isLoading ? (
-                  <span className="inline-block animate-pulse">...</span>
-                ) : (
-                  matchCount
-                )}
-              </span>
-              <span className="text-lg">件の物件が見つかりました</span>
-            </div>
-          </div>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      {/* かんたん検索 */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">物件を検索</h2>
+        
+        {/* エリア選択 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            エリア
+          </label>
+          <select
+            value={filters.area}
+            onChange={(e) => handleFilterChange('area', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">すべてのエリア</option>
+            {areas.map(area => (
+              <option key={area} value={area}>{area}</option>
+            ))}
+          </select>
+        </div>
 
-          <div className="p-6 space-y-6">
-            {/* エリア選択 */}
-            <div>
-              <h3 className="font-bold mb-3">エリア</h3>
-              <select
-                value={searchConditions.area}
-                onChange={(e) => setSearchConditions(prev => ({ ...prev, area: e.target.value }))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base"
+        {/* 物件種別 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            物件種別
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {propertyTypes.map(type => (
+              <button
+                key={type}
+                onClick={() => togglePropertyType(type)}
+                className={`px-4 py-2 rounded-md border transition-colors ${
+                  filters.types.includes(type)
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                }`}
               >
-                <option value="">エリアを選択</option>
-                {areaOptions.map(area => (
-                  <option key={area} value={area} className="text-base">{area}</option>
-                ))}
-              </select>
-            </div>
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            {/* 種別 */}
-            <div>
-              <h3 className="font-bold mb-3">種別（複数選択可）</h3>
-              <div className="flex flex-wrap gap-2">
-                {propertyTypes.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => togglePropertyType(type)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-colors ${
-                      searchConditions.propertyTypes.includes(type)
-                        ? 'bg-orange-500 text-white border-orange-500'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-orange-300'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* 詳細検索トグル */}
+        <button
+          onClick={() => setIsDetailedSearch(!isDetailedSearch)}
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+        >
+          {isDetailedSearch ? (
+            <>
+              <ChevronUpIcon className="w-5 h-5" />
+              詳細検索を閉じる
+            </>
+          ) : (
+            <>
+              <ChevronDownIcon className="w-5 h-5" />
+              詳細検索を開く
+            </>
+          )}
+        </button>
 
-            {/* 間取り */}
+        {/* 詳細検索 */}
+        {isDetailedSearch && (
+          <div className="space-y-4 pt-4 border-t">
+            {/* 価格 */}
             <div>
-              <h3 className="font-bold mb-3">間取り（複数選択可）</h3>
-              <div className="flex flex-wrap gap-2">
-                {layouts.map(layout => (
-                  <button
-                    key={layout}
-                    onClick={() => toggleLayout(layout)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-colors ${
-                      searchConditions.layouts.includes(layout)
-                        ? 'bg-orange-500 text-white border-orange-500'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-orange-300'
-                    }`}
-                  >
-                    {layout}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 物件価格 */}
-            <div>
-              <h3 className="font-bold mb-3">物件価格</h3>
-              <div className="flex gap-2 items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                価格
+              </label>
+              <div className="grid grid-cols-2 gap-2">
                 <select
-                  value={searchConditions.priceMin}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, priceMin: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.priceMin}
+                  onChange={(e) => handleFilterChange('priceMin', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {priceOptions.min.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  {priceOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
-                <span>〜</span>
                 <select
-                  value={searchConditions.priceMax}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, priceMax: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.priceMax}
+                  onChange={(e) => handleFilterChange('priceMax', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {priceOptions.max.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* 築年月 */}
-            <div>
-              <h3 className="font-bold mb-3">築年月</h3>
-              <div className="flex gap-2 items-center">
-                <select
-                  value={searchConditions.ageMin}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, ageMin: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
-                >
-                  {ageOptions.min.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-                <span>〜</span>
-                <select
-                  value={searchConditions.ageMax}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, ageMax: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
-                >
-                  {ageOptions.max.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  <option value="">上限なし</option>
+                  {priceOptions.slice(1).map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -509,25 +234,31 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
 
             {/* 土地面積 */}
             <div>
-              <h3 className="font-bold mb-3">土地面積</h3>
-              <div className="flex gap-2 items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                土地面積
+              </label>
+              <div className="grid grid-cols-2 gap-2">
                 <select
-                  value={searchConditions.landAreaMin}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, landAreaMin: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.landAreaMin}
+                  onChange={(e) => handleFilterChange('landAreaMin', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {landAreaOptions.min.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  {areaOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
-                <span>〜</span>
                 <select
-                  value={searchConditions.landAreaMax}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, landAreaMax: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.landAreaMax}
+                  onChange={(e) => handleFilterChange('landAreaMax', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {landAreaOptions.max.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  <option value="">上限なし</option>
+                  {areaOptions.slice(1).map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -535,71 +266,66 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
 
             {/* 建物面積 */}
             <div>
-              <h3 className="font-bold mb-3">建物面積</h3>
-              <div className="flex gap-2 items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                建物面積
+              </label>
+              <div className="grid grid-cols-2 gap-2">
                 <select
-                  value={searchConditions.buildingAreaMin}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, buildingAreaMin: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.buildingAreaMin}
+                  onChange={(e) => handleFilterChange('buildingAreaMin', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {buildingAreaOptions.min.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  {areaOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
-                <span>〜</span>
                 <select
-                  value={searchConditions.buildingAreaMax}
-                  onChange={(e) => setSearchConditions(prev => ({ ...prev, buildingAreaMax: e.target.value }))}
-                  className="flex-1 p-2 border rounded-lg"
+                  value={filters.buildingAreaMax}
+                  onChange={(e) => handleFilterChange('buildingAreaMax', e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {buildingAreaOptions.max.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  <option value="">上限なし</option>
+                  {areaOptions.slice(1).map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
 
-            {/* 駅までの徒歩 */}
+            {/* 最寄り駅 */}
             <div>
-              <h3 className="font-bold mb-3">駅までの徒歩</h3>
-              <select
-                value={searchConditions.walkingTime}
-                onChange={(e) => setSearchConditions(prev => ({ ...prev, walkingTime: e.target.value }))}
-                className="w-full p-2 border rounded-lg"
-              >
-                {walkingTimeOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* ボタン */}
-            <div className="flex gap-4 pt-4 border-t">
-              <button
-                onClick={handleSearch}
-                disabled={matchCount === 0}
-                className={`flex-1 py-3 rounded-lg font-bold transition-colors ${
-                  matchCount > 0
-                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                この条件で検索（{matchCount}件）
-              </button>
-              <button
-                onClick={handleClear}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 transition-colors"
-              >
-                条件をクリア
-              </button>
-              <button
-                onClick={handleClose}
-                className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-colors"
-              >
-                閉じる
-              </button>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                最寄り駅
+              </label>
+              <input
+                type="text"
+                value={filters.nearStation}
+                onChange={(e) => handleFilterChange('nearStation', e.target.value)}
+                placeholder="駅名を入力"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
+        )}
+
+        {/* 検索ボタン */}
+        <div className="flex gap-2">
+          <button
+            onClick={handleSearch}
+            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            検索する
+          </button>
+          <button
+            onClick={handleReset}
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            リセット
+          </button>
         </div>
       </div>
     </div>

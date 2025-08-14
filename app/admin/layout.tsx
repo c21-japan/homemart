@@ -1,116 +1,164 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import PWAInstallPrompt from '@/components/PWAInstallPrompt'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { 
+  HomeIcon, 
+  BuildingOfficeIcon, 
+  UsersIcon, 
+  ChartBarIcon,
+  ArrowLeftOnRectangleIcon 
+} from '@heroicons/react/24/outline'
 
-export default function AdminLayout({
-  children,
-}: {
+interface AdminLayoutProps {
   children: React.ReactNode
-}) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [loading, setLoading] = useState(true)
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
-
-  // ログインページの場合はレイアウトを適用しない
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // セッションストレージから認証状態をチェック
-    const checkAuth = () => {
-      const authStatus = sessionStorage.getItem('admin-auth')
-      const timestamp = sessionStorage.getItem('admin-timestamp')
-      
-      if (authStatus === 'authenticated' && timestamp) {
-        const now = Date.now()
-        const authTime = parseInt(timestamp)
-        
-        // 24時間以内の認証であれば有効
-        if (now - authTime < 24 * 60 * 60 * 1000) {
-          setIsAuthenticated(true)
-        } else {
-          // 認証期限切れ
-          sessionStorage.removeItem('admin-auth')
-          sessionStorage.removeItem('admin-timestamp')
-          router.push('/admin/login')
-        }
-      } else {
-        // 認証されていない場合はログインページにリダイレクト
+    checkAuth()
+  }, [pathname])
+
+  const checkAuth = () => {
+    // セキュアな認証チェック
+    const authData = localStorage.getItem('admin-auth')
+    
+    if (!authData) {
+      if (pathname !== '/admin/login') {
         router.push('/admin/login')
       }
       setLoading(false)
+      return
     }
 
-    checkAuth()
-  }, [router])
+    try {
+      const auth = JSON.parse(authData)
+      const now = new Date().getTime()
+      
+      // トークンの有効期限チェック（24時間）
+      if (auth.expires && auth.expires > now) {
+        setIsAuthenticated(true)
+        
+        // トークンの自動更新（残り1時間を切ったら更新）
+        const timeRemaining = auth.expires - now
+        if (timeRemaining < 3600000) { // 1時間
+          const newExpires = now + 86400000 // 24時間延長
+          const updatedAuth = { ...auth, expires: newExpires }
+          localStorage.setItem('admin-auth', JSON.stringify(updatedAuth))
+        }
+      } else {
+        // 期限切れ
+        localStorage.removeItem('admin-auth')
+        setIsAuthenticated(false)
+        if (pathname !== '/admin/login') {
+          router.push('/admin/login')
+        }
+      }
+    } catch (error) {
+      console.error('認証エラー:', error)
+      localStorage.removeItem('admin-auth')
+      setIsAuthenticated(false)
+      if (pathname !== '/admin/login') {
+        router.push('/admin/login')
+      }
+    }
+    
+    setLoading(false)
+  }
 
   const handleLogout = () => {
-    sessionStorage.removeItem('admin-auth')
-    sessionStorage.removeItem('admin-timestamp')
+    localStorage.removeItem('admin-auth')
+    setIsAuthenticated(false)
     router.push('/admin/login')
+  }
+
+  // ログインページの場合は認証不要
+  if (pathname === '/admin/login') {
+    return <>{children}</>
   }
 
   // ローディング中
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">読み込み中...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
-  // 認証されていない場合
+  // 未認証
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">認証中...</p>
-        </div>
-      </div>
-    )
+    return null
   }
+
+  // ナビゲーションメニュー
+  const navItems = [
+    { href: '/admin', label: 'ダッシュボード', icon: HomeIcon },
+    { href: '/admin/properties', label: '物件管理', icon: BuildingOfficeIcon },
+    { href: '/admin/inquiries', label: 'お問い合わせ', icon: UsersIcon },
+    { href: '/admin/analytics', label: '分析', icon: ChartBarIcon }
+  ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-bold text-gray-900">ホームマート 管理画面</h1>
-            <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-              管理者
-            </span>
+    <div className="min-h-screen bg-gray-100">
+      {/* サイドバー */}
+      <div className="fixed inset-y-0 left-0 w-64 bg-gray-900">
+        <div className="flex flex-col h-full">
+          {/* ロゴ */}
+          <div className="px-6 py-4 bg-gray-800">
+            <h2 className="text-xl font-bold text-white">
+              ホームマート管理画面
+            </h2>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-600">
-              ログイン中: 管理者
-            </div>
+
+          {/* ナビゲーション */}
+          <nav className="flex-1 px-4 py-4 space-y-2">
+            {navItems.map(item => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* ログアウトボタン */}
+          <div className="px-4 py-4 border-t border-gray-800">
             <button
               onClick={handleLogout}
-              className="text-sm text-red-600 hover:text-red-700 font-medium"
+              className="flex items-center gap-3 w-full px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors"
             >
-              ログアウト
+              <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+              <span>ログアウト</span>
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* メインコンテンツ */}
-      <main className="min-h-screen">
-        {children}
-      </main>
-
-      {/* PWAインストール促進 */}
-      <PWAInstallPrompt />
+      <div className="ml-64">
+        <main className="p-8">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

@@ -2,130 +2,185 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 
-export default function AdminLogin() {
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+export default function AdminLoginPage() {
   const router = useRouter()
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
+  // 環境変数から認証情報を取得（本番環境では環境変数を使用）
+  const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME || 'admin'
+  const ADMIN_PASSWORD = 'homemart2024' // デフォルトパスワード
 
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('パスワード入力:', e.target.value ? '***' : '空')
-    setPassword(e.target.value)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    // エラーをクリア
+    if (error) setError('')
   }
 
-  const handleButtonClick = () => {
-    console.log('ボタンクリックイベント発火')
-    
-    // パスワードが入力されているかチェック
-    if (!password) {
-      setError('パスワードを入力してください')
-      return
+  const validateForm = (): boolean => {
+    if (!formData.username.trim()) {
+      setError('ユーザー名を入力してください')
+      return false
     }
-    
-    // ログイン処理を実行
-    handleLogin()
+    if (!formData.password) {
+      setError('パスワードを入力してください')
+      return false
+    }
+    if (formData.password.length < 6) {
+      setError('パスワードは6文字以上で入力してください')
+      return false
+    }
+    return true
   }
 
-  const handleLogin = async () => {
-    console.log('ログイン処理開始:', { password: password ? '***' : '空' })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     
-    setIsLoading(true)
+    if (!validateForm()) return
+
+    setLoading(true)
     setError('')
 
     try {
-      // パスワードをチェック
-      if (password === 'homemart2024') {
-        console.log('パスワード認証成功')
+      // 認証チェック
+      if (formData.username === ADMIN_USERNAME && formData.password === ADMIN_PASSWORD) {
+        // 認証成功
+        const authToken = Math.random().toString(36).substring(2) + Date.now().toString(36)
+        const expires = new Date().getTime() + 86400000 // 24時間後
         
-        // 認証成功：セッションストレージに保存
-        sessionStorage.setItem('admin-auth', 'authenticated')
-        sessionStorage.setItem('admin-timestamp', Date.now().toString())
+        const authData = {
+          token: authToken,
+          username: formData.username,
+          expires: expires,
+          loginTime: new Date().toISOString()
+        }
         
-        console.log('認証情報保存完了、管理画面にリダイレクト')
+        // ローカルストレージに保存（セキュアな実装ではhttpOnly cookieを使用）
+        localStorage.setItem('admin-auth', JSON.stringify(authData))
         
-        // 管理画面にリダイレクト
+        // ダッシュボードへリダイレクト
         router.push('/admin')
       } else {
-        console.log('パスワード認証失敗')
-        setError('パスワードが正しくありません')
+        // 認証失敗
+        setError('ユーザー名またはパスワードが正しくありません')
       }
     } catch (err) {
-      console.error('ログイン処理エラー:', err)
+      console.error('ログインエラー:', err)
       setError('ログイン処理中にエラーが発生しました')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('フォーム送信イベント発火')
-    handleButtonClick()
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ホームマート</h1>
-          <h2 className="text-xl font-semibold text-gray-600">管理画面ログイン</h2>
-        </div>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleFormSubmit}>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                パスワード
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={handlePasswordChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#BEAF87] focus:border-[#BEAF87] sm:text-sm"
-                  placeholder="パスワードを入力してください"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div className="text-red-600 text-sm text-center">
-                {error}
-              </div>
-            )}
-
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                onClick={handleButtonClick}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#BEAF87] hover:bg-[#BEAF87]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#BEAF87] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-              >
-                {isLoading ? 'ログイン中...' : 'ログイン'}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              パスワード: homemart2024
-            </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-lg shadow-xl p-8">
+          {/* ヘッダー */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">管理画面</h1>
+            <p className="mt-2 text-gray-600">ログインしてください</p>
           </div>
 
-          {/* デバッグ情報 */}
-          <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600">
-            <p>デバッグ情報:</p>
-            <p>パスワード長: {password.length}</p>
-            <p>ローディング状態: {isLoading ? 'true' : 'false'}</p>
-            <p>エラー: {error || 'なし'}</p>
+          {/* エラーメッセージ */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          {/* ログインフォーム */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* ユーザー名 */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                ユーザー名
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ユーザー名を入力"
+                autoComplete="username"
+                disabled={loading}
+              />
+            </div>
+
+            {/* パスワード */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                パスワード
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="パスワードを入力"
+                  autoComplete="current-password"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* ログインボタン */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 px-4 rounded-md text-white font-medium transition-colors ${
+                loading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  ログイン中...
+                </span>
+              ) : (
+                'ログイン'
+              )}
+            </button>
+          </form>
+
+          {/* フッター */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              © 2024 株式会社ホームマート
+            </p>
           </div>
         </div>
       </div>

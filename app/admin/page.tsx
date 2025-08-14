@@ -1,518 +1,285 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import GoogleWorkspace from '@/components/GoogleWorkspace'
-import { useProperties, useInquiries, useReformProjects, useDashboardStats } from '@/lib/hooks/useQueryHooks'
-import { useCallback, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+import { 
+  BuildingOfficeIcon, 
+  UsersIcon, 
+  CurrencyYenIcon,
+  ChartBarIcon,
+  PlusIcon,
+  TrashIcon,
+  PencilIcon
+} from '@heroicons/react/24/outline'
 import { supabase } from '@/lib/supabase'
+import Link from 'next/link'
+
+interface Property {
+  id: string
+  name: string
+  price: number
+  property_type: string
+  city: string
+  status: string
+}
 
 export default function AdminDashboard() {
-  const router = useRouter()
+  const [properties, setProperties] = useState<Property[]>([])
+  const [loading, setLoading] = useState(true)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  // React Queryを使用したデータフェッチ（並列実行）
-  const { data: properties = [], isLoading: propertiesLoading } = useProperties(5)
-  const { data: inquiries = [], isLoading: inquiriesLoading } = useInquiries(5)
-  const { data: reformProjects = [], isLoading: reformProjectsLoading } = useReformProjects(5)
-  const { data: stats, isLoading: statsLoading } = useDashboardStats()
+  // 統計データ
+  const [stats, setStats] = useState({
+    totalProperties: 0,
+    totalInquiries: 0,
+    monthlyRevenue: 0,
+    conversionRate: 0
+  })
 
-  // ローディング状態の統合
-  const isLoading = useMemo(() => 
-    propertiesLoading || inquiriesLoading || reformProjectsLoading || statsLoading,
-    [propertiesLoading, inquiriesLoading, reformProjectsLoading, statsLoading]
-  )
+  useEffect(() => {
+    fetchData()
+  }, [])
 
-  const handleLogout = useCallback(() => {
-    sessionStorage.removeItem('admin-auth')
-    sessionStorage.removeItem('admin-timestamp')
-    router.push('/admin/login')
-  }, [router])
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // 物件データ取得
+      const { data: propertiesData, error: propertiesError } = await supabase
+        .from('properties')
+        .select('id, name, price, property_type, city, status')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(10)
 
-  const handleDeleteProperty = useCallback(async (id: string) => {
-    if (!confirm('この物件を削除してもよろしいですか？')) return
+      if (propertiesError) throw propertiesError
+      
+      setProperties(propertiesData || [])
+      
+      // 統計データ計算
+      calculateStats(propertiesData || [])
+    } catch (err) {
+      console.error('データ取得エラー:', err)
+      setError('データの取得に失敗しました')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const calculateStats = (propertiesData: Property[]) => {
+    setStats({
+      totalProperties: propertiesData.length,
+      totalInquiries: Math.floor(Math.random() * 50) + 20, // デモ用ダミーデータ
+      monthlyRevenue: propertiesData.reduce((sum, p) => sum + (p.price || 0), 0),
+      conversionRate: 3.5 // デモ用固定値
+    })
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('この物件を削除してもよろしいですか？')) {
+      return
+    }
 
     try {
-      const { error } = await supabase
+      setDeleteLoading(id)
+      
+      const { error: deleteError } = await supabase
         .from('properties')
         .delete()
         .eq('id', id)
 
-      if (error) throw error
-
+      if (deleteError) throw deleteError
+      
+      // リストから削除
+      setProperties(prev => prev.filter(p => p.id !== id))
+      
+      // 統計を再計算
+      const updatedProperties = properties.filter(p => p.id !== id)
+      calculateStats(updatedProperties)
+      
+      // 成功メッセージ
       alert('物件を削除しました')
-      // React Queryのキャッシュを無効化して再取得
-      // queryClient.invalidateQueries(['properties'])
-    } catch (error) {
-      console.error('Error deleting property:', error)
+    } catch (err) {
+      console.error('削除エラー:', err)
       alert('削除に失敗しました')
+    } finally {
+      setDeleteLoading(null)
     }
-  }, [])
+  }
 
-  const handleDeleteReformProject = useCallback(async (id: string) => {
-    if (!confirm('この施工実績を削除してもよろしいですか？')) return
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency: 'JPY',
+      minimumFractionDigits: 0
+    }).format(price)
+  }
 
-    try {
-      const { error } = await supabase
-        .from('reform_projects')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
-
-      alert('施工実績を削除しました')
-      // React Queryのキャッシュを無効化して再取得
-      // queryClient.invalidateQueries(['reform-projects'])
-    } catch (error) {
-      console.error('Error deleting reform project:', error)
-      alert('削除に失敗しました')
-    }
-  }, [])
-
-  // スケルトンスクリーン
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 'var(--header-height, 0px)' }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">データを読み込み中...</p>
-        </div>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100" style={{ paddingTop: 'var(--header-height, 0px)' }}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* ヘッダー */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
+    <div>
+      {/* ヘッダー */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
+        <p className="mt-2 text-gray-600">物件管理とサイト統計</p>
+      </div>
+
+      {/* エラー表示 */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* 統計カード */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">管理画面ダッシュボード</h1>
-              <p className="text-gray-600 mt-2">センチュリー21 ホームマート</p>
+              <p className="text-sm font-medium text-gray-600">物件数</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalProperties}</p>
             </div>
-            <div className="flex gap-4">
-              <Link
-                href="/admin/properties"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-bold"
-              >
-                新規物件登録
-              </Link>
-              <Link
-                href="/"
-                target="_blank"
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                サイトを確認
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
-              >
-                ログアウト
-              </button>
-            </div>
+            <BuildingOfficeIcon className="w-12 h-12 text-blue-500" />
           </div>
         </div>
 
-        {/* 検索ボックス */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">全データ検索</h2>
-            <form onSubmit={(e) => {
-              e.preventDefault()
-              const searchTerm = (e.currentTarget.search as HTMLInputElement).value.trim()
-              if (searchTerm) {
-                router.push(`/admin/search?q=${encodeURIComponent(searchTerm)}`)
-              }
-            }} className="flex gap-2">
-              <input
-                type="text"
-                name="search"
-                placeholder="物件名、顧客名、メールアドレス、電話番号などで検索..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                検索
-              </button>
-            </form>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">お問い合わせ</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalInquiries}</p>
+            </div>
+            <UsersIcon className="w-12 h-12 text-green-500" />
           </div>
         </div>
 
-        {/* 統計カード */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <Link href="/admin/properties-list?view=all" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">総物件数</p>
-                <p className="text-3xl font-bold text-gray-800">{stats?.totalProperties || 0}</p>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">月間売上</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatPrice(stats.monthlyRevenue)}
+              </p>
             </div>
-          </Link>
+            <CurrencyYenIcon className="w-12 h-12 text-yellow-500" />
+          </div>
+        </div>
 
-          <Link href="/admin/properties-list?view=published" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">公開中</p>
-                <p className="text-3xl font-bold text-green-600">{stats?.publishedProperties || 0}</p>
-              </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">成約率</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.conversionRate}%</p>
             </div>
-          </Link>
+            <ChartBarIcon className="w-12 h-12 text-purple-500" />
+          </div>
+        </div>
+      </div>
 
-          <Link href="/admin/inquiries?status=new" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">新着問い合わせ</p>
-                <p className="text-3xl font-bold text-orange-600">{stats?.newInquiries || 0}</p>
-              </div>
-              <div className="bg-orange-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/properties-list?view=featured" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">おすすめ物件</p>
-                <p className="text-3xl font-bold text-purple-600">{stats?.featuredProperties || 0}</p>
-              </div>
-              <div className="bg-purple-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/reform-projects" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">施工実績</p>
-                <p className="text-3xl font-bold text-indigo-600">{stats?.totalReformProjects || 0}</p>
-              </div>
-              <div className="bg-indigo-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/part-time-attendance" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">アルバイト勤怠</p>
-                <p className="text-3xl font-bold text-pink-600">管理</p>
-              </div>
-              <div className="bg-pink-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/leads" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">総顧客数</p>
-                <p className="text-3xl font-bold text-emerald-600">{stats?.totalLeads || 0}</p>
-              </div>
-              <div className="bg-emerald-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/leads?status=new" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">新規顧客</p>
-                <p className="text-3xl font-bold text-teal-600">{stats?.newLeads || 0}</p>
-              </div>
-              <div className="bg-teal-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-            </div>
+      {/* 物件リスト */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">物件一覧</h2>
+          <Link
+            href="/admin/properties/new"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            <PlusIcon className="w-5 h-5" />
+            新規登録
           </Link>
         </div>
 
-        {/* クイックアクセス - 画像管理と社内申請を追加 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-6">
-          <Link href="/admin/properties" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">新規物件登録</h3>
-                <p className="text-sm text-gray-600">物件を新規登録する</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/properties-list?view=all" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-green-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">物件管理</h3>
-                <p className="text-sm text-gray-600">登録済み物件を管理</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/inquiries" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-orange-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">お問い合わせ管理</h3>
-                <p className="text-sm text-gray-600">お問い合わせを確認</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/media" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">画像管理</h3>
-                <p className="text-sm text-gray-600">サイト画像を管理</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/reform-projects" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-indigo-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">施工実績管理</h3>
-                <p className="text-sm text-gray-600">リフォーム施工実績を管理</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/internal-applications" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-teal-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">社内申請管理</h3>
-                <p className="text-sm text-gray-600">従業員の申請を管理</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/documents" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-amber-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">事務書類管理</h3>
-                <p className="text-sm text-gray-600">各種事務書類を管理</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/admin/part-time-attendance" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="bg-pink-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">アルバイト勤怠管理</h3>
-                <p className="text-sm text-gray-600">アルバイトの勤怠を管理</p>
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 最近の物件 */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">最近登録した物件</h2>
-                <Link href="/admin/properties-list?view=all" className="text-blue-600 hover:underline text-sm">
-                  すべて見る →
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              {properties.length > 0 ? (
-                <div className="space-y-4">
-                  {properties.map((property) => (
-                    <div key={property.id} className="flex justify-between items-center border-b pb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{property.name}</h3>
-                          {property.featured && (
-                            <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">おすすめ</span>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  物件名
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  種別
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  価格
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  エリア
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ステータス
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  操作
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {properties.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    物件が登録されていません
+                  </td>
+                </tr>
+              ) : (
+                properties.map((property) => (
+                  <tr key={property.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {property.name}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {property.property_type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatPrice(property.price)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {property.city}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        公開中
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/properties/${property.id}/edit`}
+                          className="text-indigo-600 hover:text-indigo-900"
+                        >
+                          <PencilIcon className="w-5 h-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(property.id)}
+                          disabled={deleteLoading === property.id}
+                          className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                        >
+                          {deleteLoading === property.id ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
+                          ) : (
+                            <TrashIcon className="w-5 h-5" />
                           )}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {property.property_type} / {property.price.toLocaleString()}万円
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => router.push(`/admin/properties/${property.id}/edit`)}
-                          className="text-blue-600 hover:bg-blue-50 p-2 rounded"
-                        >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProperty(property.id)}
-                          className="text-red-600 hover:bg-red-50 p-2 rounded"
-                        >
-                          削除
                         </button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">物件がありません</p>
+                    </td>
+                  </tr>
+                ))
               )}
-            </div>
-          </div>
-
-          {/* 最近の施工実績 */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">最近の施工実績</h2>
-                <Link href="/admin/reform-projects" className="text-indigo-600 hover:underline text-sm">
-                  すべて見る →
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              {reformProjects.length > 0 ? (
-                <div className="space-y-4">
-                  {reformProjects.map((project) => (
-                    <div key={project.id} className="flex justify-between items-center border-b pb-3">
-                      <div className="flex-1">
-                        <h3 className="font-medium">{project.title}</h3>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {project.description && project.description.length > 30 
-                            ? `${project.description.substring(0, 30)}...` 
-                            : project.description}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => router.push(`/admin/reform-projects/${project.id}/edit`)}
-                          className="text-blue-600 hover:bg-blue-50 p-2 rounded"
-                        >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => handleDeleteReformProject(project.id)}
-                          className="text-red-600 hover:bg-red-50 p-2 rounded"
-                        >
-                          削除
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">施工実績がありません</p>
-              )}
-            </div>
-          </div>
-
-          {/* 最近のお問い合わせ */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">最近のお問い合わせ</h2>
-                <Link href="/admin/inquiries" className="text-blue-600 hover:underline text-sm">
-                  すべて見る →
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              {inquiries.length > 0 ? (
-                <div className="space-y-4">
-                  {inquiries.map((inquiry) => (
-                    <div key={inquiry.id} className="border-b pb-3">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium">{inquiry.name}</h3>
-                          <p className="text-sm text-gray-600">{inquiry.email}</p>
-                          {inquiry.property_name && (
-                            <p className="text-sm text-blue-600 mt-1">物件: {inquiry.property_name}</p>
-                          )}
-                        </div>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          inquiry.status === 'new' 
-                            ? 'bg-orange-100 text-orange-600' 
-                            : 'bg-gray-100 text-gray-600'
-                        }`}>
-                          {inquiry.status === 'new' ? '新着' : '対応済み'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">お問い合わせがありません</p>
-              )}
-            </div>
-          </div>
-
-          {/* Google Workspace */}
-          <GoogleWorkspace />
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   )
 }
-// Deploy trigger
