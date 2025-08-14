@@ -8,15 +8,18 @@
      · serverActions
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 10.0s
+ ✓ Compiled successfully in 3.0s
    Skipping validation of types
    Skipping linting
    Collecting page data ...
-[Error [PageNotFoundError]: Cannot find module for page: /api/auth/test-connection/route] {
-  code: 'ENOENT'
-}
+ ⚠ Using edge runtime on a page currently disables static generation for that page
 
 > Build error occurred
-[Error: Failed to collect page data for /api/auth/test-connection] {
-  type: 'Error'
+[Error: Cannot find module '/Users/milk/homemart/.next/server/next-font-manifest.json'
+Require stack:
+- /Users/milk/homemart/node_modules/next/dist/export/index.js
+- /Users/milk/homemart/node_modules/next/dist/build/index.js
+- /Users/milk/homemart/node_modules/next/dist/cli/next-build.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
 }
