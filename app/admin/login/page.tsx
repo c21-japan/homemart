@@ -1,41 +1,53 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
 
-  // フォーム送信ハンドラー（e.preventDefaultが重要！）
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault() // これが重要！ページリロードを防ぐ
+  // ログイン処理（重要：e.preventDefault()必須！）
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault() // これがないとページがリロードされる！
     
-    console.log('ログイン試行:', { email, password }) // デバッグ用
+    console.log('ログイン処理開始') // デバッグ用
+    setError('')
+    setLoading(true)
     
-    // ハードコードされた認証
-    const validUsers = [
-      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner' },
-      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin' },
-      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff' }
-    ]
-    
-    const user = validUsers.find(u => u.email === email && u.password === password)
-    
-    if (user) {
-      // LocalStorageに保存
-      localStorage.setItem('isAdmin', 'true')
-      localStorage.setItem('adminName', user.name)
-      localStorage.setItem('userRole', user.role)
-      
-      // 管理画面へ遷移
-      window.location.href = '/admin' // router.pushの代わりに直接遷移
-    } else {
-      setError('メールアドレスまたはパスワードが正しくありません')
-      setTimeout(() => setError(''), 3000)
+    try {
+      // シンプルな認証（データベース不要）
+      if (email === 'y-inui@century21.group' && password === 'Inui2024!') {
+        console.log('認証成功')
+        
+        // LocalStorageに保存
+        localStorage.setItem('isAdmin', 'true')
+        localStorage.setItem('adminName', '乾佑企')
+        localStorage.setItem('userRole', 'owner')
+        
+        // 管理画面へ遷移
+        window.location.href = '/admin'
+      } else if (email === 'm-yasuda@century21.group' && password === 'Yasuda2024!') {
+        localStorage.setItem('isAdmin', 'true')
+        localStorage.setItem('adminName', '安田実加')
+        localStorage.setItem('userRole', 'admin')
+        window.location.href = '/admin'
+      } else if (email === 'info@century21.group' && password === 'Yamao2024!') {
+        localStorage.setItem('isAdmin', 'true')
+        localStorage.setItem('adminName', '山尾妃奈')
+        localStorage.setItem('userRole', 'staff')
+        window.location.href = '/admin'
+      } else {
+        console.log('認証失敗')
+        setError('メールアドレスまたはパスワードが正しくありません')
+      }
+    } catch (err) {
+      console.error('エラー:', err)
+      setError('ログイン処理中にエラーが発生しました')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -51,7 +63,7 @@ export default function LoginPage() {
             <h2 className="text-lg text-gray-600 mt-2">管理画面ログイン</h2>
           </div>
           
-          {/* onSubmitハンドラーを追加！ */}
+          {/* 重要：onSubmitを必ず設定！ */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -64,6 +76,7 @@ export default function LoginPage() {
                 placeholder="例: y-inui@century21.group"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loading}
               />
             </div>
             
@@ -79,11 +92,13 @@ export default function LoginPage() {
                   placeholder="パスワードを入力"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
                   required
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  disabled={loading}
                 >
                   {showPassword ? '隠す' : '表示'}
                 </button>
@@ -98,15 +113,16 @@ export default function LoginPage() {
             
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ログイン
+              {loading ? 'ログイン中...' : 'ログイン'}
             </button>
           </form>
           
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
-            <p className="font-semibold mb-2">テストアカウント:</p>
-            <div className="space-y-1">
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="font-semibold text-sm mb-2">テスト用アカウント:</p>
+            <div className="space-y-1 text-xs">
               <p>オーナー: y-inui@century21.group / Inui2024!</p>
               <p>管理者: m-yasuda@century21.group / Yasuda2024!</p>
               <p>スタッフ: info@century21.group / Yamao2024!</p>
