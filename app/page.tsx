@@ -1,97 +1,246 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import PropertySearch from '@/components/PropertySearch'
-import NewFeature from '@/components/NewFeature'
+import PropertyCard from '@/components/PropertyCard'
+import { ChevronRightIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 
-export default function Home() {
+export default function HomePage() {
+  const router = useRouter()
+  const [showSearch, setShowSearch] = useState(false)
+
+  // 検索実行ハンドラ - 物件一覧ページへ遷移
+  const handleSearch = (filters: any) => {
+    // URLパラメータを構築
+    const params = new URLSearchParams()
+    
+    if (filters.area) {
+      params.set('area', filters.area)
+    }
+    if (filters.types && filters.types.length > 0) {
+      params.set('types', filters.types.join(','))
+    }
+    if (filters.priceMin) {
+      params.set('priceMin', filters.priceMin)
+    }
+    if (filters.priceMax) {
+      params.set('priceMax', filters.priceMax)
+    }
+    if (filters.landAreaMin) {
+      params.set('landAreaMin', filters.landAreaMin)
+    }
+    if (filters.landAreaMax) {
+      params.set('landAreaMax', filters.landAreaMax)
+    }
+    if (filters.buildingAreaMin) {
+      params.set('buildingAreaMin', filters.buildingAreaMin)
+    }
+    if (filters.buildingAreaMax) {
+      params.set('buildingAreaMax', filters.buildingAreaMax)
+    }
+    if (filters.nearStation) {
+      params.set('nearStation', filters.nearStation)
+    }
+
+    // 物件一覧ページへ遷移
+    router.push(`/properties?${params.toString()}`)
+  }
+
+  // クイック検索ハンドラ
+  const handleQuickSearch = (area: string) => {
+    router.push(`/properties?area=${encodeURIComponent(area)}`)
+  }
+
+  const handlePropertyTypeSearch = (type: string) => {
+    router.push(`/properties?types=${encodeURIComponent(type)}`)
+  }
+
+  // サンプル物件データ
+  const featuredProperties = [
+    {
+      id: '1',
+      name: '広陵町の新築戸建',
+      price: 28800000,
+      property_type: '新築戸建',
+      address: '奈良県北葛城郡広陵町',
+      city: '広陵町',
+      image_url: '/images/property1.jpg',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: '2',
+      name: '香芝市の中古戸建',
+      price: 22000000,
+      property_type: '中古戸建',
+      address: '奈良県香芝市',
+      city: '香芝市',
+      image_url: '/images/property2.jpg',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: '3',
+      name: '大和高田市の土地',
+      price: 15000000,
+      property_type: '土地',
+      address: '奈良県大和高田市',
+      city: '大和高田市',
+      image_url: '/images/property3.jpg',
+      created_at: new Date().toISOString()
+    }
+  ]
+
+  // 人気エリア
+  const popularAreas = [
+    { name: '広陵町', count: 45 },
+    { name: '香芝市', count: 38 },
+    { name: '大和高田市', count: 32 },
+    { name: '橿原市', count: 28 },
+    { name: '田原本町', count: 24 },
+    { name: '王寺町', count: 22 }
+  ]
+
   return (
-    <div className="bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* ヒーローセクション */}
-        <section className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            理想の住まいを
-            <span className="text-homemart-blue ml-2">見つけよう</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            センチュリー21 ホームマートで、あなたに最適な不動産を見つけませんか？
-            豊富な物件情報と専門的なサポートで、理想の住まいへの第一歩を踏み出しましょう。
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+    <div className="min-h-screen">
+      {/* ヒーローセクション */}
+      <section className="relative bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              奈良・大阪で理想の住まいを見つけよう
+            </h1>
+            <p className="text-xl mb-8 text-blue-100">
+              株式会社ホームマートは、地域密着型の不動産会社として
+              お客様の理想の住まい探しをサポートします
+            </p>
+            <button
+              onClick={() => setShowSearch(true)}
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-colors"
+            >
+              物件を検索する
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 検索モーダル */}
+      {showSearch && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">物件検索</h2>
+                <button
+                  onClick={() => setShowSearch(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              <PropertySearch
+                onSearch={(filters) => {
+                  handleSearch(filters)
+                  setShowSearch(false)
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* クイック検索 */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-6">物件種別から探す</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {['新築戸建', '中古戸建', '土地', 'マンション', '収益物件'].map((type) => (
+              <button
+                key={type}
+                onClick={() => handlePropertyTypeSearch(type)}
+                className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow text-center"
+              >
+                <div className="text-lg font-semibold">{type}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 人気エリア */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-6">人気のエリア</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {popularAreas.map((area) => (
+              <button
+                key={area.name}
+                onClick={() => handleQuickSearch(area.name)}
+                className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow transition-all"
+              >
+                <div className="font-semibold">{area.name}</div>
+                <div className="text-sm text-gray-500">{area.count}件</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* おすすめ物件 */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">おすすめ物件</h2>
             <Link
               href="/properties"
-              className="bg-homemart-blue text-white px-8 py-3 rounded-lg text-lg font-semibold hover:opacity-90 transition-opacity"
+              className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
             >
-              物件を探す
-            </Link>
-            <Link
-              href="/sell"
-              className="bg-white text-homemart-blue px-8 py-3 rounded-lg text-lg font-semibold border-2 border-homemart-blue hover:bg-blue-50 transition-colors"
-            >
-              売却相談
+              すべて見る
+              <ChevronRightIcon className="w-4 h-4" />
             </Link>
           </div>
-        </section>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* 物件検索セクション */}
-        <section className="mb-16">
-          <PropertySearch 
-            selectedArea=""
-            onClose={() => {}}
-            areaOptions={[]}
-            onReturnToSearch={() => {}}
-          />
-        </section>
-
-        {/* サービス紹介 */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {[
-            {
-              title: '物件検索',
-              description: '豊富な物件情報から最適な住まいを見つけましょう',
-              icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-              color: 'blue'
-            },
-            {
-              title: '売却サポート',
-              description: '専門知識を活かした売却サポートで、適正価格での売却を実現',
-              icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1',
-              color: 'green'
-            },
-            {
-              title: 'リフォーム',
-              description: '住まいの価値を高めるリフォームプランをご提案',
-              icon: 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z',
-              color: 'purple'
-            }
-          ].map((service, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow">
-              <div className={`w-16 h-16 bg-${service.color}-100 rounded-full flex items-center justify-center mx-auto mb-4`}>
-                <svg className={`w-8 h-8 text-${service.color}-600`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={service.icon} />
-                </svg>
+      {/* 会社情報 */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="bg-blue-600 text-white rounded-lg p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-3xl font-bold mb-4">株式会社ホームマート</h2>
+                <p className="mb-6">
+                  センチュリー21加盟店として、豊富な物件情報と
+                  確かな実績でお客様の不動産売買をサポートいたします。
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <PhoneIcon className="w-5 h-5" />
+                    <span>0120-43-8639</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <EnvelopeIcon className="w-5 h-5" />
+                    <span>info@homemart.jp</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.title}</h3>
-              <p className="text-gray-600">{service.description}</p>
+              <div className="flex items-center justify-center">
+                <Link
+                  href="/contact"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                >
+                  お問い合わせはこちら
+                </Link>
+              </div>
             </div>
-          ))}
-        </section>
-
-        {/* CTAセクション */}
-        <section className="text-center bg-homemart-blue text-white p-12 rounded-lg">
-          <h2 className="text-3xl font-bold mb-4">今すぐ始めませんか？</h2>
-          <p className="text-xl mb-8 opacity-90">
-            理想の住まいへの第一歩を踏み出しましょう
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-white text-homemart-blue px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            お問い合わせ
-          </Link>
-        </section>
-      </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

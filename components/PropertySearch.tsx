@@ -40,7 +40,6 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
   useEffect(() => {
     if (initialFilters) {
       setFilters(initialFilters)
-      // 詳細検索項目が設定されている場合は詳細検索を開く
       if (
         initialFilters.priceMin || 
         initialFilters.priceMax || 
@@ -55,11 +54,23 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
     }
   }, [initialFilters])
 
-  // エリアリスト
+  // 完全なエリアリスト（奈良県・大阪府）
   const areas = [
+    // 奈良県北部
     '広陵町', '香芝市', '大和高田市', '橿原市', '田原本町',
-    '上牧町', '王寺町', '河合町', '三郷町', '斑鳩町'
-  ]
+    '上牧町', '王寺町', '河合町', '三郷町', '斑鳩町',
+    '安堵町', '川西町', '三宅町', '平群町',
+    // 奈良県中部
+    '奈良市', '大和郡山市', '天理市', '生駒市',
+    // 奈良県南部
+    '桜井市', '五條市', '御所市', '葛城市',
+    // 大阪府東部
+    '東大阪市', '八尾市', '柏原市', '藤井寺市', '羽曳野市',
+    '松原市', '大阪狭山市', '富田林市', '河内長野市',
+    // 大阪府北部
+    '大阪市', '堺市', '豊中市', '吹田市', '高槻市',
+    '枚方市', '茨木市', '箕面市', '池田市'
+  ].sort() // アルファベット順にソート
 
   // 物件種別リスト
   const propertyTypes = [
@@ -77,7 +88,12 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
     { value: '30000000', label: '3,000万円' },
     { value: '35000000', label: '3,500万円' },
     { value: '40000000', label: '4,000万円' },
-    { value: '50000000', label: '5,000万円' }
+    { value: '50000000', label: '5,000万円' },
+    { value: '60000000', label: '6,000万円' },
+    { value: '70000000', label: '7,000万円' },
+    { value: '80000000', label: '8,000万円' },
+    { value: '90000000', label: '9,000万円' },
+    { value: '100000000', label: '1億円' }
   ]
 
   // 面積オプション
@@ -91,7 +107,9 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
     { value: '150', label: '150㎡' },
     { value: '200', label: '200㎡' },
     { value: '250', label: '250㎡' },
-    { value: '300', label: '300㎡' }
+    { value: '300', label: '300㎡' },
+    { value: '400', label: '400㎡' },
+    { value: '500', label: '500㎡' }
   ]
 
   // フィルター変更ハンドラ
@@ -114,6 +132,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
   // 検索実行
   const handleSearch = () => {
+    console.log('検索実行:', filters) // デバッグ用
     onSearch(filters)
   }
 
@@ -134,13 +153,31 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
     onSearch(resetFilters)
   }
 
+  // エリアグループ化
+  const groupedAreas = {
+    '奈良県北部': areas.filter(a => 
+      ['広陵町', '香芝市', '大和高田市', '橿原市', '田原本町', '上牧町', '王寺町', '河合町', '三郷町', '斑鳩町', '安堵町', '川西町', '三宅町', '平群町'].includes(a)
+    ),
+    '奈良県中部': areas.filter(a => 
+      ['奈良市', '大和郡山市', '天理市', '生駒市'].includes(a)
+    ),
+    '奈良県南部': areas.filter(a => 
+      ['桜井市', '五條市', '御所市', '葛城市'].includes(a)
+    ),
+    '大阪府東部': areas.filter(a => 
+      ['東大阪市', '八尾市', '柏原市', '藤井寺市', '羽曳野市', '松原市', '大阪狭山市', '富田林市', '河内長野市'].includes(a)
+    ),
+    '大阪府北部': areas.filter(a => 
+      ['大阪市', '堺市', '豊中市', '吹田市', '高槻市', '枚方市', '茨木市', '箕面市', '池田市'].includes(a)
+    )
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      {/* かんたん検索 */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">物件を検索</h2>
         
-        {/* エリア選択 */}
+        {/* エリア選択（グループ化） */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             エリア
@@ -151,8 +188,12 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">すべてのエリア</option>
-            {areas.map(area => (
-              <option key={area} value={area}>{area}</option>
+            {Object.entries(groupedAreas).map(([group, groupAreas]) => (
+              <optgroup key={group} label={group}>
+                {groupAreas.map(area => (
+                  <option key={area} value={area}>{area}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -166,6 +207,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
             {propertyTypes.map(type => (
               <button
                 key={type}
+                type="button"
                 onClick={() => togglePropertyType(type)}
                 className={`px-4 py-2 rounded-md border transition-colors ${
                   filters.types.includes(type)
@@ -181,6 +223,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
         {/* 詳細検索トグル */}
         <button
+          type="button"
           onClick={() => setIsDetailedSearch(!isDetailedSearch)}
           className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
         >
@@ -315,14 +358,16 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
         {/* 検索ボタン */}
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={handleSearch}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-semibold"
           >
             検索する
           </button>
           <button
+            type="button"
             onClick={handleReset}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-semibold"
           >
             リセット
           </button>
