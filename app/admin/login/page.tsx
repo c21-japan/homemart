@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -21,46 +21,44 @@ export default function AdminLogin() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         // ログイン成功
-        console.log('ログイン成功:', data);
         router.push('/admin');
-        router.refresh(); // ミドルウェアを再実行
+        router.refresh();
       } else {
         // エラー表示
         setError(data.error || 'ログインに失敗しました');
-        console.error('ログインエラー:', data);
       }
     } catch (error) {
-      console.error('Network error:', error);
-      setError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      console.error('Login error:', error);
+      setError('ネットワークエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDemoLogin = () => {
-    setUsername('admin');
-    setPassword('homemart2024');
+    setEmail('inui@homemart.co.jp');
+    setPassword('HomeM@rt2024');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-lg shadow-xl p-8">
-          {/* ヘッダー */}
+          {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               管理画面ログイン
             </h2>
             <p className="text-gray-600">セキュアな認証で管理画面にアクセス</p>
-            
-            {/* 開発環境でのデモログインボタン */}
+
+            {/* Demo Login Button for Development */}
             {process.env.NODE_ENV === 'development' && (
               <button
                 type="button"
@@ -72,7 +70,7 @@ export default function AdminLogin() {
             )}
           </div>
 
-          {/* エラーメッセージ */}
+          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
               <div className="flex">
@@ -88,26 +86,28 @@ export default function AdminLogin() {
             </div>
           )}
 
-          {/* ログインフォーム */}
+          {/* Login Form */}
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Email */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                ユーザー名
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                メールアドレス
               </label>
               <input
-                id="username"
-                name="username"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="ユーザー名を入力"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="メールアドレスを入力"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
 
+            {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 パスワード
@@ -126,6 +126,7 @@ export default function AdminLogin() {
               />
             </div>
 
+            {/* Login Button */}
             <div>
               <button
                 type="submit"
@@ -147,7 +148,7 @@ export default function AdminLogin() {
             </div>
           </form>
 
-          {/* フッター */}
+          {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               © 2024 株式会社ホームマート

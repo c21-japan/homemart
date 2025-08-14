@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { deleteCookie } from 'cookies-next'
 
 interface SearchResult {
   type: 'property' | 'inquiry' | 'lead' | 'reform_project'
@@ -16,7 +15,7 @@ interface SearchResult {
   url: string
 }
 
-export default function AdminSearch() {
+function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const query = searchParams.get('q') || ''
@@ -30,9 +29,19 @@ export default function AdminSearch() {
     reformProjects: 0
   })
 
-  const handleLogout = () => {
-    deleteCookie('admin-auth')
-    router.push('/admin/login')
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        router.push('/admin/login');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   }
 
   useEffect(() => {
@@ -109,16 +118,16 @@ export default function AdminSearch() {
             })
           })
         }
-      } catch (leadError) {
-        console.log('Leads table not available')
+      } catch (error) {
+        console.error('リード検索エラー:', error)
       }
 
-      // リフォーム施工実績検索
+      // リフォーム案件検索
       try {
         const { data: reformProjects, error: reformError } = await supabase
           .from('reform_projects')
-          .select('id, title, description, created_at')
-          .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+          .select('id, project_name, client_name, status, created_at, description')
+          .or(`project_name.ilike.%${searchTerm}%,client_name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
           .order('created_at', { ascending: false })
 
         if (!reformError && reformProjects) {
@@ -126,21 +135,19 @@ export default function AdminSearch() {
             allResults.push({
               type: 'reform_project',
               id: project.id,
-              title: project.title,
-              description: project.description || '説明なし',
+              title: project.project_name,
+              description: `${project.client_name} - ${project.description || '説明なし'}`,
+              status: project.status,
               created_at: project.created_at,
               url: `/admin/reform-projects`
             })
           })
         }
-      } catch (reformError) {
-        console.log('Reform projects table not available')
+      } catch (error) {
+        console.error('リフォーム案件検索エラー:', error)
       }
 
-      // 結果を日付順でソート
-      allResults.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-
-      setResults(allResults)
+      // 統計を更新
       setStats({
         properties: allResults.filter(r => r.type === 'property').length,
         inquiries: allResults.filter(r => r.type === 'inquiry').length,
@@ -148,189 +155,203 @@ export default function AdminSearch() {
         reformProjects: allResults.filter(r => r.type === 'reform_project').length
       })
 
+      setResults(allResults)
     } catch (error) {
-      console.error('Search error:', error)
-      setResults([])
+      console.error('検索エラー:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const getTypeLabel = (type: string) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'property': return '物件'
-      case 'inquiry': return 'お問い合わせ'
-      case 'lead': return 'リード'
-      case 'reform_project': return '施工実績'
-      default: return 'その他'
+      case 'property':
+        return '🏠'
+      case 'inquiry':
+        return '📧'
+      case 'lead':
+        return '👤'
+      case 'reform_project':
+        return '🔨'
+      default:
+        return '📄'
     }
   }
 
-  const getTypeColor = (type: string) => {
+  const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'property': return 'bg-blue-100 text-blue-800'
-      case 'inquiry': return 'bg-green-100 text-green-800'
-      case 'lead': return 'bg-purple-100 text-purple-800'
-      case 'reform_project': return 'bg-indigo-100 text-indigo-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'property':
+        return '物件'
+      case 'inquiry':
+        return 'お問い合わせ'
+      case 'lead':
+        return 'リード'
+      case 'reform_project':
+        return 'リフォーム案件'
+      default:
+        return 'その他'
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-100 text-green-800'
-      case 'draft': return 'bg-yellow-100 text-yellow-800'
-      case 'new': return 'bg-blue-100 text-blue-800'
-      case 'in_progress': return 'bg-orange-100 text-orange-800'
-      case 'won': return 'bg-green-100 text-green-800'
-      case 'lost': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+      case 'published':
+        return 'bg-green-100 text-green-800'
+      case 'pending':
+      case 'draft':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'inactive':
+      case 'archived':
+        return 'bg-gray-100 text-gray-800'
+      default:
+        return 'bg-blue-100 text-blue-800'
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 'var(--header-height, 0px)' }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100" style={{ paddingTop: 'var(--header-height, 0px)' }}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* ヘッダー */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">検索結果</h1>
-              <p className="text-gray-600 mt-2">検索クエリ: &quot;{query}&quot;</p>
+    <div className="min-h-screen bg-gray-100">
+      {/* ヘッダー */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold">検索結果</h1>
+              {query && (
+                <span className="ml-4 text-sm text-gray-500">
+                  「{query}」の検索結果
+                </span>
+              )}
             </div>
-            <div className="flex gap-4">
+            <div className="flex items-center space-x-4">
               <Link
                 href="/admin"
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                ダッシュボードに戻る
+                ダッシュボード
               </Link>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
                 ログアウト
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* 検索統計 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">物件</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.properties}</p>
+      <main className="py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* 検索フォーム */}
+          <div className="mb-8">
+            <form onSubmit={(e) => { e.preventDefault(); performSearch(query); }}>
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => router.push(`/admin/search?q=${encodeURIComponent(e.target.value)}`)}
+                  placeholder="検索キーワードを入力..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
+                >
+                  検索
+                </button>
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </div>
-            </div>
+            </form>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">お問い合わせ</p>
-                <p className="text-3xl font-bold text-green-600">{stats.inquiries}</p>
+          {/* 統計 */}
+          {query && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="text-2xl font-bold text-blue-600">{stats.properties}</div>
+                <div className="text-sm text-gray-600">物件</div>
               </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="text-2xl font-bold text-green-600">{stats.inquiries}</div>
+                <div className="text-sm text-gray-600">お問い合わせ</div>
               </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">リード</p>
-                <p className="text-3xl font-bold text-purple-600">{stats.leads}</p>
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="text-2xl font-bold text-purple-600">{stats.leads}</div>
+                <div className="text-sm text-gray-600">リード</div>
               </div>
-              <div className="bg-purple-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="text-2xl font-bold text-orange-600">{stats.reformProjects}</div>
+                <div className="text-sm text-gray-600">リフォーム案件</div>
               </div>
             </div>
-          </div>
+          )}
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">施工実績</p>
-                <p className="text-3xl font-bold text-indigo-600">{stats.reformProjects}</p>
-              </div>
-              <div className="bg-indigo-100 p-3 rounded-full">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
+          {/* 検索結果 */}
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-          </div>
-        </div>
-
-        {/* 検索結果 */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">検索結果 ({results.length}件)</h2>
-          
-          {results.length === 0 ? (
+          ) : query && results.length === 0 ? (
             <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">検索結果が見つかりません</h3>
-              <p className="mt-1 text-sm text-gray-500">別のキーワードで検索してみてください。</p>
+              <p className="text-gray-500">検索結果が見つかりませんでした。</p>
+              <p className="text-sm text-gray-400 mt-2">別のキーワードで検索してみてください。</p>
             </div>
-          ) : (
+          ) : query ? (
             <div className="space-y-4">
-              {results.map((result, index) => (
-                <div key={`${result.type}-${result.id}`} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              {results.map((result) => (
+                <div key={`${result.type}-${result.id}`} className="bg-white rounded-lg shadow p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(result.type)}`}>
+                        <span className="text-2xl">{getTypeIcon(result.type)}</span>
+                        <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
                           {getTypeLabel(result.type)}
                         </span>
                         {result.status && (
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(result.status)}`}>
+                          <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(result.status)}`}>
                             {result.status}
                           </span>
                         )}
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-1">{result.title}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        <Link href={result.url} className="hover:text-blue-600">
+                          {result.title}
+                        </Link>
+                      </h3>
                       <p className="text-gray-600 mb-2">{result.description}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         作成日: {new Date(result.created_at).toLocaleDateString('ja-JP')}
                       </p>
                     </div>
-                    <div className="ml-4">
-                      <Link
-                        href={result.url}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        詳細を見る
-                      </Link>
-                    </div>
+                    <Link
+                      href={result.url}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      詳細を見る →
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">検索キーワードを入力してください。</p>
+            </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
+  )
+}
+
+export default function AdminSearch() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   )
 }
