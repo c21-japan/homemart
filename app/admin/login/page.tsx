@@ -16,20 +16,23 @@ export default function LoginPage() {
     
     // ローカル認証（Supabase不要）
     const validUsers = [
-      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner' },
-      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin' },
-      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff' },
+      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner', permissions: ['all'] },
+      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin', permissions: ['leads', 'customers', 'reports'] },
+      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff', permissions: ['leads'] },
+      { email: 't-toyoda@century21.group', password: 'Toyoda2024!', name: '豊田拓真', role: 'staff', permissions: ['leads'] },
+      { email: 'm-imadu@century21.group', password: 'Imadu2024!', name: '今津元幸', role: 'staff', permissions: ['reports'] }
     ]
     
     const user = validUsers.find(u => u.email === email && u.password === password)
     
     if (user) {
-      // LocalStorageに保存
+      // LocalStorageに保存（キー名を修正！）
       if (typeof window !== 'undefined') {
-        localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('isAdmin', 'true')  // isAuthenticated → isAdmin に変更
+        localStorage.setItem('adminName', user.name)  // userName → adminName に変更
         localStorage.setItem('userEmail', user.email)
-        localStorage.setItem('userName', user.name)
         localStorage.setItem('userRole', user.role)
+        localStorage.setItem('userPermissions', JSON.stringify(user.permissions))
       }
       
       // 管理画面へ
@@ -102,6 +105,13 @@ export default function LoginPage() {
             >
               ログイン
             </button>
+            
+            <Link
+              href="/admin/register"
+              className="block w-full py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center"
+            >
+              新規登録
+            </Link>
           </form>
           
           <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
