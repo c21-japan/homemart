@@ -4,87 +4,40 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-// 初期ユーザーデータ（データベース移行前の仮データ）
-const USERS = [
-  {
-    email: 'y-inui@century21.group',
-    password: 'Inui2024!',
-    name: '乾佑企',
-    role: 'owner',
-    permissions: ['all'],
-    status: 'active'
-  },
-  {
-    email: 'm-yasuda@century21.group',
-    password: 'Yasuda2024!',
-    name: '安田実加',
-    role: 'admin',
-    permissions: ['leads', 'customers', 'reports'],
-    status: 'active'
-  },
-  {
-    email: 't-toyoda@century21.group',
-    password: 'Toyoda2024!',
-    name: '豊田拓真',
-    role: 'staff',
-    permissions: ['leads'],
-    status: 'active'
-  },
-  {
-    email: 'm-imadu@century21.group',
-    password: 'Imadu2024!',
-    name: '今津元幸',
-    role: 'staff',
-    permissions: ['reports'],
-    status: 'active'
-  },
-  {
-    email: 'info@century21.group',
-    password: 'Yamao2024!',
-    name: '山尾妃奈',
-    role: 'staff',
-    permissions: ['leads'],
-    status: 'active'
-  }
-]
-
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
     
-    // ユーザー認証
-    const user = USERS.find(u => u.email === email && u.password === password)
+    // ローカル認証（Supabase不要）
+    const validUsers = [
+      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner' },
+      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin' },
+      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff' },
+    ]
+    
+    const user = validUsers.find(u => u.email === email && u.password === password)
     
     if (user) {
-      if (user.status !== 'active') {
-        setError('アカウントが承認されていません。管理者にお問い合わせください。')
-        setLoading(false)
-        return
+      // LocalStorageに保存
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('userEmail', user.email)
+        localStorage.setItem('userName', user.name)
+        localStorage.setItem('userRole', user.role)
       }
       
-      // ユーザー情報を保存
-      localStorage.setItem('isAuthenticated', 'true')
-      localStorage.setItem('userEmail', user.email)
-      localStorage.setItem('userName', user.name)
-      localStorage.setItem('userRole', user.role)
-      localStorage.setItem('userPermissions', JSON.stringify(user.permissions))
-      
-      // ダッシュボードへ遷移
+      // 管理画面へ
       router.push('/admin')
     } else {
       setError('メールアドレスまたはパスワードが正しくありません')
+      setTimeout(() => setError(''), 3000)
     }
-    
-    setLoading(false)
   }
 
   return (
@@ -111,7 +64,6 @@ export default function LoginPage() {
                 placeholder="例: y-inui@century21.group"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
-                autoFocus
               />
             </div>
             
@@ -146,35 +98,20 @@ export default function LoginPage() {
             
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
-              {loading ? 'ログイン中...' : 'ログイン'}
+              ログイン
             </button>
-            
-            <Link
-              href="/admin/register"
-              className="block w-full py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center"
-            >
-              新規登録
-            </Link>
           </form>
           
-          {/* 開発環境でのみ表示 */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
-              <p className="font-semibold mb-2">テスト用アカウント:</p>
-              <div className="space-y-1">
-                <p>オーナー: y-inui@century21.group / Inui2024!</p>
-                <p>管理者: m-yasuda@century21.group / Yasuda2024!</p>
-                <p>スタッフ: info@century21.group / Yamao2024!</p>
-              </div>
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
+            <p className="font-semibold mb-2">アカウント情報:</p>
+            <div className="space-y-1">
+              <p>オーナー: y-inui@century21.group / Inui2024!</p>
+              <p>管理者: m-yasuda@century21.group / Yasuda2024!</p>
+              <p>スタッフ: info@century21.group / Yamao2024!</p>
             </div>
-          )}
-        </div>
-        
-        <div className="text-center mt-4 text-sm text-gray-600">
-          © 2024 株式会社ホームマート・センチュリー21広陵店
+          </div>
         </div>
       </div>
     </div>
