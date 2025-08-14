@@ -371,6 +371,8 @@ function PropertySearchClient({ initialProperties }: { initialProperties: Proper
         <PropertySearch
           onClose={() => setShowSearch(false)}
           selectedArea=""
+          selectedRoute=""
+          selectedStation=""
           areaOptions={areaOptions}
           onReturnToSearch={() => setFilteredProperties(searchHistory)}
         />

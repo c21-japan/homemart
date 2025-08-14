@@ -168,6 +168,11 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
 
   // 条件が変更されたら該当件数を更新
   useEffect(() => {
+    // 初期状態でselectedAreaの値を設定
+    if (selectedArea && !searchConditions.area) {
+      setSearchConditions(prev => ({ ...prev, area: selectedArea }))
+    }
+    
     const fetchMatchCount = async () => {
       setIsLoading(true)
       
@@ -180,12 +185,12 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
           .ilike('address', `%${selectedArea}%`)
 
         // 路線フィルタ
-        if (selectedRoute) {
+        if (selectedRoute && selectedRoute.trim()) {
           query = query.eq('route', selectedRoute)
         }
 
         // 最寄駅フィルタ
-        if (selectedStation) {
+        if (selectedStation && selectedStation.trim()) {
           query = query.eq('station', selectedStation)
         }
 
@@ -309,10 +314,10 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
     params.append('area', searchConditions.area || selectedArea)
     
     // 路線と駅の情報をURLパラメータに追加
-    if (selectedRoute) {
+    if (selectedRoute && selectedRoute.trim()) {
       params.append('route', selectedRoute)
     }
-    if (selectedStation) {
+    if (selectedStation && selectedStation.trim()) {
       params.append('station', selectedStation)
     }
     
@@ -347,7 +352,7 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
   // 条件クリア
   const handleClear = () => {
     setSearchConditions({
-      area: '',
+      area: selectedArea || '',
       propertyTypes: [],
       layouts: [],
       priceMin: '',
@@ -375,11 +380,11 @@ export default function PropertySearch({ selectedArea, selectedRoute, selectedSt
           {/* ヘッダー */}
           <div className="bg-orange-500 text-white p-6 rounded-t-lg">
             <h2 className="text-2xl font-bold">物件検索</h2>
-            <p className="mt-2">エリア：{selectedArea}</p>
-            {selectedRoute && (
+            <p className="mt-2">エリア：{selectedArea || '未選択'}</p>
+            {selectedRoute && selectedRoute.trim() && (
               <p className="mt-1 text-sm opacity-90">路線：{selectedRoute}</p>
             )}
-            {selectedStation && (
+            {selectedStation && selectedStation.trim() && (
               <p className="mt-1 text-sm opacity-90">最寄駅：{selectedStation}駅</p>
             )}
             <div className="mt-4 flex items-center gap-2">
