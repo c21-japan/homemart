@@ -1,180 +1,129 @@
 #!/bin/bash
 
 # ホームマート統合システム デプロイスクリプト
-# 使用方法: ./scripts/deploy.sh [production|staging]
+# 使用方法: ./scripts/deploy.sh [environment]
+# environment: production, staging (デフォルト: production)
 
 set -e
 
-# 色付きログ出力
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
+# 色付きログ関数
 log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    echo -e "\033[32m[INFO]\033[0m $1"
 }
 
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+log_warn() {
+    echo -e "\033[33m[WARN]\033[0m $1"
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "\033[31m[ERROR]\033[0m $1"
+}
+
+log_success() {
+    echo -e "\033[32m[SUCCESS]\033[0m $1"
 }
 
 # 環境設定
 ENVIRONMENT=${1:-production}
-PROJECT_NAME="homemart-integration-system"
 
-log_info "デプロイ環境: $ENVIRONMENT"
-log_info "プロジェクト名: $PROJECT_NAME"
-
-# 1. 依存関係のインストール
-log_info "依存関係をインストール中..."
-npm ci --production=false
-
-# 2. ビルド
-log_info "アプリケーションをビルド中..."
-npm run build
-
-# 3. 環境変数の確認
-log_info "環境変数を確認中..."
-if [ ! -f ".env.$ENVIRONMENT" ]; then
-    log_error ".env.$ENVIRONMENT ファイルが見つかりません"
+if [[ "$ENVIRONMENT" != "production" && "$ENVIRONMENT" != "staging" ]]; then
+    log_error "無効な環境です。'production' または 'staging' を指定してください。"
     exit 1
 fi
 
-# 4. Supabase Storageバケットの作成
-log_info "Supabase Storageバケットを作成中..."
-create_storage_buckets() {
-    # 必要なバケットのリスト
-    BUCKETS=(
-        "lead-photos"
-        "checklist-attachments"
-        "audio-records"
-        "general-documents"
-    )
-    
-    for bucket in "${BUCKETS[@]}"; do
-        log_info "バケット '$bucket' を作成中..."
-        # ここでSupabase CLIを使用してバケットを作成
-        # supabase storage create $bucket --project-ref $SUPABASE_PROJECT_REF
-    done
-}
+log_info "デプロイ環境: $ENVIRONMENT"
 
-# 5. データベースセットアップ
-log_info "データベースをセットアップ中..."
-setup_database() {
-    if [ "$ENVIRONMENT" = "production" ]; then
-        log_info "本番環境用データベーススクリプトを実行中..."
-        # Supabase CLIを使用してSQLスクリプトを実行
-        # supabase db push --project-ref $SUPABASE_PROJECT_REF
-    else
-        log_info "ステージング環境用データベーススクリプトを実行中..."
-        # ステージング用の処理
-    fi
-}
+# 現在のディレクトリを確認
+if [[ ! -f "package.json" ]]; then
+    log_error "package.jsonが見つかりません。プロジェクトルートで実行してください。"
+    exit 1
+fi
 
-# 6. Vercelへのデプロイ
+# 依存関係のインストール
+log_info "依存関係をインストール中..."
+npm install
+
+# ビルド
+log_info "プロジェクトをビルド中..."
+npm run build
+
+if [[ $? -eq 0 ]]; then
+    log_success "ビルドが完了しました"
+else
+    log_error "ビルドに失敗しました"
+    exit 1
+fi
+
+# 環境変数の確認
+log_info "環境変数を確認中..."
+if [[ -f ".env.$ENVIRONMENT" ]]; then
+    log_info ".env.$ENVIRONMENT ファイルが見つかりました"
+else
+    log_warn ".env.$ENVIRONMENT ファイルが見つかりません"
+fi
+
+# Vercelデプロイ
 log_info "Vercelにデプロイ中..."
-deploy_to_vercel() {
-    # Vercel CLIがインストールされているかチェック
-    if ! command -v vercel &> /dev/null; then
-        log_error "Vercel CLIがインストールされていません"
-        log_info "npm install -g vercel を実行してください"
-        exit 1
-    fi
-    
-    # 環境変数を設定
-    export $(cat .env.$ENVIRONMENT | xargs)
-    
-    # Vercelにデプロイ
+
+if [[ "$ENVIRONMENT" == "production" ]]; then
+    log_info "本番環境にデプロイ中..."
     vercel --prod --confirm
-}
+else
+    log_info "ステージング環境にデプロイ中..."
+    vercel --confirm
+fi
 
-# 7. ドメイン設定
-log_info "ドメインを設定中..."
-setup_domain() {
-    if [ "$ENVIRONMENT" = "production" ]; then
-        log_info "本番ドメインを設定中..."
-        # vercel domains add homemart.co.jp
-        # vercel domains verify homemart.co.jp
-    fi
-}
+if [[ $? -eq 0 ]]; then
+    log_success "デプロイが完了しました"
+else
+    log_error "デプロイに失敗しました"
+    exit 1
+fi
 
-# 8. 環境変数の設定
-log_info "Vercel環境変数を設定中..."
-setup_vercel_env() {
-    # .envファイルから環境変数を読み込んでVercelに設定
-    while IFS= read -r line; do
-        # コメント行と空行をスキップ
-        if [[ ! "$line" =~ ^# ]] && [[ -n "$line" ]]; then
-            key=$(echo "$line" | cut -d'=' -f1)
-            value=$(echo "$line" | cut -d'=' -f2-)
-            
-            if [ -n "$key" ] && [ -n "$value" ]; then
-                log_info "環境変数を設定: $key"
-                vercel env add "$key" "$ENVIRONMENT" <<< "$value"
-            fi
-        fi
-    done < ".env.$ENVIRONMENT"
-}
+# デプロイ後の確認
+log_info "デプロイ後の確認中..."
 
-# 9. ヘルスチェック
-log_info "デプロイ後のヘルスチェックを実行中..."
-health_check() {
-    # アプリケーションの起動確認
-    sleep 30  # 起動待機
+# 最新のデプロイメント情報を取得
+DEPLOYMENT_URL=$(vercel ls --json | jq -r '.[0].url' 2>/dev/null || echo "取得できませんでした")
+
+if [[ "$DEPLOYMENT_URL" != "取得できませんでした" ]]; then
+    log_info "デプロイメントURL: $DEPLOYMENT_URL"
     
-    if [ "$ENVIRONMENT" = "production" ]; then
-        URL="https://homemart.co.jp"
+    # ヘルスチェック
+    log_info "ヘルスチェックを実行中..."
+    if curl -s -f "$DEPLOYMENT_URL" > /dev/null; then
+        log_success "アプリケーションが正常に応答しています"
     else
-        URL="https://staging.homemart.co.jp"
+        log_warn "アプリケーションの応答を確認できませんでした"
     fi
-    
-    # HTTPステータスコードをチェック
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-    
-    if [ "$HTTP_STATUS" = "200" ]; then
-        log_success "アプリケーションが正常に起動しました"
-    else
-        log_error "アプリケーションの起動に失敗しました (HTTP: $HTTP_STATUS)"
-        exit 1
-    fi
-}
+else
+    log_warn "デプロイメントURLを取得できませんでした"
+fi
 
-# 10. 通知
-log_info "デプロイ完了通知を送信中..."
-send_notification() {
-    # Slackやメールでデプロイ完了を通知
-    log_success "デプロイ完了通知を送信しました"
-}
+# 環境別の設定
+if [[ "$ENVIRONMENT" == "production" ]]; then
+    URL="https://your-domain.com"
+    log_info "本番環境の設定が完了しました"
+elif [[ "$ENVIRONMENT" == "staging" ]]; then
+    URL="https://staging.your-domain.com"
+    log_info "ステージング環境の設定が完了しました"
+fi
 
-# メイン処理
-main() {
-    log_info "デプロイを開始します..."
-    
-    create_storage_buckets
-    setup_database
-    deploy_to_vercel
-    setup_domain
-    setup_vercel_env
-    health_check
-    send_notification
-    
-    log_success "デプロイが完了しました！"
-    log_info "URL: https://homemart.co.jp"
-    log_info "管理画面: https://homemart.co.jp/admin"
-}
+# 完了メッセージ
+log_success "デプロイが完了しました！"
+log_info "環境: $ENVIRONMENT"
+log_info "URL: $URL"
 
-# エラーハンドリング
-trap 'log_error "デプロイ中にエラーが発生しました"; exit 1' ERR
+if [[ "$ENVIRONMENT" == "production" ]]; then
+    log_info "管理画面: $URL/admin"
+    log_info "API エンドポイント: $URL/api"
+fi
 
-# スクリプト実行
-main "$@"
+# 次のステップ
+log_info "次のステップ:"
+log_info "1. アプリケーションの動作確認"
+log_info "2. 外部連携のテスト"
+log_info "3. 監視設定の確認"
+log_info "4. ユーザーへの通知"
+
+log_success "デプロイスクリプトが完了しました！"

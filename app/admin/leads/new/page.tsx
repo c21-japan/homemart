@@ -26,7 +26,12 @@ export default function NewLead() {
     notes: '',
     assigned_staff: '',
     next_action: '',
-    next_action_date: ''
+    next_action_date: '',
+    // FP情報
+    fp_assigned: '',
+    fp_company: '',
+    fp_contact_date: '',
+    monthly_income: ''
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -86,7 +91,14 @@ export default function NewLead() {
       const leadData = {
         ...formData,
         budget_min: formData.budget_min ? parseInt(formData.budget_min) : undefined,
-        budget_max: formData.budget_max ? parseInt(formData.budget_max) : undefined
+        budget_max: formData.budget_max ? parseInt(formData.budget_max) : undefined,
+        // FP情報を構造化
+        fp_info: {
+          fp_assigned: formData.fp_assigned || undefined,
+          fp_company: formData.fp_company || undefined,
+          fp_contact_date: formData.fp_contact_date || undefined,
+          monthly_income: formData.monthly_income ? parseInt(formData.monthly_income) : undefined
+        }
       }
 
       await createLead(leadData)
@@ -388,6 +400,69 @@ export default function NewLead() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="顧客の希望条件や詳細な要望等を記入してください"
               />
+            </div>
+
+            {/* FP情報（オプション） */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">FP情報（オプション）</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="fp_assigned" className="block text-sm font-medium text-gray-700 mb-2">
+                    FP担当者
+                  </label>
+                  <input
+                    type="text"
+                    id="fp_assigned"
+                    name="fp_assigned"
+                    value={formData.fp_assigned || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="FP担当者名"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="fp_company" className="block text-sm font-medium text-gray-700 mb-2">
+                    FP会社
+                  </label>
+                  <input
+                    type="text"
+                    id="fp_company"
+                    name="fp_company"
+                    value={formData.fp_company || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="FP会社名"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="fp_contact_date" className="block text-sm font-medium text-gray-700 mb-2">
+                    初回連絡日
+                  </label>
+                  <input
+                    type="date"
+                    id="fp_contact_date"
+                    name="fp_contact_date"
+                    value={formData.fp_contact_date || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="monthly_income" className="block text-sm font-medium text-gray-700 mb-2">
+                    月収（概算）
+                  </label>
+                  <input
+                    type="number"
+                    id="monthly_income"
+                    name="monthly_income"
+                    value={formData.monthly_income || ''}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="500000"
+                    min="0"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* ボタン */}

@@ -1,0 +1,67 @@
+# 環境変数テンプレートファイル
+# このファイルをコピーして .env.local を作成し、実際の値を設定してください
+
+# Supabase設定
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+SUPABASE_SERVICE_KEY=your_service_role_key_here
+
+# データベース設定
+DATABASE_URL=your_database_url_here
+
+# 認証設定
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
+JWT_SECRET=your_jwt_secret_here
+
+# Google API設定
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/google/auth
+
+# SendGrid設定（メール送信用）
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+SENDGRID_FROM_EMAIL=your_verified_sender_email@example.com
+
+# Mailjet設定（メール送信用）
+MAILJET_API_KEY=your_mailjet_api_key_here
+MAILJET_SECRET_KEY=your_mailjet_secret_key_here
+MAILJET_FROM_EMAIL=your_verified_sender_email@example.com
+
+# LINE設定
+LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token_here
+LINE_CHANNEL_SECRET=your_line_channel_secret_here
+LINE_WEBHOOK_URL=http://localhost:3000/api/integrations/line
+
+# Century21設定
+CENTURY21_API_URL=https://api.century21.co.jp
+CENTURY21_API_KEY=your_century21_api_key_here
+CENTURY21_COMPANY_ID=your_century21_company_id_here
+CENTURY21_BRANCH_ID=your_century21_branch_id_here
+
+# Plaud設定
+PLAUD_API_KEY=your_plaud_api_key_here
+PLAUD_API_URL=https://api.plaud.ai
+
+# OpenAI設定
+OPENAI_API_KEY=your_openai_api_key_here
+
+# GitHub設定
+GITHUB_TOKEN=your_github_token_here
+
+# その他のAPI設定
+SUUMO_API_KEY=your_suumo_api_key_here
+HOMES_API_KEY=your_homes_api_key_here
+GAMMA_API_KEY=your_gamma_api_key_here
+UPSIDER_API_KEY=your_upsider_api_key_here
+
+# 管理者設定
+ADMIN_EMAIL=admin@example.com
+
+# サイト設定
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# その他の設定
+NODE_ENV=development
+CRON_SECRET=your_cron_secret_here

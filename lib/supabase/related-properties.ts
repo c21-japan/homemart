@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 
 interface Property {
   id: string;
-  name: string;
+  title: string;
   price: number;
   property_type: string;
   prefecture: string;

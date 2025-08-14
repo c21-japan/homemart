@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -10,33 +11,73 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // 既にログインしている場合はリダイレクト
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const checkSession = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // 管理者権限を確認
+        const { data: adminUser } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .eq('role', 'admin')
+          .single();
+
+        if (adminUser) {
+          router.push('/admin');
+        }
+      }
+    } catch (error) {
+      console.log('セッションチェックエラー:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      // Supabase認証を使用
+      const { data: { user, session }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // ログイン成功
-        router.push('/admin');
-        router.refresh();
-      } else {
-        // エラー表示
-        setError(data.error || 'ログインに失敗しました');
+      if (error || !user || !session) {
+        setError('メールアドレスまたはパスワードが正しくありません');
+        return;
       }
-    } catch (error) {
+
+      // 管理者権限を確認
+      const { data: adminUser, error: adminError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (adminError || !adminUser) {
+        await supabase.auth.signOut();
+        setError('管理者権限がありません');
+        return;
+      }
+
+      // ログイン成功
+      router.push('/admin');
+      router.refresh();
+    } catch (error: any) {
       console.error('Login error:', error);
-      setError('ネットワークエラーが発生しました');
+      if (error?.message?.includes('Failed to fetch')) {
+        setError('ネットワークエラーが発生しました');
+      } else {
+        setError('ログインに失敗しました');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,12 +139,10 @@ export default function AdminLogin() {
                 name="email"
                 type="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="メールアドレスを入力"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                autoComplete="email"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="admin@homemart.co.jp"
               />
             </div>
 
@@ -117,48 +156,22 @@ export default function AdminLogin() {
                 name="password"
                 type="password"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="パスワードを入力"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                autoComplete="current-password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="パスワードを入力"
               />
             </div>
 
-            {/* Login Button */}
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    ログイン中...
-                  </span>
-                ) : (
-                  'ログイン'
-                )}
-              </button>
-            </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'ログイン中...' : 'ログイン'}
+            </button>
           </form>
-
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              © 2024 株式会社ホームマート
-            </p>
-            {process.env.NODE_ENV === 'development' && (
-              <p className="text-xs text-gray-400 mt-2">
-                開発モード有効
-              </p>
-            )}
-          </div>
         </div>
       </div>
     </div>

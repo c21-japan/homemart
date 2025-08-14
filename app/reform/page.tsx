@@ -17,6 +17,7 @@ interface ReformProject {
 export default function ReformPage() {
   const [projects, setProjects] = useState<ReformProject[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>('')
   const [showContactModal, setShowContactModal] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -35,15 +36,36 @@ export default function ReformPage() {
 
   const fetchReformProjects = async () => {
     try {
+      setError('')
       const { data, error } = await supabase
         .from('reform_projects')
-        .select('*')
+        .select('id, title, before_image_url, after_image_url, description, created_at')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching reform projects:', error)
+        
+        // Supabaseエラーコードに基づく分岐
+        if (error.code === 'PGRST116') {
+          setError('リフォーム案件が見つかりません')
+        } else if (error.code === '42P01') {
+          setError('システムエラーが発生しました。管理者に連絡してください')
+        } else if (error.message?.includes('Failed to fetch')) {
+          setError('ネットワークエラーです。接続を確認してください')
+        } else {
+          setError('リフォーム案件の取得に失敗しました')
+        }
+        return
+      }
+      
       setProjects(data || [])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching reform projects:', error)
+      if (error?.message?.includes('Failed to fetch')) {
+        setError('ネットワークエラーです。接続を確認してください')
+      } else {
+        setError('予期しないエラーが発生しました')
+      }
     } finally {
       setLoading(false)
     }
@@ -544,6 +566,18 @@ export default function ReformPage() {
                 お客様のご要望に応じて、数多くのリフォーム工事を手がけてまいりました
               </p>
             </div>
+
+            {/* エラー表示 */}
+            {error && (
+              <div className="mb-8 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {error}
+                </div>
+              </div>
+            )}
 
             {loading ? (
               <div className="flex justify-center">

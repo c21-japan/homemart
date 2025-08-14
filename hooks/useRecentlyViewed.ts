@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 interface Property {
   id: string;
-  name: string;
+  title: string;
   price: number;
   property_type: string;
   address: string;

@@ -14,11 +14,11 @@ import {
 export type { LeadType, LeadStatus, CustomerLead }
 
 // リード一覧を取得
-export async function getLeads(filters?: LeadFilter): Promise<CustomerLead[]> {
+export async function getLeads(filters?: LeadFilter & { page?: number; limit?: number }): Promise<{ data: CustomerLead[]; error: any; count: number | null }> {
   try {
     let query = supabase
       .from('customer_leads')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
 
     if (filters?.type) {
@@ -42,13 +42,22 @@ export async function getLeads(filters?: LeadFilter): Promise<CustomerLead[]> {
       query = query.or(`last_name.ilike.%${filters.search}%,first_name.ilike.%${filters.search}%,extra->>building_name.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
     }
 
-    const { data, error } = await query
+    // ページネーション
+    if (filters?.page && filters?.limit) {
+      const offset = (filters.page - 1) * filters.limit
+      query = query.range(offset, offset + filters.limit - 1)
+    }
 
-    if (error) throw error
-    return data || []
+    const { data, error, count } = await query
+
+    if (error) {
+      return { data: [], error, count: null }
+    }
+
+    return { data: data || [], error: null, count: count || 0 }
   } catch (error) {
     console.error('Error fetching leads:', error)
-    throw error
+    return { data: [], error, count: null }
   }
 }
 
@@ -317,6 +326,44 @@ export async function removeLeadAttachment(leadId: string, filePath: string): Pr
     return data
   } catch (error) {
     console.error('Error removing lead attachment:', error)
+    throw error
+  }
+}
+
+// FP情報を更新
+export async function updateFPInfo(leadId: string, fpInfo: any): Promise<CustomerLead> {
+  try {
+    const { data, error } = await supabase
+      .from('customer_leads')
+      .update({ 
+        fp_info: fpInfo,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', leadId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error updating FP info:', error)
+    throw error
+  }
+}
+
+// FP情報を取得
+export async function getFPInfo(leadId: string): Promise<any> {
+  try {
+    const { data, error } = await supabase
+      .from('customer_leads')
+      .select('fp_info')
+      .eq('id', leadId)
+      .single()
+
+    if (error) throw error
+    return data?.fp_info || {}
+  } catch (error) {
+    console.error('Error fetching FP info:', error)
     throw error
   }
 }

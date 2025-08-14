@@ -1,11 +1,47 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import PropertySearch from './PropertySearch'
-import { getPropertyCountsByArea } from '@/lib/supabase/properties'
-import { supabase } from '@/lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
 
-// 路線と駅のデータ（管理画面と同じ）
+// 環境変数のチェック
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Supabase環境変数が設定されていません')
+}
+
+// Supabaseクライアントの作成
+const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+
+// 物件数を取得する関数
+async function getPropertyCountsByArea() {
+  try {
+    const { data, error } = await supabase
+      .from('properties')
+      .select('prefecture, city')
+      .eq('status', 'published')
+
+    if (error) throw error
+
+    // エリアごとに件数を集計
+    const counts: { [key: string]: number } = {}
+    if (data) {
+      data.forEach((property) => {
+        const key = `${property.prefecture}_${property.city}`
+        counts[key] = (counts[key] || 0) + 1
+      })
+    }
+
+    return counts
+  } catch (error) {
+    console.error('Error fetching property counts:', error)
+    return {}
+  }
+}
+
+// 路線と駅のデータ
 const routeStations: { [key: string]: string[] } = {
   'JR大和路線': ['王寺', '法隆寺', '大和小泉', '郡山', '奈良', '平城山', '木津', '加茂'],
   'JR和歌山線': ['王寺', '畠田', '志都美', '香芝', '高田', '大和新庄', '御所', '玉手', '掖上', '吉野口', '北宇智', '五条'],
@@ -48,7 +84,7 @@ export default function AreaSearch() {
   const [simpleSearchStation, setSimpleSearchStation] = useState<string>('')
   const [simpleSearchAvailableStations, setSimpleSearchAvailableStations] = useState<string[]>([])
 
-  // エリアデータの定義（物件数は動的に更新される）
+  // エリアデータの定義
   const areaData: {
     nara: Array<{ name: string; prefecture: string }>;
     osaka: Array<{ name: string; prefecture: string }>;
@@ -115,17 +151,17 @@ export default function AreaSearch() {
   }
 
   // かんたん検索用のエリアデータ（カテゴリー付き）
-  const simpleSearchAreaData: Array<{ name: string; prefecture: string; disabled?: boolean; isCategory?: boolean }> = [
+  const simpleSearchAreaData = useMemo((): Array<{ name: string; prefecture: string; disabled?: boolean; isCategory?: boolean }> => [
     // 奈良県カテゴリー
     { name: '奈良県', prefecture: '奈良県', disabled: true, isCategory: true },
     ...areaData.nara,
     // 大阪府カテゴリー
     { name: '大阪府', prefecture: '大阪府', disabled: true, isCategory: true },
     ...areaData.osaka
-  ]
+  ], [areaData])
 
   // 物件数を取得する関数
-  async function fetchPropertyCounts() {
+  const fetchPropertyCounts = useCallback(async () => {
     setLoading(true)
     try {
       const counts = await getPropertyCountsByArea()
@@ -135,7 +171,7 @@ export default function AreaSearch() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // コンポーネントマウント時に物件数を取得 + リアルタイム更新の設定
   useEffect(() => {
@@ -152,21 +188,20 @@ export default function AreaSearch() {
           schema: 'public',
           table: 'properties'
         },
-        (payload) => {
-          console.log('物件データが更新されました:', payload)
+        () => {
           // データが変更されたら自動的に件数を再取得
           fetchPropertyCounts()
         }
       )
       .subscribe()
 
-    // クリーンアップ（コンポーネントがアンマウントされるときに購読解除）
+    // クリーンアップ
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [fetchPropertyCounts])
 
-  // ページがフォーカスされたときも更新（念のため）
+  // ページがフォーカスされたときも更新
   useEffect(() => {
     const handleFocus = () => {
       fetchPropertyCounts()
@@ -177,7 +212,7 @@ export default function AreaSearch() {
     return () => {
       window.removeEventListener('focus', handleFocus)
     }
-  }, [])
+  }, [fetchPropertyCounts])
 
   // 路線が変更されたときに駅リストを更新
   useEffect(() => {
@@ -200,12 +235,12 @@ export default function AreaSearch() {
   }, [simpleSearchRoute])
 
   // エリアごとの物件数を取得
-  const getAreaCount = (prefecture: string, city: string) => {
+  const getAreaCount = useCallback((prefecture: string, city: string) => {
     const key = `${prefecture}_${city}`
     return propertyCounts[key] || 0
-  }
+  }, [propertyCounts])
 
-  const handleAreaClick = (area: { name: string, prefecture: string }) => {
+  const handleAreaClick = useCallback((area: { name: string, prefecture: string }) => {
     const count = getAreaCount(area.prefecture, area.name)
     if (count === 0) {
       return // 物件数が0の場合は何もしない
@@ -213,28 +248,28 @@ export default function AreaSearch() {
     // エリア選択後、路線選択画面を表示
     setSelectedArea(area.name)
     setShowRouteSelection(true)
-  }
+  }, [getAreaCount])
 
   // 検索画面を閉じる関数
-  const handleCloseSearch = () => {
+  const handleCloseSearch = useCallback(() => {
     setSelectedArea(null)
     setShowRouteSelection(false)
     setSelectedRoute('')
     setSelectedStation('')
-  }
+  }, [])
 
   // 路線選択をスキップして検索に進む
-  const handleSkipRouteSelection = () => {
+  const handleSkipRouteSelection = useCallback(() => {
     setShowRouteSelection(false)
-  }
+  }, [])
 
   // 路線と駅の選択を完了して検索に進む
-  const handleCompleteRouteSelection = () => {
+  const handleCompleteRouteSelection = useCallback(() => {
     setShowRouteSelection(false)
-  }
+  }, [])
 
   // かんたん検索の実行
-  const handleSimpleSearch = () => {
+  const handleSimpleSearch = useCallback(() => {
     console.log('かんたん検索:', {
       area: simpleSearchArea,
       type: simpleSearchType,
@@ -243,16 +278,30 @@ export default function AreaSearch() {
       station: simpleSearchStation
     })
     // ここで検索処理を実行
-  }
+  }, [simpleSearchArea, simpleSearchType, simpleSearchKeyword, simpleSearchRoute, simpleSearchStation])
 
   // かんたん検索のクリア
-  const handleSimpleSearchClear = () => {
+  const handleSimpleSearchClear = useCallback(() => {
     setSimpleSearchArea('')
     setSimpleSearchType('')
     setSimpleSearchKeyword('')
     setSimpleSearchRoute('')
     setSimpleSearchStation('')
-  }
+  }, [])
+
+  // エリアオプションの配列
+  const areaOptions = useMemo(() => [
+    // 奈良県
+    '奈良市', '天理市', '香芝市', '大和高田市', '橿原市', '葛城市', '大和郡山市', '桜井市', '生駒市',
+    '生駒郡三郷町', '生駒郡安堵町', '生駒郡平群町', '生駒郡斑鳩町', '磯城郡田原本町', '磯城郡三宅町', '磯城郡川西町',
+    '北葛城郡広陵町', '北葛城郡王寺町', '北葛城郡河合町', '北葛城郡上牧町',
+    // 大阪府
+    '堺市堺区', '堺市中区', '堺市東区', '堺市西区', '堺市南区', '堺市北区', '堺市美原区',
+    '岸和田市', '吹田市', '貝塚市', '茨木市', '富田林市', '松原市', '箕面市', '門真市',
+    '藤井寺市', '四條畷市', '泉大津市', '守口市', '八尾市', '寝屋川市', '大東市', '柏原市',
+    '摂津市', '交野市', '池田市', '高槻市', '枚方市', '泉佐野市', '河内長野市', '和泉市',
+    '羽曳野市', '高石市', '泉南市', '大阪狭山市'
+  ], [])
 
   return (
     <>
@@ -405,7 +454,7 @@ export default function AreaSearch() {
                 disabled={count === 0}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   count > 0
-                    ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-500 hover:shadow-md cursor-pointer'
+                    ? 'border-gray-200 hover:border-orange-500 hover:bg-orange-50 hover:shadow-md cursor-pointer'
                     : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
                 }`}
               >
@@ -420,7 +469,7 @@ export default function AreaSearch() {
           })}
         </div>
 
-        {/* 路線・駅選択セクション（エリア選択の下に追加） */}
+        {/* 路線・駅選択セクション */}
         <div className="border-t pt-6">
           <h3 className="font-bold mb-3">路線・駅で絞り込み</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -461,9 +510,7 @@ export default function AreaSearch() {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={() => {
-                  // 選択された条件で検索を実行
                   console.log('路線・駅検索:', { route: selectedRoute, station: selectedStation })
-                  // ここで検索処理を実行
                 }}
                 className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
               >
@@ -559,27 +606,20 @@ export default function AreaSearch() {
       {/* 既存の検索画面モーダルを使用 */}
       {selectedArea && !showRouteSelection && (
         <PropertySearch 
-          selectedArea={selectedArea} 
-          selectedRoute={selectedRoute}
-          selectedStation={selectedStation}
-          onClose={handleCloseSearch}
-          areaOptions={[
-            // 奈良県
-            '奈良市', '天理市', '香芝市', '大和高田市', '橿原市', '葛城市', '大和郡山市', '桜井市', '生駒市',
-            '生駒郡三郷町', '生駒郡安堵町', '生駒郡平群町', '生駒郡斑鳩町', '磯城郡田原本町', '磯城郡三宅町', '磯城郡川西町',
-            '北葛城郡広陵町', '北葛城郡王寺町', '北葛城郡河合町', '北葛城郡上牧町',
-            // 大阪府
-            '堺市堺区', '堺市中区', '堺市東区', '堺市西区', '堺市南区', '堺市北区', '堺市美原区',
-            '岸和田市', '吹田市', '貝塚市', '茨木市', '富田林市', '松原市', '箕面市', '門真市',
-            '藤井寺市', '四條畷市', '泉大津市', '守口市', '八尾市', '寝屋川市', '大東市', '柏原市',
-            '摂津市', '交野市', '池田市', '高槻市', '枚方市', '泉佐野市', '河内長野市', '和泉市',
-            '羽曳野市', '高石市', '泉南市', '大阪狭山市'
-          ]}
-          onReturnToSearch={() => {
-            // エリア選択画面に戻る
-            setSelectedArea(null)
-            setSelectedRoute('')
-            setSelectedStation('')
+          onSearch={(filters) => {
+            console.log('検索実行:', filters)
+            // 検索処理を実行
+          }}
+          initialFilters={{
+            area: selectedArea,
+            types: [],
+            priceMin: '',
+            priceMax: '',
+            landAreaMin: '',
+            landAreaMax: '',
+            buildingAreaMin: '',
+            buildingAreaMax: '',
+            nearStation: selectedStation || ''
           }}
         />
       )}

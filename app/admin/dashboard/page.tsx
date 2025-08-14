@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [agreementStats, setAgreementStats] = useState<any>(null)
   const [checklistStats, setChecklistStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>('')
   const [selectedPeriod, setSelectedPeriod] = useState('current')
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+      setError('')
       
       // 各統計データを並行取得
       const [leads, agreements, checklists] = await Promise.all([
@@ -46,8 +48,13 @@ export default function DashboardPage() {
       setAgreementStats(agreements)
       setChecklistStats(checklists)
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching dashboard data:', error)
+      if (error?.message?.includes('Failed to fetch')) {
+        setError('ネットワークエラーです。接続を確認してください')
+      } else {
+        setError('ダッシュボードデータの取得に失敗しました')
+      }
     } finally {
       setLoading(false)
     }
@@ -99,6 +106,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* エラー表示 */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
+            </div>
+          </div>
+        )}
+
         {/* 主要指標 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">

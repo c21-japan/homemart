@@ -1,55 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AuthService } from '@/lib/auth/auth-service';
+import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email, password } = body;
+    const { email, password } = await request.json()
 
-    // 入力検証
-    if (!email || !password) {
+    // Supabase認証を使用
+    const { data: { user, session }, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error || !user || !session) {
       return NextResponse.json(
-        { error: 'メールアドレスとパスワードを入力してください' },
-        { status: 400 }
-      );
-    }
-
-    // 認証サービスでログイン処理
-    const authService = new AuthService();
-    const result = await authService.login(email, password);
-
-    if (result.error) {
-      return NextResponse.json(
-        { error: result.error },
+        { error: 'メールアドレスまたはパスワードが正しくありません' },
         { status: 401 }
-      );
+      )
     }
 
-    // レスポンスを作成
-    const response = NextResponse.json({
-      success: true,
-      message: 'ログインに成功しました',
-      user: result.data?.user
-    });
+    // 管理者権限を確認
+    const { data: adminUser, error: adminError } = await supabase
+      .from('users')
+      .select('id, email, name, role')
+      .eq('id', user.id)
+      .eq('role', 'admin')
+      .single()
 
-    // セッションCookieを設定
-    if (result.data?.sessionToken) {
-      response.cookies.set('session', result.data.sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24, // 24時間
-        path: '/'
-      });
+    if (adminError || !adminUser) {
+      // 管理者権限がない場合はログアウト
+      await supabase.auth.signOut()
+      return NextResponse.json(
+        { error: '管理者権限がありません' },
+        { status: 403 }
+      )
     }
 
-    return response;
-
+    return NextResponse.json({
+      user: {
+        id: adminUser.id,
+        email: adminUser.email,
+        name: adminUser.name,
+        role: adminUser.role
+      },
+      session: session
+    })
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'ログイン処理中にエラーが発生しました' },
+      { error: 'ログインに失敗しました' },
       { status: 500 }
-    );
+    )
   }
 }

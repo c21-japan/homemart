@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { supabase, testSupabaseConnection } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { getRelatedProperties } from '@/lib/supabase/related-properties'
 
 interface Property {
   id: string
-  name: string
+  title: string
   price: number
-  prefecture: string
-  city: string
+  prefecture?: string
+  city?: string
   town?: string
   address: string
   station?: string
@@ -59,7 +59,7 @@ interface Property {
   elevator?: boolean
   auto_lock?: boolean
   delivery_box?: boolean
-  bicycle_parking?: boolean
+  bicycle_parking?: number
 }
 
 export default function PropertyDetail() {
@@ -74,6 +74,12 @@ export default function PropertyDetail() {
 
   useEffect(() => {
     if (params?.id) {
+      console.log('PropertyDetail: コンポーネントがマウントされました')
+      console.log('PropertyDetail: パラメータID:', params.id)
+      console.log('PropertyDetail: Supabase設定:', {
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      })
       fetchProperty(params.id as string)
     }
   }, [params?.id])
@@ -83,24 +89,48 @@ export default function PropertyDetail() {
       setLoading(true)
       setError(null)
       
+      console.log('Fetching property with ID:', id)
+      
+      // Supabase接続をテスト
+      const isConnected = await testSupabaseConnection()
+      if (!isConnected) {
+        setError('データベース接続に失敗しました。しばらく待ってから再試行してください。')
+        return
+      }
+      
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
         .eq('id', id)
         .single()
 
+      console.log('Supabase response:', { data, error: fetchError })
+
       if (fetchError) {
         console.error('Fetch error:', fetchError)
-        setError('物件情報の取得に失敗しました')
+        
+        // エラーの種類に応じて適切なメッセージを表示
+        let errorMessage = '物件情報の取得に失敗しました'
+        
+        if (fetchError.code === 'PGRST116') {
+          errorMessage = '指定された物件が見つかりませんでした'
+        } else if (fetchError.code === 'PGRST301') {
+          errorMessage = 'データベース接続エラーが発生しました'
+        } else if (fetchError.message) {
+          errorMessage += `: ${fetchError.message}`
+        }
+        
+        setError(errorMessage)
         return
       }
 
       if (data) {
+        console.log('Property data received:', data)
         setProperty(data)
         // 最近見た物件に追加
         addRecentlyViewed({
           id: data.id,
-          name: data.name,
+          title: data.title,
           price: data.price,
           property_type: data.property_type,
           address: data.address,
@@ -115,7 +145,19 @@ export default function PropertyDetail() {
       }
     } catch (err) {
       console.error('Error fetching property:', err)
-      setError('エラーが発生しました')
+      
+      let errorMessage = 'エラーが発生しました'
+      if (err instanceof Error) {
+        if (err.message.includes('fetch')) {
+          errorMessage = 'ネットワークエラーが発生しました。インターネット接続を確認してください。'
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'リクエストがタイムアウトしました。しばらく待ってから再試行してください。'
+        } else {
+          errorMessage = err.message
+        }
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -124,10 +166,21 @@ export default function PropertyDetail() {
   const fetchRelatedProperties = async (currentProperty: Property) => {
     try {
       setLoadingRelated(true)
-      const related = await getRelatedProperties(currentProperty, 10)
-      setRelatedProperties(related)
+      
+      // 必要なフィールドが存在するかチェック
+      if (currentProperty.prefecture && currentProperty.city) {
+        const related = await getRelatedProperties(currentProperty as any, 10)
+        setRelatedProperties(related)
+      } else {
+        console.log('関連物件の取得に必要なフィールドが不足しています:', {
+          prefecture: currentProperty.prefecture,
+          city: currentProperty.city
+        })
+        setRelatedProperties([])
+      }
     } catch (error) {
       console.error('Error fetching related properties:', error)
+      setRelatedProperties([])
     } finally {
       setLoadingRelated(false)
     }
@@ -147,11 +200,46 @@ export default function PropertyDetail() {
   if (error || !property) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error || '物件が見つかりませんでした'}</p>
-          <Link href="/properties" className="text-blue-600 hover:underline">
-            物件一覧に戻る
-          </Link>
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              {error ? 'エラーが発生しました' : '物件が見つかりません'}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {error || '指定された物件は存在しないか、削除された可能性があります。'}
+            </p>
+            
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 text-left">
+                <p className="text-sm text-red-700 font-medium">エラー詳細:</p>
+                <p className="text-sm text-red-600 break-words">{error}</p>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                ページを再読み込み
+              </button>
+              
+              <Link 
+                href="/properties" 
+                className="block w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-center"
+              >
+                物件一覧に戻る
+              </Link>
+              
+              <Link 
+                href="/" 
+                className="block w-full text-gray-600 hover:text-gray-800 transition-colors text-center"
+              >
+                ホームに戻る
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -236,7 +324,7 @@ export default function PropertyDetail() {
                   <div className="aspect-w-16 aspect-h-9 mb-4">
                     <img
                       src={allImages[selectedImage]}
-                      alt={property.name}
+                      alt={property.title}
                       className="w-full h-[400px] object-contain bg-gray-100 rounded"
                       loading="lazy"
                       onError={(e) => {
@@ -263,7 +351,7 @@ export default function PropertyDetail() {
                         >
                           <img
                             src={img}
-                            alt={`${property.name} ${index + 1}`}
+                            alt={`${property.title} ${index + 1}`}
                             className="w-full h-20 object-cover object-center"
                             loading="lazy"
                             onError={(e) => {
@@ -291,7 +379,7 @@ export default function PropertyDetail() {
 
             {/* 物件名と価格 */}
             <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h1 className="text-2xl font-bold mb-4">{property.name}</h1>
+              <h1 className="text-2xl font-bold mb-4">{property.title}</h1>
               <div className="text-3xl font-bold text-red-600 mb-4">
                 {property.price.toLocaleString()}万円
               </div>
@@ -542,7 +630,7 @@ export default function PropertyDetail() {
                   0120-43-8639
                 </a>
                 <Link
-                  href={`/contact?property=${property.name}`}
+                  href={`/contact?property=${property.title}`}
                   className="block w-full bg-green-600 text-white text-center py-3 rounded-lg hover:bg-green-700 font-bold"
                 >
                   メールで問い合わせる
@@ -596,7 +684,7 @@ export default function PropertyDetail() {
                         {recentProperty.image_url || (recentProperty.images && recentProperty.images[0]) ? (
                           <img
                             src={recentProperty.image_url || recentProperty.images![0]}
-                            alt={recentProperty.name}
+                            alt={recentProperty.title}
                             className="w-full h-full object-contain object-center"
                             loading="lazy"
                           />
@@ -605,7 +693,7 @@ export default function PropertyDetail() {
                         )}
                       </div>
                       <div className="p-3">
-                        <h3 className="font-bold text-sm mb-1 line-clamp-2">{recentProperty.name}</h3>
+                        <h3 className="font-bold text-sm mb-1 line-clamp-2">{recentProperty.title}</h3>
                         <p className="text-lg font-bold text-red-600 mb-1">
                           {recentProperty.price.toLocaleString()}万円
                         </p>

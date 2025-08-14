@@ -32,8 +32,9 @@ export class AuthService {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
+          async get(name: string) {
+            const cookies = await cookieStore;
+            return cookies.get(name)?.value;
           },
         },
       }
@@ -163,19 +164,27 @@ export class AuthService {
 
       // ロール権限追加
       rolePerms?.forEach(p => {
-        if (p.permissions?.code) {
-          permissions.add(p.permissions.code);
+        if (p.permissions && Array.isArray(p.permissions)) {
+          p.permissions.forEach(perm => {
+            if (perm.code) {
+              permissions.add(perm.code);
+            }
+          });
         }
       });
 
       // カスタム権限適用
       customPerms?.forEach(p => {
-        if (p.permissions?.code) {
-          if (p.granted) {
-            permissions.add(p.permissions.code);
-          } else {
-            permissions.delete(p.permissions.code);
-          }
+        if (p.permissions && Array.isArray(p.permissions)) {
+          p.permissions.forEach(perm => {
+            if (perm.code) {
+              if (p.granted) {
+                permissions.add(perm.code);
+              } else {
+                permissions.delete(perm.code);
+              }
+            }
+          });
         }
       });
 

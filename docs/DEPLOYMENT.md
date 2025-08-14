@@ -9,7 +9,6 @@
 - **フロントエンド**: Next.js 14 (App Router)
 - **バックエンド**: Supabase (Database, Auth, Storage)
 - **ホスティング**: Vercel
-- **ドメイン**: homemart.co.jp
 - **環境**: Production
 
 ## 🚀 事前準備
@@ -55,13 +54,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
 # メール送信設定
 MAILJET_API_KEY=your_production_mailjet_api_key
 MAILJET_API_SECRET=your_production_mailjet_api_secret
-MAILJET_FROM_EMAIL=noreply@homemart.co.jp
+MAILJET_FROM_EMAIL=your_verified_sender_email@example.com
 
 # 管理者メール
-ADMIN_EMAIL=admin@homemart.co.jp
+ADMIN_EMAIL=admin@example.com
 
 # サイトURL
-NEXT_PUBLIC_SITE_URL=https://homemart.co.jp
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
 # 外部API連携
 CENTURY21_API_KEY=your_century21_api_key
@@ -143,14 +142,14 @@ vercel env add MAILJET_API_KEY production
 # ... 他の環境変数も同様に設定
 ```
 
-### 3. ドメインの設定
+### 3. カスタムドメインの設定（オプション）
 
 ```bash
 # カスタムドメインを追加
-vercel domains add homemart.co.jp
+vercel domains add your-domain.com
 
 # DNSレコードの確認
-vercel domains verify homemart.co.jp
+vercel domains verify your-domain.com
 ```
 
 ### 4. 本番デプロイ
@@ -222,10 +221,10 @@ npm run test:offline
 
 ```bash
 # Webhook URLの設定
-https://homemart.co.jp/api/integrations/line
+https://your-domain.com/api/integrations/line
 
 # 署名検証の確認
-curl -X POST https://homemart.co.jp/api/integrations/line \
+curl -X POST https://your-domain.com/api/integrations/line \
   -H "Content-Type: application/json" \
   -d '{"test": "webhook"}'
 ```
@@ -234,7 +233,7 @@ curl -X POST https://homemart.co.jp/api/integrations/line \
 
 ```bash
 # Mailjet設定の確認
-curl -X POST https://homemart.co.jp/api/send-email \
+curl -X POST https://your-domain.com/api/send-email \
   -H "Content-Type: application/json" \
   -d '{"to": "test@example.com", "subject": "テスト", "content": "テストメール"}'
 ```
@@ -258,7 +257,7 @@ curl -X POST https://homemart.co.jp/api/send-email \
 
 ```bash
 # 手動実行でテスト
-curl -X POST https://homemart.co.jp/api/cron/daily-tasks \
+curl -X POST https://your-domain.com/api/cron/daily-tasks \
   -H "Authorization: Bearer your-cron-secret" \
   -H "Content-Type: application/json" \
   -d '{"task": "all"}'
@@ -270,13 +269,13 @@ curl -X POST https://homemart.co.jp/api/cron/daily-tasks \
 
 ```bash
 # ヘルスチェック
-curl https://homemart.co.jp/api/health
+curl https://your-domain.com/api/health
 
 # 認証テスト
-curl https://homemart.co.jp/api/auth/status
+curl https://your-domain.com/api/auth/status
 
 # データベース接続テスト
-curl https://homemart.co.jp/api/test/db
+curl https://your-domain.com/api/test/db
 ```
 
 ### 2. PWA機能テスト
@@ -328,8 +327,8 @@ vercel env encrypt MAILJET_API_SECRET
 ### 2. アクセス制御
 
 ```bash
-# IP制限の設定
-vercel domains protect homemart.co.jp --allowed-ips 192.168.1.0/24
+# IP制限の設定（必要に応じて）
+vercel domains protect your-domain.com --allowed-ips 192.168.1.0/24
 
 # 認証の確認
 vercel auth verify
@@ -360,10 +359,10 @@ echo $NEXT_PUBLIC_SUPABASE_URL
 **PWA動作しない**
 ```bash
 # Service Workerの確認
-curl https://homemart.co.jp/service-worker.js
+curl https://your-domain.com/service-worker.js
 
 # Manifestの確認
-curl https://homemart.co.jp/manifest.webmanifest
+curl https://your-domain.com/manifest.webmanifest
 ```
 
 ### 2. ロールバック手順
@@ -415,7 +414,7 @@ npm run clean:deps
 
 ```bash
 # 運用開始通知
-curl -X POST https://homemart.co.jp/api/notifications/deploy-complete \
+curl -X POST https://your-domain.com/api/notifications/deploy-complete \
   -H "Content-Type: application/json" \
   -d '{"environment": "production", "version": "1.0.0"}'
 ```
@@ -424,9 +423,9 @@ curl -X POST https://homemart.co.jp/api/notifications/deploy-complete \
 
 デプロイに関する問題が発生した場合は、以下までご連絡ください：
 
-- **技術サポート**: tech@homemart.co.jp
+- **技術サポート**: tech@example.com
 - **緊急時**: 080-XXXX-XXXX
-- **ドキュメント**: https://docs.homemart.co.jp
+- **ドキュメント**: https://docs.example.com
 
 ---
 

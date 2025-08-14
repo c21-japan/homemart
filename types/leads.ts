@@ -66,6 +66,28 @@ export type LeadExtra =
       visit_request?: boolean
     }
 
+// FP情報の型定義
+export interface FPInfo {
+  fp_assigned?: string
+  fp_company?: string
+  fp_contact_date?: string
+  financial_goals?: string[]
+  current_assets?: {
+    savings?: number
+    investments?: number
+    insurance?: number
+  }
+  monthly_income?: number
+  monthly_expenses?: number
+  loan_amount?: number
+  loan_terms?: number
+  interest_rate?: number
+  repayment_method?: string
+  fp_notes?: string
+  next_fp_meeting?: string
+  fp_status?: 'active' | 'inactive' | 'pending'
+}
+
 // 完全なリード情報
 export interface CustomerLead extends LeadBase {
   id: string
@@ -75,6 +97,7 @@ export interface CustomerLead extends LeadBase {
   assigned_to?: string
   status: LeadStatus
   extra: LeadExtra
+  fp_info?: FPInfo
 }
 
 // 媒介契約情報
