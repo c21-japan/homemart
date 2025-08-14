@@ -9,9 +9,28 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('フォーム送信開始:', { password: password ? '***' : '空' })
+
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('パスワード入力:', e.target.value ? '***' : '空')
+    setPassword(e.target.value)
+  }
+
+  const handleButtonClick = () => {
+    console.log('ボタンクリックイベント発火')
+    
+    // パスワードが入力されているかチェック
+    if (!password) {
+      setError('パスワードを入力してください')
+      return
+    }
+    
+    // ログイン処理を実行
+    handleLogin()
+  }
+
+  const handleLogin = async () => {
+    console.log('ログイン処理開始:', { password: password ? '***' : '空' })
     
     setIsLoading(true)
     setError('')
@@ -41,8 +60,10 @@ export default function AdminLogin() {
     }
   }
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('フォーム送信イベント発火')
+    handleButtonClick()
   }
 
   return (
@@ -56,7 +77,7 @@ export default function AdminLogin() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleFormSubmit}>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 パスワード
@@ -85,6 +106,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={isLoading}
+                onClick={handleButtonClick}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#BEAF87] hover:bg-[#BEAF87]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#BEAF87] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 {isLoading ? 'ログイン中...' : 'ログイン'}
@@ -96,6 +118,14 @@ export default function AdminLogin() {
             <p className="text-sm text-gray-600">
               パスワード: homemart2024
             </p>
+          </div>
+
+          {/* デバッグ情報 */}
+          <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600">
+            <p>デバッグ情報:</p>
+            <p>パスワード長: {password.length}</p>
+            <p>ローディング状態: {isLoading ? 'true' : 'false'}</p>
+            <p>エラー: {error || 'なし'}</p>
           </div>
         </div>
       </div>
