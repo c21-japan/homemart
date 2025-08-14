@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-  // ログイン処理（重要：e.preventDefault()必須！）
+  // ログイン処理（APIエンドポイントを使用）
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault() // これがないとページがリロードされる！
     
@@ -22,43 +22,39 @@ export default function LoginPage() {
     setLoading(true)
     
     try {
-      // シンプルな認証（データベース不要）
-      if (email === 'y-inui@century21.group' && password === 'Inui2024!') {
-        console.log('✅ 認証成功: 乾佑企（オーナー）')
+      // APIエンドポイントにPOSTリクエストを送信
+      console.log('APIエンドポイントにリクエスト送信中...')
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log('APIレスポンス:', data);
+
+      if (response.ok && data.success) {
+        console.log('✅ 認証成功:', data.user.name, `(${data.user.role})`)
         
         // LocalStorageに保存
         localStorage.setItem('isAdmin', 'true')
-        localStorage.setItem('adminName', '乾佑企')
-        localStorage.setItem('userRole', 'owner')
+        localStorage.setItem('adminName', data.user.name)
+        localStorage.setItem('userRole', data.user.role)
+        localStorage.setItem('userPermissions', JSON.stringify(data.user.permissions))
         console.log('localStorage保存完了')
         
         // 管理画面へ遷移
         console.log('管理画面へリダイレクト中...')
         window.location.href = '/admin'
-      } else if (email === 'm-yasuda@century21.group' && password === 'Yasuda2024!') {
-        console.log('✅ 認証成功: 安田実加（管理者）')
-        localStorage.setItem('isAdmin', 'true')
-        localStorage.setItem('adminName', '安田実加')
-        localStorage.setItem('userRole', 'admin')
-        window.location.href = '/admin'
-      } else if (email === 'info@century21.group' && password === 'Yamao2024!') {
-        console.log('✅ 認証成功: 山尾妃奈（スタッフ）')
-        localStorage.setItem('isAdmin', 'true')
-        localStorage.setItem('adminName', '山尾妃奈')
-        localStorage.setItem('userRole', 'staff')
-        window.location.href = '/admin'
       } else {
-        console.log('❌ 認証失敗')
-        console.log('期待される値:', {
-          'y-inui@century21.group': 'Inui2024!',
-          'm-yasuda@century21.group': 'Yasuda2024!',
-          'info@century21.group': 'Yamao2024!'
-        })
-        setError('メールアドレスまたはパスワードが正しくありません')
+        console.log('❌ 認証失敗:', data.error)
+        setError(data.error || 'ログインに失敗しました')
       }
     } catch (err) {
-      console.error('🚨 エラーが発生:', err)
-      setError('ログイン処理中にエラーが発生しました')
+      console.error('🚨 ネットワークエラーが発生:', err)
+      setError('ネットワークエラーが発生しました。インターネット接続を確認してください。')
     } finally {
       setLoading(false)
       console.log('=== ログイン処理終了 ===')
