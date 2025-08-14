@@ -1,43 +1,43 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import bcrypt from 'bcryptjs'
-import { v4 as uuidv4 } from 'uuid'
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
-export type UserRole = 'owner' | 'manager' | 'staff' | 'part_time'
+export type UserRole = 'owner' | 'manager' | 'staff' | 'part_time';
 
 export interface User {
-  id: string
-  email: string
-  role: UserRole
-  profile: UserProfile
-  permissions: string[]
+  id: string;
+  email: string;
+  role: UserRole;
+  profile: UserProfile;
+  permissions: string[];
 }
 
 export interface UserProfile {
-  firstName: string
-  lastName: string
-  employeeCode?: string
-  department?: string
-  position?: string
-  avatarUrl?: string
+  firstName: string;
+  lastName: string;
+  employeeCode?: string;
+  department?: string;
+  position?: string;
+  avatarUrl?: string;
 }
 
 export class AuthService {
-  private supabase
+  private supabase;
 
   constructor() {
-    const cookieStore = cookies()
+    const cookieStore = cookies();
     this.supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value
+            return cookieStore.get(name)?.value;
           },
         },
       }
-    )
+    );
   }
 
   // ログイン
@@ -52,22 +52,22 @@ export class AuthService {
         `)
         .eq('email', email)
         .eq('is_active', true)
-        .single()
+        .single();
 
       if (userError || !user) {
-        return { error: 'メールアドレスまたはパスワードが正しくありません' }
+        return { error: 'メールアドレスまたはパスワードが正しくありません' };
       }
 
       // パスワード検証
-      const isValid = await bcrypt.compare(password, user.password_hash)
+      const isValid = await bcrypt.compare(password, user.password_hash);
       if (!isValid) {
-        return { error: 'メールアドレスまたはパスワードが正しくありません' }
+        return { error: 'メールアドレスまたはパスワードが正しくありません' };
       }
 
       // セッション作成
-      const sessionToken = uuidv4()
-      const expiresAt = new Date()
-      expiresAt.setHours(expiresAt.getHours() + 24) // 24時間有効
+      const sessionToken = uuidv4();
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24); // 24時間有効
 
       const { error: sessionError } = await this.supabase
         .from('user_sessions')
@@ -75,37 +75,37 @@ export class AuthService {
           auth_user_id: user.id,
           token: sessionToken,
           expires_at: expiresAt.toISOString()
-        })
+        });
 
       if (sessionError) {
-        return { error: 'セッションの作成に失敗しました' }
+        return { error: 'セッションの作成に失敗しました' };
       }
 
       // 最終ログイン時刻更新
       await this.supabase
         .from('auth_users')
         .update({ last_login: new Date().toISOString() })
-        .eq('id', user.id)
+        .eq('id', user.id);
 
       // アクティビティログ記録
-      await this.logActivity(user.id, 'login', 'auth', user.id)
+      await this.logActivity(user.id, 'login', 'auth', user.id);
 
       return { 
         data: {
           user: this.formatUser(user),
           sessionToken
         }
-      }
+      };
     } catch (error) {
-      console.error('Login error:', error)
-      return { error: 'ログイン処理中にエラーが発生しました' }
+      console.error('Login error:', error);
+      return { error: 'ログイン処理中にエラーが発生しました' };
     }
   }
 
   // セッション検証
   async validateSession(sessionToken: string) {
     try {
-      const { data: session, error: sessionError } = await this.supabase
+      const { data: session, error } = await this.supabase
         .from('user_sessions')
         .select(`
           *,
@@ -116,32 +116,31 @@ export class AuthService {
         `)
         .eq('token', sessionToken)
         .gt('expires_at', new Date().toISOString())
-        .single()
+        .single();
 
-      if (sessionError || !session) {
-        return null
+      if (error || !session) {
+        return null;
       }
 
-      return this.formatUser(session.auth_users)
+      return this.formatUser(session.auth_users);
     } catch (error) {
-      console.error('Session validation error:', error)
-      return null
+      console.error('Session validation error:', error);
+      return null;
     }
   }
 
   // ログアウト
   async logout(sessionToken: string) {
     try {
-      // セッション削除
       await this.supabase
         .from('user_sessions')
         .delete()
-        .eq('token', sessionToken)
+        .eq('token', sessionToken);
 
-      return { success: true }
+      return { success: true };
     } catch (error) {
-      console.error('Logout error:', error)
-      return { error: 'ログアウト処理中にエラーが発生しました' }
+      console.error('Logout error:', error);
+      return { error: 'ログアウト処理中にエラーが発生しました' };
     }
   }
 
@@ -151,48 +150,39 @@ export class AuthService {
       // ロール権限取得
       const { data: rolePerms } = await this.supabase
         .from('role_permissions')
-        .select(`
-          permissions (
-            code
-          )
-        `)
-        .eq('role', role)
+        .select('permissions(code)')
+        .eq('role', role);
 
       // カスタム権限取得
       const { data: customPerms } = await this.supabase
         .from('user_custom_permissions')
-        .select(`
-          permissions (
-            code
-          ),
-          granted
-        `)
-        .eq('auth_user_id', userId)
+        .select('permissions(code), granted')
+        .eq('auth_user_id', userId);
 
-      const permissions = new Set<string>()
+      const permissions = new Set<string>();
 
       // ロール権限追加
       rolePerms?.forEach(p => {
         if (p.permissions?.code) {
-          permissions.add(p.permissions.code)
+          permissions.add(p.permissions.code);
         }
-      })
+      });
 
       // カスタム権限適用
       customPerms?.forEach(p => {
         if (p.permissions?.code) {
           if (p.granted) {
-            permissions.add(p.permissions.code)
+            permissions.add(p.permissions.code);
           } else {
-            permissions.delete(p.permissions.code)
+            permissions.delete(p.permissions.code);
           }
         }
-      })
+      });
 
-      return Array.from(permissions)
+      return Array.from(permissions);
     } catch (error) {
-      console.error('Permission fetch error:', error)
-      return []
+      console.error('Permission fetch error:', error);
+      return [];
     }
   }
 
@@ -203,34 +193,28 @@ export class AuthService {
         .from('auth_users')
         .select('role')
         .eq('id', userId)
-        .single()
+        .single();
 
-      if (!user) return false
+      if (!user) return false;
 
-      const permissions = await this.getUserPermissions(userId, user.role)
-      return permissions.includes(permission)
+      const permissions = await this.getUserPermissions(userId, user.role);
+      return permissions.includes(permission);
     } catch (error) {
-      console.error('Permission check error:', error)
-      return false
+      console.error('Permission check error:', error);
+      return false;
     }
   }
 
   // ユーザー作成
   async createUser(userData: {
-    email: string
-    password: string
-    role: UserRole
-    profile: {
-      firstName: string
-      lastName: string
-      employeeCode?: string
-      department?: string
-      position?: string
-    }
+    email: string;
+    password: string;
+    role: UserRole;
+    profile: Partial<UserProfile>;
   }) {
     try {
       // パスワードハッシュ化
-      const passwordHash = await bcrypt.hash(userData.password, 12)
+      const passwordHash = await bcrypt.hash(userData.password, 12);
 
       // ユーザー作成
       const { data: user, error: userError } = await this.supabase
@@ -241,32 +225,35 @@ export class AuthService {
           role: userData.role
         })
         .select()
-        .single()
+        .single();
 
       if (userError || !user) {
-        return { error: 'ユーザーの作成に失敗しました' }
+        return { error: 'ユーザーの作成に失敗しました' };
       }
 
       // プロファイル作成
-      const { error: profileError } = await this.supabase
-        .from('user_profiles')
-        .insert({
-          auth_user_id: user.id,
-          first_name: userData.profile.firstName,
-          last_name: userData.profile.lastName,
-          employee_code: userData.profile.employeeCode,
-          department: userData.profile.department,
-          position: userData.profile.position
-        })
+      if (userData.profile) {
+        const { error: profileError } = await this.supabase
+          .from('user_profiles')
+          .insert({
+            auth_user_id: user.id,
+            first_name: userData.profile.firstName,
+            last_name: userData.profile.lastName,
+            employee_code: userData.profile.employeeCode,
+            department: userData.profile.department,
+            position: userData.profile.position,
+            avatar_url: userData.profile.avatarUrl
+          });
 
-      if (profileError) {
-        return { error: 'プロファイルの作成に失敗しました' }
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
       }
 
-      return { data: user }
+      return { data: this.formatUser(user) };
     } catch (error) {
-      console.error('User creation error:', error)
-      return { error: 'ユーザー作成中にエラーが発生しました' }
+      console.error('User creation error:', error);
+      return { error: 'ユーザー作成中にエラーが発生しました' };
     }
   }
 
@@ -280,16 +267,16 @@ export class AuthService {
           user_profiles (*)
         `)
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) {
-        return { error: 'ユーザー一覧の取得に失敗しました' }
+        return { error: 'ユーザー情報の取得に失敗しました' };
       }
 
-      return { data: users.map(user => this.formatUser(user)) }
+      return { data: users.map(user => this.formatUser(user)) };
     } catch (error) {
-      console.error('Users fetch error:', error)
-      return { error: 'ユーザー一覧取得中にエラーが発生しました' }
+      console.error('Users fetch error:', error);
+      return { error: 'ユーザー情報の取得中にエラーが発生しました' };
     }
   }
 
@@ -310,12 +297,13 @@ export class AuthService {
           target_type: targetType,
           target_id: targetId,
           details
-        })
+        });
     } catch (error) {
-      console.error('Activity log error:', error)
+      console.error('Activity log error:', error);
     }
   }
 
+  // ユーザー情報フォーマット
   private formatUser(dbUser: any): User {
     return {
       id: dbUser.id,
@@ -330,6 +318,6 @@ export class AuthService {
         avatarUrl: dbUser.user_profiles?.avatar_url
       },
       permissions: []
-    }
+    };
   }
 }

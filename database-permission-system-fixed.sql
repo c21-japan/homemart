@@ -1,6 +1,15 @@
 -- ========================================
--- ホームマート権限管理システム - データベーススキーマ
+-- ホームマート権限管理システム - データベーススキーマ（修正版）
 -- ========================================
+
+-- 既存テーブルの削除（クリーンアップ用）
+DROP TABLE IF EXISTS user_custom_permissions CASCADE;
+DROP TABLE IF EXISTS role_permissions CASCADE;
+DROP TABLE IF EXISTS user_sessions CASCADE;
+DROP TABLE IF EXISTS activity_logs CASCADE;
+DROP TABLE IF EXISTS user_profiles CASCADE;
+DROP TABLE IF EXISTS auth_users CASCADE;
+DROP TABLE IF EXISTS permissions CASCADE;
 
 -- ユーザーテーブル（認証情報）
 CREATE TABLE IF NOT EXISTS auth_users (
@@ -157,9 +166,9 @@ WHERE code IN (
   'property.read', 'lead.read'
 );
 
--- 初期ユーザー作成（乾代表）
+-- 初期ユーザー作成（乾代表）- 正しいパスワードハッシュ
 INSERT INTO auth_users (email, password_hash, role) VALUES
-('inui@homemart.co.jp', '$2b$12$VdaWVN22Wnh5edoTjFL.Fuiuih1YYFBrgCfF3.XS6M.EYTp95ww5q', 'owner');
+('inui@homemart.co.jp', '$2b$12$AORSnqwUno8/MkDjncIV/uUZ2malzFMTpU9uQHu2uvhSDqKPw0jeW', 'owner');
 
 INSERT INTO user_profiles (auth_user_id, employee_code, first_name, last_name, first_name_kana, last_name_kana, phone, department, position)
 SELECT id, 'HM001', '佑企', '乾', 'ユウキ', 'イヌイ', '090-7962-0019', '経営', '代表取締役'
