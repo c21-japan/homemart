@@ -13,33 +13,46 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('ログイン処理開始:', { email, password })
     
-    // ローカル認証（Supabase不要）
-    const validUsers = [
-      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner', permissions: ['all'] },
-      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin', permissions: ['leads', 'customers', 'reports'] },
-      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff', permissions: ['leads'] },
-      { email: 't-toyoda@century21.group', password: 'Toyoda2024!', name: '豊田拓真', role: 'staff', permissions: ['leads'] },
-      { email: 'm-imadu@century21.group', password: 'Imadu2024!', name: '今津元幸', role: 'staff', permissions: ['reports'] }
-    ]
-    
-    const user = validUsers.find(u => u.email === email && u.password === password)
-    
-    if (user) {
-      // LocalStorageに保存（キー名を修正！）
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('isAdmin', 'true')  // isAuthenticated → isAdmin に変更
-        localStorage.setItem('adminName', user.name)  // userName → adminName に変更
-        localStorage.setItem('userEmail', user.email)
-        localStorage.setItem('userRole', user.role)
-        localStorage.setItem('userPermissions', JSON.stringify(user.permissions))
-      }
+    try {
+      // ローカル認証（Supabase不要）
+      const validUsers = [
+        { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner', permissions: ['all'] },
+        { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin', permissions: ['leads', 'customers', 'reports'] },
+        { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff', permissions: ['leads'] },
+        { email: 't-toyoda@century21.group', password: 'Toyoda2024!', name: '豊田拓真', role: 'staff', permissions: ['leads'] },
+        { email: 'm-imadu@century21.group', password: 'Imadu2024!', name: '今津元幸', role: 'staff', permissions: ['reports'] }
+      ]
       
-      // 管理画面へ
-      router.push('/admin')
-    } else {
-      setError('メールアドレスまたはパスワードが正しくありません')
-      setTimeout(() => setError(''), 3000)
+      console.log('ユーザー検索中...')
+      const user = validUsers.find(u => u.email === email && u.password === password)
+      console.log('検索結果:', user)
+      
+      if (user) {
+        console.log('認証成功、localStorageに保存中...')
+        // LocalStorageに保存（キー名を修正！）
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('isAdmin', 'true')  // isAuthenticated → isAdmin に変更
+          localStorage.setItem('adminName', user.name)  // userName → adminName に変更
+          localStorage.setItem('userEmail', user.email)
+          localStorage.setItem('userRole', user.role)
+          localStorage.setItem('userPermissions', JSON.stringify(user.permissions))
+          console.log('localStorage保存完了')
+        }
+        
+        console.log('管理画面へリダイレクト中...')
+        // 管理画面へ
+        router.push('/admin')
+      } else {
+        console.log('認証失敗')
+        setError('メールアドレスまたはパスワードが正しくありません')
+        setTimeout(() => setError(''), 3000)
+      }
+    } catch (error) {
+      console.error('ログイン処理でエラーが発生:', error)
+      setError('ログイン処理でエラーが発生しました。ページを再読み込みしてください。')
+      setTimeout(() => setError(''), 5000)
     }
   }
 
@@ -101,6 +114,7 @@ export default function LoginPage() {
             
             <button
               type="submit"
+              onClick={() => console.log('ログインボタンクリック')}
               className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               ログイン
