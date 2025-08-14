@@ -20,6 +20,48 @@ export default function MemberLogin() {
     setMessage('')
 
     try {
+      // 社員アカウントの特別処理
+      if (email.includes('@century21.group')) {
+        console.log('社員ログイン試行:', email)
+        
+        // 社員用の認証（ハードコード）
+        if (email === 'y-inui@century21.group' && password === 'Inui2024!') {
+          setMessage('社員ログインに成功しました。管理画面にリダイレクトしています...')
+          localStorage.setItem('isAdmin', 'true')
+          localStorage.setItem('adminName', '乾佑企')
+          localStorage.setItem('userRole', 'owner')
+          localStorage.setItem('userPermissions', JSON.stringify(['all']))
+          setTimeout(() => {
+            router.push('/admin')
+          }, 1000)
+          return
+        } else if (email === 'm-yasuda@century21.group' && password === 'Yasuda2024!') {
+          setMessage('社員ログインに成功しました。管理画面にリダイレクトしています...')
+          localStorage.setItem('isAdmin', 'true')
+          localStorage.setItem('adminName', '安田実加')
+          localStorage.setItem('userRole', 'admin')
+          localStorage.setItem('userPermissions', JSON.stringify(['leads', 'customers', 'reports']))
+          setTimeout(() => {
+            router.push('/admin')
+          }, 1000)
+          return
+        } else if (email === 'info@century21.group' && password === 'Yamao2024!') {
+          setMessage('社員ログインに成功しました。管理画面にリダイレクトしています...')
+          localStorage.setItem('isAdmin', 'true')
+          localStorage.setItem('adminName', '山尾妃奈')
+          localStorage.setItem('userRole', 'staff')
+          localStorage.setItem('userPermissions', JSON.stringify(['leads']))
+          setTimeout(() => {
+            router.push('/admin')
+          }, 1000)
+          return
+        } else {
+          setError('社員アカウントの認証に失敗しました')
+          return
+        }
+      }
+
+      // 一般会員のログイン処理
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -40,41 +82,14 @@ export default function MemberLogin() {
     }
   }
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setMessage('')
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/member`,
-        },
-      })
-
-      if (error) {
-        setError(error.message)
-      } else if (data.user) {
-        setMessage('アカウントが作成されました。確認メールをチェックしてください。')
-      }
-    } catch (error) {
-      setError('アカウント作成中にエラーが発生しました')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">ホームマート</h1>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">会員ログイン</h2>
+          <h2 className="mt-6 text-2xl font-bold text-gray-900">ログイン</h2>
           <p className="mt-2 text-sm text-gray-600">
-            お気に入り物件の保存や検索履歴の確認ができます
+            会員ログインまたは社員ログインができます
           </p>
         </div>
       </div>
@@ -126,7 +141,7 @@ export default function MemberLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                  placeholder="example@email.com"
+                  placeholder="example@email.com または @century21.group"
                 />
               </div>
             </div>
@@ -167,14 +182,12 @@ export default function MemberLogin() {
                 {loading ? 'ログイン中...' : 'ログイン'}
               </button>
 
-              <button
-                type="button"
-                onClick={handleSignUp}
-                disabled={loading}
+              <Link
+                href="/member/register"
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? '作成中...' : '新規アカウント作成'}
-              </button>
+              </Link>
             </div>
           </form>
 
@@ -195,6 +208,16 @@ export default function MemberLogin() {
               >
                 ゲストとして物件を探す
               </Link>
+            </div>
+          </div>
+
+          {/* 社員用アカウント情報 */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="font-semibold text-sm mb-2 text-blue-800">社員アカウント情報:</p>
+            <div className="space-y-1 text-xs text-blue-700">
+              <p>オーナー: y-inui@century21.group / Inui2024!</p>
+              <p>管理者: m-yasuda@century21.group / Yasuda2024!</p>
+              <p>スタッフ: info@century21.group / Yamao2024!</p>
             </div>
           </div>
         </div>
