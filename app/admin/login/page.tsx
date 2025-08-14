@@ -13,41 +13,55 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault() // これがないとページがリロードされる！
     
-    console.log('ログイン処理開始') // デバッグ用
+    console.log('=== ログイン処理開始 ===')
+    console.log('フォームデータ:', { email, password })
+    console.log('入力値の長さ:', { emailLength: email.length, passwordLength: password.length })
+    console.log('入力値の型:', { emailType: typeof email, passwordType: typeof password })
+    
     setError('')
     setLoading(true)
     
     try {
       // シンプルな認証（データベース不要）
       if (email === 'y-inui@century21.group' && password === 'Inui2024!') {
-        console.log('認証成功')
+        console.log('✅ 認証成功: 乾佑企（オーナー）')
         
         // LocalStorageに保存
         localStorage.setItem('isAdmin', 'true')
         localStorage.setItem('adminName', '乾佑企')
         localStorage.setItem('userRole', 'owner')
+        console.log('localStorage保存完了')
         
         // 管理画面へ遷移
+        console.log('管理画面へリダイレクト中...')
         window.location.href = '/admin'
       } else if (email === 'm-yasuda@century21.group' && password === 'Yasuda2024!') {
+        console.log('✅ 認証成功: 安田実加（管理者）')
         localStorage.setItem('isAdmin', 'true')
         localStorage.setItem('adminName', '安田実加')
         localStorage.setItem('userRole', 'admin')
         window.location.href = '/admin'
       } else if (email === 'info@century21.group' && password === 'Yamao2024!') {
+        console.log('✅ 認証成功: 山尾妃奈（スタッフ）')
         localStorage.setItem('isAdmin', 'true')
         localStorage.setItem('adminName', '山尾妃奈')
         localStorage.setItem('userRole', 'staff')
         window.location.href = '/admin'
       } else {
-        console.log('認証失敗')
+        console.log('❌ 認証失敗')
+        console.log('期待される値:', {
+          'y-inui@century21.group': 'Inui2024!',
+          'm-yasuda@century21.group': 'Yasuda2024!',
+          'info@century21.group': 'Yamao2024!'
+        })
         setError('メールアドレスまたはパスワードが正しくありません')
       }
     } catch (err) {
-      console.error('エラー:', err)
+      console.error('🚨 エラーが発生:', err)
       setError('ログイン処理中にエラーが発生しました')
     } finally {
       setLoading(false)
+      console.log('=== ログイン処理終了 ===')
     }
   }
 
@@ -70,6 +84,7 @@ export default function LoginPage() {
                 メールアドレス
               </label>
               <input
+                name="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -86,11 +101,12 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <input
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="パスワードを入力"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
                   required
                   disabled={loading}
                 />
