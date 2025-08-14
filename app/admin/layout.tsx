@@ -1,100 +1,110 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import {
-  HomeIcon,
-  BuildingOfficeIcon,
-  DocumentTextIcon,
-  UserGroupIcon,
-  ChartBarIcon,
-  Cog6ToothIcon,
-  ArrowLeftOnRectangleIcon,
-} from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-
-  // ログインページは認証チェックをスキップ
-  const isLoginPage = pathname === '/admin/login';
+  const router = useRouter()
+  const pathname = usePathname()
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [adminName, setAdminName] = useState('')
 
   useEffect(() => {
-    if (!isLoginPage) {
-      const userData = localStorage.getItem('user');
-      if (!userData) {
-        router.push('/admin/login');
-      } else {
-        setUser(JSON.parse(userData));
-      }
+    // ログインページは除外
+    if (pathname === '/admin/login') {
+      setIsAuthorized(true)
+      return
     }
-  }, [pathname, router, isLoginPage]);
 
-  // ログアウト処理
+    // 認証チェック
+    const isAdmin = localStorage.getItem('isAdmin')
+    const name = localStorage.getItem('adminName')
+    
+    if (!isAdmin) {
+      router.push('/admin/login')
+    } else {
+      setIsAuthorized(true)
+      setAdminName(name || '管理者')
+    }
+  }, [router, pathname])
+
   const handleLogout = () => {
-    localStorage.clear();
-    router.push('/admin/login');
-  };
-
-  // ログインページの場合はchildrenのみ表示
-  if (isLoginPage) {
-    return <>{children}</>;
+    localStorage.removeItem('isAdmin')
+    localStorage.removeItem('adminName')
+    router.push('/admin/login')
   }
 
-  const menuItems = [
-    { name: 'ダッシュボード', href: '/admin', icon: HomeIcon },
-    { name: '物件管理', href: '/admin/properties', icon: BuildingOfficeIcon },
-    { name: 'リフォーム案件', href: '/admin/reform-projects', icon: DocumentTextIcon },
-    { name: '見込み客', href: '/admin/leads', icon: UserGroupIcon },
-  ];
+  // ログインページの場合はレイアウトなし
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex">
-        {/* サイドバー */}
-        <div className="w-64 bg-gray-900 min-h-screen">
-          <div className="p-4">
-            <h2 className="text-white text-xl font-bold">ホームマート管理</h2>
-            <p className="text-white text-sm opacity-75 mt-1">
-              {user?.email}
-            </p>
-          </div>
-          <nav className="mt-8">
-            {menuItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white ${
-                  pathname === item.href ? 'bg-gray-700 text-white' : ''
-                }`}
+    <div className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-8">
+              <h1 className="text-xl font-bold text-gray-900">
+                ホームマート管理画面
+              </h1>
+              <nav className="flex space-x-4">
+                <Link
+                  href="/admin"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  ダッシュボード
+                </Link>
+                <Link
+                  href="/admin/leads"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin/leads'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  リード管理
+                </Link>
+              </nav>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">
+                ようこそ、{adminName}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
               >
-                <item.icon className="w-5 h-5 mr-3" />
-                {item.name}
-              </Link>
-            ))}
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white mt-8"
-            >
-              <ArrowLeftOnRectangleIcon className="w-5 h-5 mr-3" />
-              ログアウト
-            </button>
-          </nav>
+                ログアウト
+              </button>
+            </div>
+          </div>
         </div>
+      </header>
 
-        {/* メインコンテンツ */}
-        <div className="flex-1">
-          <main className="p-8">
-            {children}
-          </main>
-        </div>
-      </div>
+      {/* メインコンテンツ */}
+      <main className="py-8">
+        {children}
+      </main>
     </div>
-  );
+  )
 }
