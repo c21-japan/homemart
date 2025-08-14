@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import {
   HomeIcon,
   BuildingOfficeIcon,
@@ -22,90 +21,30 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   // ログインページは認証チェックをスキップ
   const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
     if (!isLoginPage) {
-      checkAuth();
-    } else {
-      setLoading(false);
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        router.push('/admin/login');
+      } else {
+        setUser(JSON.parse(userData));
+      }
     }
-  }, [pathname, isLoginPage]);
-
-  const checkAuth = async () => {
-    try {
-      setLoading(true);
-      
-      // Supabaseセッションを確認
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error || !session) {
-        router.push('/admin/login');
-        return;
-      }
-
-      // ユーザー情報を取得
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        router.push('/admin/login');
-        return;
-      }
-
-      // 管理者権限を確認
-      const { data: adminUser, error: adminError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .eq('role', 'admin')
-        .single();
-
-      if (adminError || !adminUser) {
-        console.error('管理者権限がありません');
-        await supabase.auth.signOut();
-        router.push('/admin/login');
-        return;
-      }
-
-      setUser(user);
-    } catch (error) {
-      console.error('認証エラー:', error);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [pathname, router, isLoginPage]);
 
   // ログアウト処理
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      router.push('/admin/login');
-    } catch (error) {
-      console.error('ログアウトエラー:', error);
-    }
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push('/admin/login');
   };
-
-  // ローディング中
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   // ログインページの場合はchildrenのみ表示
   if (isLoginPage) {
     return <>{children}</>;
-  }
-
-  // 認証されていない場合は何も表示しない
-  if (!user) {
-    return null;
   }
 
   const menuItems = [
@@ -123,7 +62,7 @@ export default function AdminLayout({
           <div className="p-4">
             <h2 className="text-white text-xl font-bold">ホームマート管理</h2>
             <p className="text-white text-sm opacity-75 mt-1">
-              {user.email}
+              {user?.email}
             </p>
           </div>
           <nav className="mt-8">

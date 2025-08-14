@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -11,73 +10,34 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // 既にログインしている場合はリダイレクト
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  const checkSession = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // 管理者権限を確認
-        const { data: adminUser } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', session.user.id)
-          .eq('role', 'admin')
-          .single();
-
-        if (adminUser) {
-          router.push('/admin');
-        }
-      }
-    } catch (error) {
-      console.log('セッションチェックエラー:', error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      // Supabase認証を使用
-      const { data: { user, session }, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error || !user || !session) {
-        setError('メールアドレスまたはパスワードが正しくありません');
-        return;
-      }
+      const data = await response.json();
 
-      // 管理者権限を確認
-      const { data: adminUser, error: adminError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .eq('role', 'admin')
-        .single();
-
-      if (adminError || !adminUser) {
-        await supabase.auth.signOut();
-        setError('管理者権限がありません');
-        return;
-      }
-
-      // ログイン成功
-      router.push('/admin');
-      router.refresh();
-    } catch (error: any) {
-      console.error('Login error:', error);
-      if (error?.message?.includes('Failed to fetch')) {
-        setError('ネットワークエラーが発生しました');
+      if (response.ok) {
+        // ログイン成功 - localStorageにユーザー情報を保存
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push('/admin');
+        router.refresh();
       } else {
-        setError('ログインに失敗しました');
+        // エラー表示
+        setError(data.error || 'ログインに失敗しました');
       }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('ネットワークエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
