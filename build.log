@@ -13,13 +13,90 @@
    Skipping linting
    Collecting page data ...
  ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/67) ...
+   Generating static pages (16/67) 
+   Generating static pages (33/67) 
+   Generating static pages (50/67) 
+ ✓ Generating static pages (67/67)
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-> Build error occurred
-[Error: Cannot find module '/Users/milk/homemart/.next/server/next-font-manifest.json'
-Require stack:
-- /Users/milk/homemart/node_modules/next/dist/export/index.js
-- /Users/milk/homemart/node_modules/next/dist/build/index.js
-- /Users/milk/homemart/node_modules/next/dist/cli/next-build.js] {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array]
-}
+Route (app)                                           Size  First Load JS
+┌ ○ /                                              2.72 kB         155 kB
+├ ○ /_not-found                                      996 B         101 kB
+├ ○ /about                                         3.35 kB         106 kB
+├ ○ /admin                                         3.49 kB         107 kB
+├ ○ /admin/dashboard                               4.01 kB         159 kB
+├ ○ /admin/inquiries                               2.52 kB         145 kB
+├ ○ /admin/internal-applications                   3.82 kB         146 kB
+├ ƒ /admin/internal-applications/[id]              3.43 kB         146 kB
+├ ○ /admin/internal-applications/forms/expense     3.53 kB         146 kB
+├ ○ /admin/internal-applications/forms/other        3.2 kB         145 kB
+├ ○ /admin/internal-applications/forms/paid-leave  2.94 kB         145 kB
+├ ○ /admin/internal-applications/forms/sick-leave  3.41 kB         146 kB
+├ ○ /admin/internal-applications/new               1.94 kB         105 kB
+├ ○ /admin/leads                                     11 kB         150 kB
+├ ƒ /admin/leads/[id]                              5.28 kB         160 kB
+├ ○ /admin/leads/new                                3.1 kB         161 kB
+├ ○ /admin/login                                    1.6 kB         101 kB
+├ ○ /admin/media                                   4.59 kB         108 kB
+├ ○ /admin/part-time-attendance                    3.23 kB         145 kB
+├ ○ /admin/part-time-attendance/form               3.94 kB         146 kB
+├ ○ /admin/part-time-attendance/reports            4.63 kB         147 kB
+├ ○ /admin/part-time-attendance/shift-request      3.78 kB         146 kB
+├ ○ /admin/properties                              4.18 kB         146 kB
+├ ○ /admin/properties-list                         3.66 kB         146 kB
+├ ƒ /admin/properties/[id]/edit                    2.78 kB         145 kB
+├ ○ /admin/reform-projects                         20.7 kB         168 kB
+├ ○ /admin/search                                   3.3 kB         145 kB
+├ ƒ /api/attachments/presign                         202 B        99.8 kB
+├ ƒ /api/auth/debug                                  202 B        99.8 kB
+├ ƒ /api/auth/login                                  202 B        99.8 kB
+├ ƒ /api/auth/logout                                 202 B        99.8 kB
+├ ƒ /api/auth/simple-login                           202 B        99.8 kB
+├ ƒ /api/auth/test-connection                        202 B        99.8 kB
+├ ƒ /api/cron/daily-tasks                            202 B        99.8 kB
+├ ƒ /api/favorites                                   202 B        99.8 kB
+├ ƒ /api/github-delete                               202 B        99.8 kB
+├ ƒ /api/github-upload                               202 B        99.8 kB
+├ ƒ /api/google/auth                                 202 B        99.8 kB
+├ ƒ /api/google/auth/refresh                         202 B        99.8 kB
+├ ƒ /api/google/data                                 202 B        99.8 kB
+├ ƒ /api/integrations/century21                      202 B        99.8 kB
+├ ƒ /api/integrations/line                           202 B        99.8 kB
+├ ƒ /api/integrations/plaud                          202 B        99.8 kB
+├ ƒ /api/leads/[id]/fp-info                          202 B        99.8 kB
+├ ƒ /api/photos/presign                              202 B        99.8 kB
+├ ƒ /api/photos/process                              202 B        99.8 kB
+├ ƒ /api/properties                                  202 B        99.8 kB
+├ ƒ /api/reporting/runner                            202 B        99.8 kB
+├ ƒ /api/send-application-status-email               202 B        99.8 kB
+├ ƒ /api/send-email                                  202 B        99.8 kB
+├ ƒ /api/test-email                                  202 B        99.8 kB
+├ ƒ /api/upload                                      202 B        99.8 kB
+├ ƒ /api/upload-image                                202 B        99.8 kB
+├ ƒ /api/webpush/subscribe                           202 B        99.8 kB
+├ ○ /buy                                           3.17 kB         145 kB
+├ ○ /contact                                       5.25 kB         147 kB
+├ ○ /dashboard                                       568 B         100 kB
+├ ○ /fp-test                                       7.03 kB         146 kB
+├ ○ /google-auth/callback                          1.29 kB         101 kB
+├ ○ /leads/new                                     17.5 kB         170 kB
+├ ○ /login                                         1.07 kB         101 kB
+├ ○ /member                                        3.67 kB         146 kB
+├ ○ /member/login                                  2.79 kB         145 kB
+├ ○ /part-time-attendance                          4.41 kB         143 kB
+├ ƒ /part-time-attendance/profile/[id]             4.11 kB         146 kB
+├ ○ /properties                                    1.53 kB         154 kB
+├ ƒ /properties/[id]                               6.53 kB         149 kB
+├ ○ /reasons                                       2.05 kB         105 kB
+├ ○ /reform                                        8.58 kB         153 kB
+├ ○ /sell                                          2.13 kB         105 kB
+└ ○ /staff                                         2.53 kB         102 kB
++ First Load JS shared by all                      99.6 kB
+  ├ chunks/4bd1b696-602635ee57868870.js            54.1 kB
+  ├ chunks/5964-2a1ddd40921d073b.js                43.5 kB
+  └ other shared chunks (total)                    1.97 kB
+
+
+ƒ Middleware                                       69.6 kB
