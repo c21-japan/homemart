@@ -1,0 +1,99 @@
+
+> homemart@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.6
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 12.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/61) ...
+   Generating static pages (15/61) 
+   Generating static pages (30/61) 
+   Generating static pages (45/61) 
+ ✓ Generating static pages (61/61)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                           Size  First Load JS
+┌ ○ /                                              1.72 kB         147 kB
+├ ○ /_not-found                                      996 B         101 kB
+├ ○ /about                                         3.35 kB         106 kB
+├ ○ /admin                                           13 kB         160 kB
+├ ○ /admin/dashboard                               3.53 kB         158 kB
+├ ○ /admin/documents                               1.92 kB         105 kB
+├ ○ /admin/documents/property-report-form             5 kB         108 kB
+├ ○ /admin/documents/property-report-list          2.69 kB         106 kB
+├ ○ /admin/inquiries                               2.09 kB         144 kB
+├ ○ /admin/internal-applications                    3.4 kB         145 kB
+├ ƒ /admin/internal-applications/[id]              3.03 kB         145 kB
+├ ○ /admin/internal-applications/forms/expense      3.1 kB         145 kB
+├ ○ /admin/internal-applications/forms/other       2.78 kB         145 kB
+├ ○ /admin/internal-applications/forms/paid-leave  2.53 kB         145 kB
+├ ○ /admin/internal-applications/forms/sick-leave  2.98 kB         145 kB
+├ ○ /admin/internal-applications/new               1.94 kB         105 kB
+├ ○ /admin/leads                                   5.25 kB         161 kB
+├ ƒ /admin/leads/[id]                              3.88 kB         159 kB
+├ ○ /admin/leads/new                                4.7 kB         160 kB
+├ ○ /admin/login                                   1.67 kB         101 kB
+├ ○ /admin/media                                   4.59 kB         108 kB
+├ ○ /admin/part-time-attendance                    2.82 kB         145 kB
+├ ○ /admin/part-time-attendance/form               3.55 kB         146 kB
+├ ○ /admin/part-time-attendance/reports            4.23 kB         146 kB
+├ ○ /admin/part-time-attendance/shift-request      3.38 kB         145 kB
+├ ○ /admin/properties                              11.3 kB         153 kB
+├ ○ /admin/properties-list                         3.26 kB         145 kB
+├ ƒ /admin/properties/[id]/edit                    2.37 kB         144 kB
+├ ○ /admin/reform-projects                         20.3 kB         168 kB
+├ ○ /admin/search                                  7.94 kB         150 kB
+├ ƒ /api/attachments/presign                         183 B        99.8 kB
+├ ƒ /api/cron/daily-tasks                            183 B        99.8 kB
+├ ƒ /api/favorites                                   183 B        99.8 kB
+├ ƒ /api/github-delete                               183 B        99.8 kB
+├ ƒ /api/github-upload                               183 B        99.8 kB
+├ ƒ /api/google/auth                                 183 B        99.8 kB
+├ ƒ /api/google/auth/refresh                         183 B        99.8 kB
+├ ƒ /api/google/data                                 183 B        99.8 kB
+├ ƒ /api/integrations/century21                      183 B        99.8 kB
+├ ƒ /api/integrations/line                           183 B        99.8 kB
+├ ƒ /api/integrations/plaud                          183 B        99.8 kB
+├ ƒ /api/photos/presign                              183 B        99.8 kB
+├ ƒ /api/photos/process                              183 B        99.8 kB
+├ ƒ /api/reporting/runner                            183 B        99.8 kB
+├ ƒ /api/send-application-status-email               183 B        99.8 kB
+├ ƒ /api/send-email                                  183 B        99.8 kB
+├ ƒ /api/test-email                                  183 B        99.8 kB
+├ ƒ /api/upload                                      183 B        99.8 kB
+├ ƒ /api/upload-image                                183 B        99.8 kB
+├ ƒ /api/webpush/subscribe                           183 B        99.8 kB
+├ ○ /buy                                           2.77 kB         145 kB
+├ ○ /contact                                       4.87 kB         147 kB
+├ ○ /google-auth/callback                          1.29 kB         101 kB
+├ ○ /leads/new                                     17.1 kB         169 kB
+├ ○ /member                                        3.26 kB         145 kB
+├ ○ /member/login                                  2.39 kB         144 kB
+├ ○ /part-time-attendance                          4.02 kB         143 kB
+├ ƒ /part-time-attendance/profile/[id]              3.7 kB         146 kB
+├ ○ /properties                                     5.1 kB         156 kB
+├ ƒ /properties/[id]                               5.41 kB         148 kB
+├ ○ /reasons                                       2.05 kB         105 kB
+├ ○ /reform                                        7.88 kB         152 kB
+├ ○ /sell                                          2.13 kB         105 kB
+└ ○ /staff                                         2.53 kB         102 kB
++ First Load JS shared by all                      99.6 kB
+  ├ chunks/4bd1b696-602635ee57868870.js            54.1 kB
+  ├ chunks/5964-2a1ddd40921d073b.js                43.5 kB
+  └ other shared chunks (total)                    1.97 kB
+
+
+ƒ Middleware                                       33.5 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
