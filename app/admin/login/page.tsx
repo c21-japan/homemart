@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -11,48 +10,32 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('ログイン処理開始:', { email, password })
+  // フォーム送信ハンドラー（e.preventDefaultが重要！）
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault() // これが重要！ページリロードを防ぐ
     
-    try {
-      // ローカル認証（Supabase不要）
-      const validUsers = [
-        { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner', permissions: ['all'] },
-        { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin', permissions: ['leads', 'customers', 'reports'] },
-        { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff', permissions: ['leads'] },
-        { email: 't-toyoda@century21.group', password: 'Toyoda2024!', name: '豊田拓真', role: 'staff', permissions: ['leads'] },
-        { email: 'm-imadu@century21.group', password: 'Imadu2024!', name: '今津元幸', role: 'staff', permissions: ['reports'] }
-      ]
+    console.log('ログイン試行:', { email, password }) // デバッグ用
+    
+    // ハードコードされた認証
+    const validUsers = [
+      { email: 'y-inui@century21.group', password: 'Inui2024!', name: '乾佑企', role: 'owner' },
+      { email: 'm-yasuda@century21.group', password: 'Yasuda2024!', name: '安田実加', role: 'admin' },
+      { email: 'info@century21.group', password: 'Yamao2024!', name: '山尾妃奈', role: 'staff' }
+    ]
+    
+    const user = validUsers.find(u => u.email === email && u.password === password)
+    
+    if (user) {
+      // LocalStorageに保存
+      localStorage.setItem('isAdmin', 'true')
+      localStorage.setItem('adminName', user.name)
+      localStorage.setItem('userRole', user.role)
       
-      console.log('ユーザー検索中...')
-      const user = validUsers.find(u => u.email === email && u.password === password)
-      console.log('検索結果:', user)
-      
-      if (user) {
-        console.log('認証成功、localStorageに保存中...')
-        // LocalStorageに保存（キー名を修正！）
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('isAdmin', 'true')  // isAuthenticated → isAdmin に変更
-          localStorage.setItem('adminName', user.name)  // userName → adminName に変更
-          localStorage.setItem('userEmail', user.email)
-          localStorage.setItem('userRole', user.role)
-          localStorage.setItem('userPermissions', JSON.stringify(user.permissions))
-          console.log('localStorage保存完了')
-        }
-        
-        console.log('管理画面へリダイレクト中...')
-        // 管理画面へ
-        router.push('/admin')
-      } else {
-        console.log('認証失敗')
-        setError('メールアドレスまたはパスワードが正しくありません')
-        setTimeout(() => setError(''), 3000)
-      }
-    } catch (error) {
-      console.error('ログイン処理でエラーが発生:', error)
-      setError('ログイン処理でエラーが発生しました。ページを再読み込みしてください。')
-      setTimeout(() => setError(''), 5000)
+      // 管理画面へ遷移
+      window.location.href = '/admin' // router.pushの代わりに直接遷移
+    } else {
+      setError('メールアドレスまたはパスワードが正しくありません')
+      setTimeout(() => setError(''), 3000)
     }
   }
 
@@ -68,7 +51,8 @@ export default function LoginPage() {
             <h2 className="text-lg text-gray-600 mt-2">管理画面ログイン</h2>
           </div>
           
-          <form onSubmit={handleLogin} className="space-y-6">
+          {/* onSubmitハンドラーを追加！ */}
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 メールアドレス
@@ -114,22 +98,14 @@ export default function LoginPage() {
             
             <button
               type="submit"
-              onClick={() => console.log('ログインボタンクリック')}
               className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               ログイン
             </button>
-            
-            <Link
-              href="/admin/register"
-              className="block w-full py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center"
-            >
-              新規登録
-            </Link>
           </form>
           
           <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600">
-            <p className="font-semibold mb-2">アカウント情報:</p>
+            <p className="font-semibold mb-2">テストアカウント:</p>
             <div className="space-y-1">
               <p>オーナー: y-inui@century21.group / Inui2024!</p>
               <p>管理者: m-yasuda@century21.group / Yasuda2024!</p>
