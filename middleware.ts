@@ -1,27 +1,28 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // 管理画面のパスかどうかをチェック
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-
-    // ログインページは認証チェックから除外
-    if (request.nextUrl.pathname === '/admin/login') {
-      return NextResponse.next()
-    }
-    
-    // セッションクッキーをチェック
-    const isAuthenticated = request.cookies.get('admin-auth')
-    
-    if (!isAuthenticated || isAuthenticated.value !== 'authenticated') {
-      // 認証されていない場合はログインページにリダイレクト
-      return NextResponse.redirect(new URL('/admin/login', request.url))
-    }
+  const pathname = request.nextUrl.pathname;
+  
+  // ログインページとAPIルートは認証不要
+  if (pathname === '/admin/login' || pathname.startsWith('/api/')) {
+    return NextResponse.next();
   }
   
-  return NextResponse.next()
+  // 管理画面へのアクセスをチェック
+  if (pathname.startsWith('/admin')) {
+    const adminAuth = request.cookies.get('admin-auth');
+    
+    if (!adminAuth) {
+      // 未認証の場合はログインページへリダイレクト
+      const loginUrl = new URL('/admin/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/admin/:path*'
-}
+  matcher: ['/admin/:path*']
+};
