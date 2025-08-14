@@ -8,7 +8,7 @@
      · serverActions
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 3.0s
+ ✓ Compiled successfully in 2000ms
    Skipping validation of types
    Skipping linting
    Collecting page data ...
@@ -100,3 +100,7 @@ Route (app)                                           Size  First Load JS
 
 
 ƒ Middleware                                       69.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
