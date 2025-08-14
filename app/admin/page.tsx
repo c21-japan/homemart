@@ -18,13 +18,11 @@ interface DashboardCard {
   description: string;
   icon: any;
   href: string;
-  permission?: string;
   action?: string;
   count?: number;
 }
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState<any>({});
 
   // ダッシュボードカード定義
@@ -34,7 +32,6 @@ export default function AdminDashboard() {
       description: '社員・アルバイトの管理',
       icon: UsersIcon,
       href: '/admin/users',
-      permission: 'user.read',
       action: 'ユーザー一覧',
       count: stats.userCount
     },
@@ -43,7 +40,6 @@ export default function AdminDashboard() {
       description: '物件情報の登録・編集',
       icon: BuildingOfficeIcon,
       href: '/admin/properties',
-      permission: 'property.read',
       action: '物件一覧',
       count: stats.propertyCount
     },
@@ -52,7 +48,6 @@ export default function AdminDashboard() {
       description: '顧客リードの管理',
       icon: UsersIcon,
       href: '/admin/leads',
-      permission: 'lead.read',
       action: 'リード一覧',
       count: stats.leadCount
     },
@@ -61,7 +56,6 @@ export default function AdminDashboard() {
       description: '物件報告書等の管理',
       icon: DocumentTextIcon,
       href: '/admin/documents',
-      permission: 'property.read',
       action: '書類一覧',
       count: stats.documentCount
     },
@@ -70,7 +64,6 @@ export default function AdminDashboard() {
       description: '各種申請の管理',
       icon: ClipboardDocumentListIcon,
       href: '/admin/internal-applications',
-      permission: 'attendance.read',
       action: '申請一覧',
       count: stats.applicationCount
     },
@@ -79,7 +72,6 @@ export default function AdminDashboard() {
       description: '出退勤・シフト管理',
       icon: ClockIcon,
       href: '/admin/attendance',
-      permission: 'attendance.read',
       action: '勤怠一覧',
       count: stats.attendanceCount
     },
@@ -88,34 +80,14 @@ export default function AdminDashboard() {
       description: '各種レポート・分析',
       icon: ChartBarIcon,
       href: '/admin/reports',
-      permission: 'report.view',
       action: 'レポート表示',
       count: stats.reportCount
     }
   ];
 
-  // 権限に基づいてカードをフィルタリング
-  const filteredCards = dashboardCards.filter(card => {
-    if (!card.permission) return true;
-    return user?.permissions?.includes(card.permission);
-  });
-
-  // ユーザー情報取得（実際の実装では認証コンテキストから取得）
+  // 統計データの初期化
   useEffect(() => {
-    // TODO: 認証コンテキストからユーザー情報を取得
-    setUser({
-      profile: {
-        firstName: '佑企',
-        lastName: '乾',
-        employeeCode: 'HM001',
-        department: '経営',
-        position: '代表取締役'
-      },
-      role: 'owner',
-      permissions: ['system.manage', 'user.read', 'property.read', 'lead.read', 'attendance.read', 'report.view']
-    });
-
-    // TODO: 実際の統計データを取得
+    // サンプル統計データ
     setStats({
       userCount: 8,
       propertyCount: 24,
@@ -127,29 +99,19 @@ export default function AdminDashboard() {
     });
   }, []);
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
       {/* ヘッダー */}
       <div className="border-b border-gray-200 pb-6">
         <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
         <p className="mt-2 text-gray-600">
-          お疲れ様です、{user.profile.lastName} {user.profile.firstName}さん
+          ホームマート管理画面へようこそ
         </p>
         <div className="mt-2 flex items-center text-sm text-gray-500">
           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-            {user.role === 'owner' ? 'オーナー' : 
-             user.role === 'manager' ? 'マネージャー' : 
-             user.role === 'staff' ? 'スタッフ' : 'パートタイム'}
+            管理者
           </span>
-          <span className="ml-2">{user.profile.department} - {user.profile.position}</span>
+          <span className="ml-2">センチュリー21 広陵店</span>
         </div>
       </div>
 
@@ -211,7 +173,7 @@ export default function AdminDashboard() {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCards.map((card) => (
+            {dashboardCards.map((card) => (
               <div key={card.title} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center">
@@ -237,14 +199,12 @@ export default function AdminDashboard() {
                     <EyeIcon className="h-4 w-4 inline mr-1" />
                     {card.action}
                   </Link>
-                  {card.permission?.includes('create') && (
-                    <Link
-                      href={`${card.href}/new`}
-                      className="bg-green-600 text-white text-xs px-3 py-2 rounded-md hover:bg-green-700 transition-colors"
-                    >
-                      <PlusIcon className="h-4 w-4" />
-                    </Link>
-                  )}
+                  <Link
+                    href={`${card.href}/new`}
+                    className="bg-green-600 text-white text-xs px-3 py-2 rounded-md hover:bg-green-700 transition-colors"
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
             ))}
