@@ -1,70 +1,38 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Header from "@/components/Header";
-import Breadcrumb from "@/components/Breadcrumb";
-import Footer from "@/components/Footer";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import { AuthProvider } from "@/lib/contexts/AuthContext";
-import QueryProvider from "@/lib/providers/QueryProvider";
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import QueryProvider from '@/lib/providers/QueryProvider'
+import { AuthProvider } from '@/lib/contexts/AuthContext'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "ホームマート - センチュリー21加盟店 | 奈良県北葛城郡",
-  description: "奈良県北葛城郡の不動産会社ホームマート。物件検索、売却査定、不動産の購入・売却をお手伝いします。",
-  manifest: "/manifest.webmanifest",
-  themeColor: "#f97316",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "ホームマート"
-  },
-  openGraph: {
-    type: "website",
-    locale: "ja_JP",
-    url: "https://homemart.com",
-    title: "ホームマート - センチュリー21加盟店",
-    description: "奈良県北葛城郡の不動産会社ホームマート",
-    siteName: "ホームマート"
-  }
-};
+  title: 'センチュリー21 ホームマート',
+  description: '奈良県・南大阪の不動産・リフォーム総合サービス',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={inter.className}>
         <QueryProvider>
           <AuthProvider>
-            <Header />
-            <Breadcrumb />
-            <main>
-              {children}
-            </main>
-            <Footer />
-            <PWAInstallPrompt />
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </AuthProvider>
         </QueryProvider>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
       </body>
     </html>
-  );
+  )
 }

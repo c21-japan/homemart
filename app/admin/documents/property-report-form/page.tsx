@@ -1,147 +1,243 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
+
+// フォームデータの型定義
+interface FormData {
+  // 基本情報
+  propertyName: string
+  sellerName: string
+  phoneNumber: string
+  usage: string
+  
+  // 物件状況
+  leak: string
+  leakDetail: string
+  termite: string
+  pipe: string
+  pipeDetail: string
+  fire: string
+  
+  // 付帯設備
+  waterHeater: boolean
+  waterHeaterDefect: boolean
+  waterHeaterDefectDetail: string
+  kitchen: Record<string, boolean>
+  bathroom: Record<string, boolean>
+  toilet: Record<string, boolean>
+  aircon: Record<string, boolean>
+  floorHeating: boolean
+  storage: Record<string, boolean>
+  other: Record<string, boolean>
+  
+  // 周辺環境
+  noise: string
+  noiseDetail: string
+  incident: string
+  incidentDetail: string
+  construction: string
+  otherNotes: string
+}
+
+// 初期データ
+const initialFormData: FormData = {
+  propertyName: '',
+  sellerName: '',
+  phoneNumber: '',
+  usage: '',
+  leak: '',
+  leakDetail: '',
+  termite: '',
+  pipe: '',
+  pipeDetail: '',
+  fire: '',
+  waterHeater: false,
+  waterHeaterDefect: false,
+  waterHeaterDefectDetail: '',
+  kitchen: {
+    sink: false,
+    gasStove: false,
+    ihStove: false,
+    rangeHood: false,
+    dishwasher: false,
+    waterFilter: false
+  },
+  bathroom: {
+    bathtub: false,
+    shower: false,
+    reheating: false,
+    bathDryer: false
+  },
+  toilet: {
+    toilet: false,
+    washlet: false
+  },
+  aircon: {
+    living: false,
+    bedroom: false,
+    other: false
+  },
+  floorHeating: false,
+  storage: {
+    closet: false,
+    shoeBox: false,
+    screenDoor: false,
+    fusuma: false
+  },
+  other: {
+    intercom: false,
+    tvAntenna: false,
+    fireAlarm: false
+  },
+  noise: '',
+  noiseDetail: '',
+  incident: '',
+  incidentDetail: '',
+  construction: '',
+  otherNotes: ''
+}
 
 export default function PropertyReportFormPage() {
   const [currentSection, setCurrentSection] = useState(1)
-  const [formData, setFormData] = useState<Record<string, any>>({
-    // 基本情報
-    propertyName: '',
-    sellerName: '',
-    phoneNumber: '',
-    usage: '',
-    
-    // 物件状況
-    leak: '',
-    leakDetail: '',
-    termite: '',
-    pipe: '',
-    pipeDetail: '',
-    fire: '',
-    
-    // 付帯設備
-    waterHeater: false,
-    waterHeaterDefect: false,
-    waterHeaterDefectDetail: '',
-    kitchen: {
-      sink: false,
-      gasStove: false,
-      ihStove: false,
-      rangeHood: false,
-      dishwasher: false,
-      waterFilter: false
-    },
-    bathroom: {
-      bathtub: false,
-      shower: false,
-      reheating: false,
-      bathDryer: false
-    },
-    toilet: {
-      toilet: false,
-      washlet: false
-    },
-    
-    // その他設備
-    aircon: {
-      living: false,
-      bedroom: false,
-      other: false
-    },
-    floorHeating: false,
-    storage: {
-      closet: false,
-      shoeBox: false,
-      screenDoor: false,
-      fusuma: false
-    },
-    other: {
-      intercom: false,
-      tvAntenna: false,
-      fireAlarm: false
-    },
-    
-    // 周辺環境
-    noise: '',
-    noiseDetail: '',
-    incident: '',
-    incidentDetail: '',
-    construction: '',
-    otherNotes: ''
-  })
+  const [formData, setFormData] = useState<FormData>(initialFormData)
 
   const totalSections = 6
 
-  const updateProgress = () => {
-    return (currentSection / totalSections) * 100
-  }
+  // メモ化された計算値
+  const progress = useMemo(() => (currentSection / totalSections) * 100, [currentSection])
+  
+  const isLastSection = useMemo(() => currentSection === totalSections, [currentSection])
+  const isFirstSection = useMemo(() => currentSection === 1, [currentSection])
 
-  const handleInputChange = (field: string, value: any) => {
+  // 最適化されたハンドラー
+  const handleInputChange = useCallback((field: keyof FormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }, [])
+
+  const handleNestedChange = useCallback((parent: keyof FormData, field: string, value: boolean) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [parent]: {
+        ...(prev[parent] as Record<string, boolean>),
+        [field]: value,
+      },
     }))
-  }
+  }, [])
 
-  const handleNestedChange = (parent: string, field: string, value: any) => {
-    setFormData(prev => {
-      const key = parent as keyof typeof prev;
-      const parentObj = (prev[key] ?? {}) as Record<string, any>;
-
-      return {
-        ...prev,
-        [parent]: {
-          ...parentObj,
-          [field]: value,
-        },
-      };
-    });
-  }
-
-  const validateSection = (sectionNumber: number) => {
+  const validateSection = useCallback((sectionNumber: number) => {
     switch (sectionNumber) {
       case 1:
-        if (!formData.propertyName || !formData.sellerName || !formData.phoneNumber || !formData.usage) {
-          alert('必須項目を入力してください')
-          return false
-        }
-        break
+        return formData.propertyName && formData.sellerName && formData.phoneNumber && formData.usage
       case 2:
-        if (!formData.leak || !formData.termite || !formData.pipe || !formData.fire) {
-          alert('必須項目を選択してください')
-          return false
-        }
-        break
+        return formData.leak && formData.termite && formData.pipe && formData.fire
+      default:
+        return true
     }
-    return true
-  }
+  }, [formData])
 
-  const nextSection = () => {
-    if (validateSection(currentSection)) {
-      if (currentSection < totalSections) {
-        setCurrentSection(currentSection + 1)
-        window.scrollTo(0, 0)
-      }
+  const nextSection = useCallback(() => {
+    if (validateSection(currentSection) && currentSection < totalSections) {
+      setCurrentSection(currentSection + 1)
+      window.scrollTo(0, 0)
+    } else if (!validateSection(currentSection)) {
+      alert('必須項目を入力してください')
     }
-  }
+  }, [currentSection, validateSection])
 
-  const prevSection = () => {
+  const prevSection = useCallback(() => {
     if (currentSection > 1) {
       setCurrentSection(currentSection - 1)
       window.scrollTo(0, 0)
     }
-  }
+  }, [currentSection])
 
-  const submitForm = () => {
-    // ここでフォームデータを送信
+  const submitForm = useCallback(() => {
     console.log('送信データ:', formData)
     alert('送信完了しました')
-    // 実際の実装では、APIエンドポイントにPOSTリクエストを送信
+  }, [formData])
+
+  // 共通のボタンスタイル
+  const buttonStyles = {
+    primary: "bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors",
+    secondary: "bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors",
+    success: "bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors"
   }
 
+  // 共通のセクションヘッダー
+  const SectionHeader = ({ number, title, color }: { number: number; title: string; color: string }) => (
+    <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+      <span className={`${color} text-sm font-medium px-3 py-1 rounded-full mr-3`}>{number}</span>
+      {title}
+    </h2>
+  )
+
+  // 共通の入力フィールド
+  const InputField = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label}{required && <span className="text-red-500">*</span>}
+      </label>
+      {children}
+    </div>
+  )
+
+  // 共通のラジオボタングループ
+  const RadioGroup = ({ 
+    name, 
+    value, 
+    onChange, 
+    options 
+  }: { 
+    name: string; 
+    value: string; 
+    onChange: (value: string) => void; 
+    options: { value: string; label: string }[] 
+  }) => (
+    <div className="space-y-3">
+      {options.map((option) => (
+        <label key={option.value} className="flex items-center">
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={(e) => onChange(e.target.value)}
+            className="mr-3"
+          />
+          {option.label}
+        </label>
+      ))}
+    </div>
+  )
+
+  // 共通のチェックボックスグループ
+  const CheckboxGroup = ({ 
+    items, 
+    values, 
+    onChange 
+  }: { 
+    items: { key: string; label: string }[]; 
+    values: Record<string, boolean>; 
+    onChange: (key: string, value: boolean) => void 
+  }) => (
+    <div className="grid grid-cols-2 gap-3">
+      {items.map((item) => (
+        <label key={item.key} className="flex items-center">
+          <input
+            type="checkbox"
+            checked={values[item.key] || false}
+            onChange={(e) => onChange(item.key, e.target.checked)}
+            className="mr-2"
+          />
+          {item.label}
+        </label>
+      ))}
+    </div>
+  )
+
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">物件状況等報告書・付帯設備表</h1>
         <p className="text-gray-600">センチュリー21 ホームマート</p>
@@ -151,20 +247,17 @@ export default function PropertyReportFormPage() {
       <div className="bg-gray-200 rounded-full h-4 mb-6">
         <div 
           className="bg-blue-600 h-4 rounded-full transition-all duration-300"
-          style={{ width: `${updateProgress()}%` }}
-        ></div>
+          style={{ width: `${progress}%` }}
+        />
       </div>
       <div className="text-center text-sm text-gray-600 mb-6">
-        {Math.round(updateProgress())}% 完了
+        {Math.round(progress)}% 完了
       </div>
 
       {/* セクション1: 基本情報 */}
       {currentSection === 1 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">1</span>
-            📋 基本情報
-          </h2>
+          <SectionHeader number={1} title="📋 基本情報" color="bg-blue-100 text-blue-800" />
           
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
             <div className="flex">
@@ -184,10 +277,7 @@ export default function PropertyReportFormPage() {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                物件名（マンション名・部屋番号）<span className="text-red-500">*</span>
-              </label>
+            <InputField label="物件名（マンション名・部屋番号）" required>
               <input
                 type="text"
                 value={formData.propertyName}
@@ -195,12 +285,9 @@ export default function PropertyReportFormPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="例：〇〇マンション 301号室"
               />
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                売主様のお名前<span className="text-red-500">*</span>
-              </label>
+            <InputField label="売主様のお名前" required>
               <input
                 type="text"
                 value={formData.sellerName}
@@ -208,12 +295,9 @@ export default function PropertyReportFormPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="例：山田 太郎"
               />
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ご連絡先電話番号<span className="text-red-500">*</span>
-              </label>
+            <InputField label="ご連絡先電話番号" required>
               <input
                 type="tel"
                 value={formData.phoneNumber}
@@ -221,39 +305,24 @@ export default function PropertyReportFormPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="例：090-1234-5678"
               />
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                現在の使用状況<span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="現在の使用状況" required>
+              <RadioGroup
+                name="usage"
+                value={formData.usage}
+                onChange={(value) => handleInputChange('usage', value)}
+                options={[
                   { value: 'self', label: '自己使用中' },
                   { value: 'vacant', label: '空き家' },
                   { value: 'rental', label: '賃貸中' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="usage"
-                      value={option.value}
-                      checked={formData.usage === option.value}
-                      onChange={(e) => handleInputChange('usage', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
+                ]}
+              />
+            </InputField>
           </div>
 
           <div className="flex justify-end mt-8">
-            <button
-              onClick={nextSection}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={nextSection} className={buttonStyles.primary}>
               次へ進む →
             </button>
           </div>
@@ -263,40 +332,22 @@ export default function PropertyReportFormPage() {
       {/* セクション2: 物件の状況 */}
       {currentSection === 2 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full mr-3">2</span>
-            🏠 物件の状況確認
-          </h2>
+          <SectionHeader number={2} title="🏠 物件の状況確認" color="bg-green-100 text-green-800" />
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                雨漏り<span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="雨漏り" required>
+              <RadioGroup
+                name="leak"
+                value={formData.leak}
+                onChange={(value) => handleInputChange('leak', value)}
+                options={[
                   { value: 'no', label: '発見していない' },
                   { value: 'past', label: '過去にあった（修繕済）' },
                   { value: 'current', label: '現在ある' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="leak"
-                      value={option.value}
-                      checked={formData.leak === option.value}
-                      onChange={(e) => handleInputChange('leak', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+              />
               {(formData.leak === 'past' || formData.leak === 'current') && (
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    詳細（場所・状況など）
-                  </label>
                   <textarea
                     value={formData.leakDetail}
                     onChange={(e) => handleInputChange('leakDetail', e.target.value)}
@@ -306,60 +357,33 @@ export default function PropertyReportFormPage() {
                   />
                 </div>
               )}
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                シロアリの害<span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="シロアリの害" required>
+              <RadioGroup
+                name="termite"
+                value={formData.termite}
+                onChange={(value) => handleInputChange('termite', value)}
+                options={[
                   { value: 'no', label: '発見していない' },
                   { value: 'past', label: '過去にあった（駆除済）' },
                   { value: 'current', label: '現在ある' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="termite"
-                      value={option.value}
-                      checked={formData.termite === option.value}
-                      onChange={(e) => handleInputChange('termite', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
+                ]}
+              />
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                給排水管の故障<span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="給排水管の故障" required>
+              <RadioGroup
+                name="pipe"
+                value={formData.pipe}
+                onChange={(value) => handleInputChange('pipe', value)}
+                options={[
                   { value: 'no', label: '発見していない' },
                   { value: 'yes', label: '現在ある' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="pipe"
-                      value={option.value}
-                      checked={formData.pipe === option.value}
-                      onChange={(e) => handleInputChange('pipe', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+              />
               {formData.pipe === 'yes' && (
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    詳細（場所・症状など）
-                  </label>
                   <textarea
                     value={formData.pipeDetail}
                     onChange={(e) => handleInputChange('pipeDetail', e.target.value)}
@@ -369,57 +393,36 @@ export default function PropertyReportFormPage() {
                   />
                 </div>
               )}
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                過去の火災・ボヤ<span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="過去の火災・ボヤ" required>
+              <RadioGroup
+                name="fire"
+                value={formData.fire}
+                onChange={(value) => handleInputChange('fire', value)}
+                options={[
                   { value: 'no', label: '無い' },
                   { value: 'yes', label: '有る' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="fire"
-                      value={option.value}
-                      checked={formData.fire === option.value}
-                      onChange={(e) => handleInputChange('fire', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
+                ]}
+              />
+            </InputField>
           </div>
 
           <div className="flex justify-between mt-8">
-            <button
-              onClick={prevSection}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors"
-            >
+            <button onClick={prevSection} className={buttonStyles.secondary}>
               ← 戻る
             </button>
-            <button
-              onClick={nextSection}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={nextSection} className={buttonStyles.primary}>
               次へ進む →
             </button>
           </div>
         </div>
       )}
 
-      {/* セクション3: 付帯設備（キッチン・水回り） */}
+      {/* セクション3: 付帯設備 */}
       {currentSection === 3 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full mr-3">3</span>
-            🚿 キッチン・水回り設備
-          </h2>
+          <SectionHeader number={3} title="🚿 キッチン・水回り設備" color="bg-purple-100 text-purple-800" />
 
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -447,96 +450,64 @@ export default function PropertyReportFormPage() {
                 </div>
               </div>
               {formData.waterHeaterDefect && (
-                <div>
-                  <textarea
-                    value={formData.waterHeaterDefectDetail}
-                    onChange={(e) => handleInputChange('waterHeaterDefectDetail', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
-                    placeholder="故障・不具合の詳細をご記入ください"
-                  />
-                </div>
+                <textarea
+                  value={formData.waterHeaterDefectDetail}
+                  onChange={(e) => handleInputChange('waterHeaterDefectDetail', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="故障・不具合の詳細をご記入ください"
+                />
               )}
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">キッチン設備</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'sink', label: '流し台' },
                   { key: 'gasStove', label: 'ガスコンロ' },
                   { key: 'ihStove', label: 'IHコンロ' },
                   { key: 'rangeHood', label: 'レンジフード' },
                   { key: 'dishwasher', label: '食器洗い機' },
                   { key: 'waterFilter', label: '浄水器' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.kitchen[item.key as keyof typeof formData.kitchen]}
-                      onChange={(e) => handleNestedChange('kitchen', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                values={formData.kitchen}
+                onChange={(key, value) => handleNestedChange('kitchen', key, value)}
+              />
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">浴室設備</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'bathtub', label: '浴槽' },
                   { key: 'shower', label: 'シャワー' },
                   { key: 'reheating', label: '追い焚き機能' },
                   { key: 'bathDryer', label: '浴室乾燥機' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.bathroom[item.key as keyof typeof formData.bathroom]}
-                      onChange={(e) => handleNestedChange('bathroom', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                values={formData.bathroom}
+                onChange={(key, value) => handleNestedChange('bathroom', key, value)}
+              />
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">トイレ設備</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'toilet', label: '便器' },
                   { key: 'washlet', label: '温水洗浄便座' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.toilet[item.key as keyof typeof formData.toilet]}
-                      onChange={(e) => handleNestedChange('toilet', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                values={formData.toilet}
+                onChange={(key, value) => handleNestedChange('toilet', key, value)}
+              />
             </div>
           </div>
 
           <div className="flex justify-between mt-8">
-            <button
-              onClick={prevSection}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors"
-            >
+            <button onClick={prevSection} className={buttonStyles.secondary}>
               ← 戻る
             </button>
-            <button
-              onClick={nextSection}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={nextSection} className={buttonStyles.primary}>
               次へ進む →
             </button>
           </div>
@@ -546,110 +517,74 @@ export default function PropertyReportFormPage() {
       {/* セクション4: その他設備 */}
       {currentSection === 4 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full mr-3">4</span>
-            🏠 その他の設備
-          </h2>
+          <SectionHeader number={4} title="🏠 その他の設備" color="bg-indigo-100 text-indigo-800" />
 
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">空調設備</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'living', label: 'エアコン（リビング）' },
                   { key: 'bedroom', label: 'エアコン（寝室）' },
                   { key: 'other', label: 'エアコン（その他）' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.aircon[item.key as keyof typeof formData.aircon]}
-                      onChange={(e) => handleNestedChange('aircon', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.floorHeating}
-                    onChange={(e) => handleInputChange('floorHeating', e.target.checked)}
-                    className="mr-2"
-                  />
-                  床暖房
-                </label>
-              </div>
+                ]}
+                values={formData.aircon}
+                onChange={(key, value) => handleNestedChange('aircon', key, value)}
+              />
+              <label className="flex items-center mt-3">
+                <input
+                  type="checkbox"
+                  checked={formData.floorHeating}
+                  onChange={(e) => handleInputChange('floorHeating', e.target.checked)}
+                  className="mr-2"
+                />
+                床暖房
+              </label>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">収納・建具</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'closet', label: 'クローゼット' },
                   { key: 'shoeBox', label: '下駄箱' },
                   { key: 'screenDoor', label: '網戸' },
                   { key: 'fusuma', label: 'ふすま' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.storage[item.key as keyof typeof formData.storage]}
-                      onChange={(e) => handleNestedChange('storage', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                values={formData.storage}
+                onChange={(key, value) => handleNestedChange('storage', key, value)}
+              />
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">その他</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
+              <CheckboxGroup
+                items={[
                   { key: 'intercom', label: 'インターホン' },
                   { key: 'tvAntenna', label: 'TV共視聴設備' },
                   { key: 'fireAlarm', label: '火災警報器' }
-                ].map((item) => (
-                  <label key={item.key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.other[item.key as keyof typeof formData.other]}
-                      onChange={(e) => handleNestedChange('other', item.key, e.target.checked)}
-                      className="mr-2"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                values={formData.other}
+                onChange={(key, value) => handleNestedChange('other', key, value)}
+              />
             </div>
           </div>
 
           <div className="flex justify-between mt-8">
-            <button
-              onClick={prevSection}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors"
-            >
+            <button onClick={prevSection} className={buttonStyles.secondary}>
               ← 戻る
             </button>
-            <button
-              onClick={nextSection}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={nextSection} className={buttonStyles.primary}>
               次へ進む →
             </button>
           </div>
         </div>
       )}
 
-      {/* セクション5: 心理的瑕疵・周辺環境 */}
+      {/* セクション5: 周辺環境 */}
       {currentSection === 5 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">5</span>
-            🏘️ 周辺環境・その他の告知事項
-          </h2>
+          <SectionHeader number={5} title="🏘️ 周辺環境・その他の告知事項" color="bg-orange-100 text-orange-800" />
 
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
             <div className="flex">
@@ -669,28 +604,16 @@ export default function PropertyReportFormPage() {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                騒音・振動・臭気等
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="騒音・振動・臭気等">
+              <RadioGroup
+                name="noise"
+                value={formData.noise}
+                onChange={(value) => handleInputChange('noise', value)}
+                options={[
                   { value: 'no', label: '特に無い' },
                   { value: 'yes', label: '有る' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="noise"
-                      value={option.value}
-                      checked={formData.noise === option.value}
-                      onChange={(e) => handleInputChange('noise', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+              />
               {formData.noise === 'yes' && (
                 <div className="mt-4">
                   <textarea
@@ -702,30 +625,18 @@ export default function PropertyReportFormPage() {
                   />
                 </div>
               )}
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                過去の事件・事故等
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="過去の事件・事故等">
+              <RadioGroup
+                name="incident"
+                value={formData.incident}
+                onChange={(value) => handleInputChange('incident', value)}
+                options={[
                   { value: 'no', label: '無い' },
                   { value: 'yes', label: '有る' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="incident"
-                      value={option.value}
-                      checked={formData.incident === option.value}
-                      onChange={(e) => handleInputChange('incident', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+              />
               {formData.incident === 'yes' && (
                 <div className="mt-4">
                   <textarea
@@ -740,36 +651,21 @@ export default function PropertyReportFormPage() {
               <p className="text-xs text-gray-500 mt-2">
                 ※物件内や近隣で起きた事件・事故で、買主様にお伝えすべきと思われる事項
               </p>
-            </div>
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                近隣の建築計画
-              </label>
-              <div className="space-y-3">
-                {[
+            <InputField label="近隣の建築計画">
+              <RadioGroup
+                name="construction"
+                value={formData.construction}
+                onChange={(value) => handleInputChange('construction', value)}
+                options={[
                   { value: 'no', label: '知らない' },
                   { value: 'yes', label: '知っている' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="construction"
-                      value={option.value}
-                      checked={formData.construction === option.value}
-                      onChange={(e) => handleInputChange('construction', e.target.value)}
-                      className="mr-3"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
+                ]}
+              />
+            </InputField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                その他買主様にお伝えすべき事項
-              </label>
+            <InputField label="その他買主様にお伝えすべき事項">
               <textarea
                 value={formData.otherNotes}
                 onChange={(e) => handleInputChange('otherNotes', e.target.value)}
@@ -777,20 +673,14 @@ export default function PropertyReportFormPage() {
                 rows={4}
                 placeholder="その他、買主様にお伝えしておきたいことがあればご記入ください"
               />
-            </div>
+            </InputField>
           </div>
 
           <div className="flex justify-between mt-8">
-            <button
-              onClick={prevSection}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors"
-            >
+            <button onClick={prevSection} className={buttonStyles.secondary}>
               ← 戻る
             </button>
-            <button
-              onClick={nextSection}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={nextSection} className={buttonStyles.primary}>
               次へ進む →
             </button>
           </div>
@@ -800,10 +690,7 @@ export default function PropertyReportFormPage() {
       {/* セクション6: 確認画面 */}
       {currentSection === 6 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full mr-3">6</span>
-            ✅ 入力内容の確認
-          </h2>
+          <SectionHeader number={6} title="✅ 入力内容の確認" color="bg-green-100 text-green-800" />
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
             <div className="flex">
@@ -825,65 +712,45 @@ export default function PropertyReportFormPage() {
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-2">基本情報</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">物件名:</span> {formData.propertyName || '未入力'}
-                </div>
-                <div>
-                  <span className="font-medium">売主様:</span> {formData.sellerName || '未入力'}
-                </div>
-                <div>
-                  <span className="font-medium">電話番号:</span> {formData.phoneNumber || '未入力'}
-                </div>
-                <div>
-                  <span className="font-medium">使用状況:</span> {
-                    formData.usage === 'self' ? '自己使用中' :
-                    formData.usage === 'vacant' ? '空き家' :
-                    formData.usage === 'rental' ? '賃貸中' : '未選択'
-                  }
-                </div>
+                <div><span className="font-medium">物件名:</span> {formData.propertyName || '未入力'}</div>
+                <div><span className="font-medium">売主様:</span> {formData.sellerName || '未入力'}</div>
+                <div><span className="font-medium">電話番号:</span> {formData.phoneNumber || '未入力'}</div>
+                <div><span className="font-medium">使用状況:</span> {
+                  formData.usage === 'self' ? '自己使用中' :
+                  formData.usage === 'vacant' ? '空き家' :
+                  formData.usage === 'rental' ? '賃貸中' : '未選択'
+                }</div>
               </div>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-2">物件状況</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">雨漏り:</span> {
-                    formData.leak === 'no' ? '発見していない' :
-                    formData.leak === 'past' ? '過去にあった（修繕済）' :
-                    formData.leak === 'current' ? '現在ある' : '未選択'
-                  }
-                </div>
-                <div>
-                  <span className="font-medium">シロアリ:</span> {
-                    formData.termite === 'no' ? '発見していない' :
-                    formData.termite === 'past' ? '過去にあった（駆除済）' :
-                    formData.termite === 'current' ? '現在ある' : '未選択'
-                  }
-                </div>
-                <div>
-                  <span className="font-medium">給排水管:</span> {
-                    formData.pipe === 'no' ? '発見していない' :
-                    formData.pipe === 'yes' ? '現在ある' : '未選択'
-                  }
-                </div>
-                <div>
-                  <span className="font-medium">火災・ボヤ:</span> {
-                    formData.fire === 'no' ? '無い' :
-                    formData.fire === 'yes' ? '有る' : '未選択'
-                  }
-                </div>
+                <div><span className="font-medium">雨漏り:</span> {
+                  formData.leak === 'no' ? '発見していない' :
+                  formData.leak === 'past' ? '過去にあった（修繕済）' :
+                  formData.leak === 'current' ? '現在ある' : '未選択'
+                }</div>
+                <div><span className="font-medium">シロアリ:</span> {
+                  formData.termite === 'no' ? '発見していない' :
+                  formData.termite === 'past' ? '過去にあった（駆除済）' :
+                  formData.termite === 'current' ? '現在ある' : '未選択'
+                }</div>
+                <div><span className="font-medium">給排水管:</span> {
+                  formData.pipe === 'no' ? '発見していない' :
+                  formData.pipe === 'yes' ? '現在ある' : '未選択'
+                }</div>
+                <div><span className="font-medium">火災・ボヤ:</span> {
+                  formData.fire === 'no' ? '無い' :
+                  formData.fire === 'yes' ? '有る' : '未選択'
+                }</div>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
             <label className="flex items-center">
-              <input
-                type="checkbox"
-                id="agree"
-                className="mr-3"
-              />
+              <input type="checkbox" id="agree" className="mr-3" />
               <span className="text-sm text-gray-700">
                 上記の内容に間違いがないことを確認しました
               </span>
@@ -891,16 +758,10 @@ export default function PropertyReportFormPage() {
           </div>
 
           <div className="flex justify-between">
-            <button
-              onClick={prevSection}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors"
-            >
+            <button onClick={prevSection} className={buttonStyles.secondary}>
               ← 修正する
             </button>
-            <button
-              onClick={submitForm}
-              className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors"
-            >
+            <button onClick={submitForm} className={buttonStyles.success}>
               送信する
             </button>
           </div>
