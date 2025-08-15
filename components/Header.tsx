@@ -1,41 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export default function Header() {
-  const [user, setUser] = useState<any>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  useEffect(() => {
-    checkUser()
-    
-    // 認証状態の変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const checkUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    } catch (error) {
-      console.error('ユーザー認証チェックエラー:', error)
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut()
-      setUser(null)
-    } catch (error) {
-      console.error('ログアウトエラー:', error)
-    }
-  }
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -77,29 +47,24 @@ export default function Header() {
 
           {/* ユーザーメニュー */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
+            <SignedIn>
               <div className="flex items-center space-x-4">
                 <Link
-                  href="/member"
+                  href="/admin"
                   className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  マイページ
+                  管理画面
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
-                >
-                  ログアウト
-                </button>
+                <UserButton />
               </div>
-            ) : (
+            </SignedIn>
+            <SignedOut>
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/member/login"
-                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
-                >
-                  会員ログイン
-                </Link>
+                <SignInButton mode="modal">
+                  <button className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
+                    社員ログイン
+                  </button>
+                </SignInButton>
                 <Link
                   href="/contact"
                   className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
@@ -107,7 +72,7 @@ export default function Header() {
                   無料相談
                 </Link>
               </div>
-            )}
+            </SignedOut>
           </div>
 
           {/* モバイルメニューボタン */}
@@ -176,43 +141,36 @@ export default function Header() {
               
               {/* モバイル用ユーザーメニュー */}
               <div className="border-t border-gray-200 pt-4 mt-4">
-                {user ? (
+                <SignedIn>
                   <div className="space-y-1">
                     <Link
-                      href="/member"
+                      href="/admin"
                       className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      マイページ
+                      管理画面
                     </Link>
-                    <button
-                      onClick={() => {
-                        handleLogout()
-                        setIsMenuOpen(false)
-                      }}
-                      className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
-                    >
-                      ログアウト
-                    </button>
+                    <div className="px-3 py-2">
+                      <UserButton />
+                    </div>
                   </div>
-                ) : (
+                </SignedIn>
+                <SignedOut>
                   <div className="space-y-1">
-                    <Link
-                      href="/member/login"
-                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      会員ログイン
-                    </Link>
+                    <SignInButton mode="modal">
+                      <button className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors">
+                        社員ログイン
+                      </button>
+                    </SignInButton>
                     <Link
                       href="/contact"
-                      className="block px-3 py-2 text-base font-medium bg-orange-600 text-white hover:bg-orange-700 rounded-md transition-colors"
+                      className="block w-full px-3 py-2 text-base font-medium bg-orange-600 text-white hover:bg-orange-700 rounded-md transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       無料相談
                     </Link>
                   </div>
-                )}
+                </SignedOut>
               </div>
             </div>
           </div>
