@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 interface PropertyCardProps {
@@ -22,6 +23,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
   const [isFavorite, setIsFavorite] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const router = useRouter()
 
   useEffect(() => {
     checkUser()
@@ -59,7 +61,10 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
     }
   }
 
-  const toggleFavorite = async () => {
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
     if (!user) {
       // 未ログインの場合はログインページにリダイレクト
       window.location.href = '/member/login'
@@ -99,8 +104,21 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
     }
   }
 
+  const handleCardClick = () => {
+    router.push(`/properties/${property.id}`)
+  }
+
+  const handleDetailClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.push(`/properties/${property.id}`)
+  }
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div 
+      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="relative">
         {property.image_url ? (
           <div className="relative w-full h-48">
@@ -140,7 +158,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
           <button
             onClick={toggleFavorite}
             disabled={isLoading}
-            className={`absolute top-3 right-3 p-2 rounded-full shadow-md transition-all ${
+            className={`absolute top-3 right-3 p-2 rounded-full shadow-md transition-all z-10 ${
               isFavorite
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-white text-gray-600 hover:bg-gray-50'
@@ -159,7 +177,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
           </button>
         )}
 
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 z-10">
           <span className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
             {property.property_type}
           </span>
@@ -184,12 +202,12 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
             {new Date(property.created_at).toLocaleDateString('ja-JP')}
           </span>
           
-          <Link
-            href={`/properties/${property.id}`}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
+          <button
+            onClick={handleDetailClick}
+            className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors z-10"
           >
             詳細を見る
-          </Link>
+          </button>
         </div>
       </div>
     </div>
