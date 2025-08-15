@@ -1,203 +1,258 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { UserRole, PERMISSIONS, hasPermission } from '@/lib/auth/permissions'
+import { useUser } from '@clerk/nextjs'
 
 export default function NewUserPage() {
-  const router = useRouter();
+  const { user: currentUser } = useUser()
+  const router = useRouter()
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
-    phone: '',
-    role: 'staff',
+    firstName: '',
+    lastName: '',
+    role: UserRole.STAFF,
     department: '',
-    position: '',
-    startDate: '',
-    status: 'active'
-  });
-  const [loading, setLoading] = useState(false);
+    position: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  // 権限チェック
+  if (!currentUser || !hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManageUsers')) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">アクセス拒否</h1>
+          <p className="text-gray-600 mb-4">ユーザー管理の権限がありません。</p>
+          <button
+            onClick={() => router.back()}
+            className="text-orange-600 hover:text-orange-700 font-medium"
+          >
+            戻る
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      // ここでClerkのユーザー作成APIを呼び出す
+      // 実際の実装では、Clerkの管理APIを使用
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setSuccess('ユーザーが正常に作成されました')
+        setFormData({
+          email: '',
+          firstName: '',
+          lastName: '',
+          role: UserRole.STAFF,
+          department: '',
+          position: ''
+        })
+        setTimeout(() => {
+          router.push('/admin/users')
+        }, 2000)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || 'ユーザー作成に失敗しました')
+      }
+    } catch (error) {
+      setError('ユーザー作成中にエラーが発生しました')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      // TODO: 実際のAPIエンドポイントに置き換え
-      console.log('ユーザー追加データ:', formData);
-      
-      // 成功時の処理
-      alert('ユーザーが正常に追加されました');
-      router.push('/admin/users');
-    } catch (error) {
-      console.error('ユーザー追加エラー:', error);
-      alert('ユーザー追加中にエラーが発生しました');
-    } finally {
-      setLoading(false);
-    }
-  };
+    }))
+  }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">新規ユーザー追加</h1>
-          <Link
-            href="/admin/users"
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ← ユーザー一覧に戻る
-          </Link>
-        </div>
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">新規ユーザー登録</h1>
+        <p className="mt-2 text-gray-600">
+          新しい社員アカウントを作成し、適切な権限を設定します
+        </p>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">ユーザー情報</h2>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-800">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-800">{success}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                お名前 *
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                名前
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                name="firstName"
+                id="firstName"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="お名前を入力"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder="太郎"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                メールアドレス *
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                姓
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                id="lastName"
+                required
+                value={formData.lastName}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder="田中"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                メールアドレス
               </label>
               <input
                 type="email"
                 name="email"
+                id="email"
+                required
                 value={formData.email}
                 onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="メールアドレスを入力"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder="tanaka@century21.group"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                電話番号
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="電話番号を入力"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                役割 *
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                権限レベル
               </label>
               <select
                 name="role"
+                id="role"
+                required
                 value={formData.role}
                 onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
               >
-                <option value="admin">管理者</option>
-                <option value="staff">スタッフ</option>
-                <option value="parttime">アルバイト</option>
+                <option value={UserRole.STAFF}>社員</option>
+                <option value={UserRole.ADMIN}>管理者</option>
+                {hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManagePermissions') && (
+                  <option value={UserRole.OWNER}>オーナー</option>
+                )}
               </select>
+              <p className="mt-1 text-sm text-gray-500">
+                {PERMISSIONS[formData.role]?.description}
+              </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="department" className="block text-sm font-medium text-gray-700">
                 部署
               </label>
               <input
                 type="text"
                 name="department"
+                id="department"
                 value={formData.department}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="部署名を入力"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder="営業部"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="position" className="block text-sm font-medium text-gray-700">
                 役職
               </label>
               <input
                 type="text"
                 name="position"
+                id="position"
                 value={formData.position}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="役職を入力"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                placeholder="主任"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                入社日
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ステータス
-              </label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="active">アクティブ</option>
-                <option value="inactive">非アクティブ</option>
-                <option value="suspended">一時停止</option>
-              </select>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4">
-            <Link
-              href="/admin/users"
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               キャンセル
-            </Link>
+            </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? '追加中...' : 'ユーザーを追加'}
+              {loading ? '作成中...' : 'ユーザー作成'}
             </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -44,150 +44,215 @@ interface WorkerPerformance {
 }
 
 export default function ReformWorkersPage() {
-  const [workers, setWorkers] = useState<Worker[]>([
-    {
-      id: 'W001',
-      name: '田中大工',
-      specialty: '内装工事',
-      hourlyRate: 2500,
-      currentProjects: ['P001', 'P003'],
-      completedProjects: 45,
-      totalEarnings: 8500000,
-      averageCompletionTime: 0.85,
-      qualityRating: 4.8,
-      incentiveEarnings: 1200000,
-      rank: 1
-    },
-    {
-      id: 'W002',
-      name: '佐藤電気',
-      specialty: '電気工事',
-      hourlyRate: 2800,
-      currentProjects: ['P002'],
-      completedProjects: 38,
-      totalEarnings: 7200000,
-      averageCompletionTime: 0.92,
-      qualityRating: 4.6,
-      incentiveEarnings: 850000,
-      rank: 2
-    },
-    {
-      id: 'W003',
-      name: '鈴木配管',
-      specialty: '配管工事',
-      hourlyRate: 2600,
-      currentProjects: ['P001', 'P004'],
-      completedProjects: 42,
-      totalEarnings: 7800000,
-      averageCompletionTime: 0.88,
-      qualityRating: 4.7,
-      incentiveEarnings: 950000,
-      rank: 3
-    },
-    {
-      id: 'W004',
-      name: '高橋左官',
-      specialty: '左官工事',
-      hourlyRate: 2400,
-      currentProjects: ['P003'],
-      completedProjects: 35,
-      totalEarnings: 6500000,
-      averageCompletionTime: 0.95,
-      qualityRating: 4.5,
-      incentiveEarnings: 650000,
-      rank: 4
-    },
-    {
-      id: 'W005',
-      name: '渡辺塗装',
-      specialty: '塗装工事',
-      hourlyRate: 2200,
-      currentProjects: ['P002', 'P004'],
-      completedProjects: 32,
-      totalEarnings: 5800000,
-      averageCompletionTime: 0.98,
-      qualityRating: 4.4,
-      incentiveEarnings: 520000,
-      rank: 5
-    }
-  ])
+  const [workers, setWorkers] = useState<Worker[]>([])
+  const [projects, setProjects] = useState<ReformProject[]>([])
+  const [workerPerformance, setWorkerPerformance] = useState<WorkerPerformance[]>([])
+  const [selectedWorker, setSelectedWorker] = useState<string>('')
+  const [lastUpdated, setLastUpdated] = useState<string>('2024-08-15 08:00:00')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [projects, setProjects] = useState<ReformProject[]>([
-    {
-      id: 'P001',
-      name: '奈良県民家リフォーム',
-      clientName: '山田様',
-      startDate: '2024-08-01',
-      plannedEndDate: '2024-09-15',
-      actualEndDate: '2024-09-10',
-      budget: 2500000,
-      status: 'completed',
-      workers: ['W001', 'W003'],
-      location: '奈良県',
-      projectType: '住宅リフォーム'
-    },
-    {
-      id: 'P002',
-      name: '南大阪マンション改修',
-      clientName: '佐藤様',
-      startDate: '2024-08-10',
-      plannedEndDate: '2024-09-30',
-      status: 'in_progress',
-      workers: ['W002', 'W005'],
-      location: '南大阪',
-      projectType: 'マンション改修'
-    },
-    {
-      id: 'P003',
-      name: '京都古民家修復',
-      clientName: '田中様',
-      startDate: '2024-08-15',
-      plannedEndDate: '2024-10-15',
-      status: 'in_progress',
-      workers: ['W001', 'W004'],
-      location: '京都',
-      projectType: '古民家修復'
-    },
-    {
-      id: 'P004',
-      name: '神戸オフィス改装',
-      clientName: '株式会社ABC',
-      startDate: '2024-08-20',
-      plannedEndDate: '2024-10-20',
-      status: 'in_progress',
-      workers: ['W003', 'W005'],
-      location: '神戸',
-      projectType: 'オフィス改装'
-    }
-  ])
+  useEffect(() => {
+    try {
+      // 初期データの設定
+      const initialWorkers: Worker[] = [
+        {
+          id: 'W001',
+          name: '田中大工',
+          specialty: '内装工事',
+          hourlyRate: 2500,
+          currentProjects: ['P001', 'P003'],
+          completedProjects: 45,
+          totalEarnings: 8500000,
+          averageCompletionTime: 0.85,
+          qualityRating: 4.8,
+          incentiveEarnings: 1200000,
+          rank: 1
+        },
+        {
+          id: 'W002',
+          name: '佐藤電気',
+          specialty: '電気工事',
+          hourlyRate: 2800,
+          currentProjects: ['P002'],
+          completedProjects: 38,
+          totalEarnings: 7200000,
+          averageCompletionTime: 0.92,
+          qualityRating: 4.6,
+          incentiveEarnings: 850000,
+          rank: 2
+        },
+        {
+          id: 'W003',
+          name: '鈴木配管',
+          specialty: '配管工事',
+          hourlyRate: 2600,
+          currentProjects: ['P001', 'P004'],
+          completedProjects: 42,
+          totalEarnings: 7800000,
+          averageCompletionTime: 0.88,
+          qualityRating: 4.7,
+          incentiveEarnings: 950000,
+          rank: 3
+        },
+        {
+          id: 'W004',
+          name: '高橋左官',
+          specialty: '左官工事',
+          hourlyRate: 2400,
+          currentProjects: ['P003'],
+          completedProjects: 35,
+          totalEarnings: 6500000,
+          averageCompletionTime: 0.95,
+          qualityRating: 4.5,
+          incentiveEarnings: 650000,
+          rank: 4
+        },
+        {
+          id: 'W005',
+          name: '渡辺塗装',
+          specialty: '塗装工事',
+          hourlyRate: 2200,
+          currentProjects: ['P002', 'P004'],
+          completedProjects: 32,
+          totalEarnings: 5800000,
+          averageCompletionTime: 0.98,
+          qualityRating: 4.4,
+          incentiveEarnings: 520000,
+          rank: 5
+        }
+      ]
 
-  const [workerPerformance, setWorkerPerformance] = useState<WorkerPerformance[]>([
-    {
-      workerId: 'W001',
-      projectId: 'P001',
-      projectName: '奈良県民家リフォーム',
-      plannedDays: 45,
-      actualDays: 40,
-      daysSaved: 5,
-      incentiveEarned: 150000,
-      qualityScore: 4.9,
-      clientSatisfaction: 5.0
-    },
-    {
-      workerId: 'W002',
-      projectId: 'P002',
-      projectName: '南大阪マンション改修',
-      plannedDays: 50,
-      actualDays: 46,
-      daysSaved: 4,
-      incentiveEarned: 120000,
-      qualityScore: 4.7,
-      clientSatisfaction: 4.8
-    }
-  ])
+      const initialProjects: ReformProject[] = [
+        {
+          id: 'P001',
+          name: '奈良県民家リフォーム',
+          clientName: '山田様',
+          startDate: '2024-08-01',
+          plannedEndDate: '2024-09-15',
+          actualEndDate: '2024-09-10',
+          budget: 2500000,
+          status: 'completed',
+          workers: ['W001', 'W003'],
+          location: '奈良県',
+          projectType: '住宅リフォーム'
+        },
+        {
+          id: 'P002',
+          name: '南大阪マンション改修',
+          clientName: '佐藤様',
+          startDate: '2024-08-10',
+          plannedEndDate: '2024-09-30',
+          budget: 3000000,
+          status: 'in_progress',
+          workers: ['W002', 'W005'],
+          location: '南大阪',
+          projectType: 'マンション改修'
+        },
+        {
+          id: 'P003',
+          name: '京都古民家修復',
+          clientName: '田中様',
+          startDate: '2024-08-15',
+          plannedEndDate: '2024-10-15',
+          budget: 4000000,
+          status: 'in_progress',
+          workers: ['W001', 'W004'],
+          location: '京都',
+          projectType: '古民家修復'
+        },
+        {
+          id: 'P004',
+          name: '神戸オフィス改装',
+          clientName: '株式会社ABC',
+          startDate: '2024-08-20',
+          plannedEndDate: '2024-10-20',
+          budget: 3500000,
+          status: 'in_progress',
+          workers: ['W003', 'W005'],
+          location: '神戸',
+          projectType: 'オフィス改装'
+        }
+      ]
 
-  const [selectedWorker, setSelectedWorker] = useState<string>('W001')
-  const [lastUpdated, setLastUpdated] = useState<string>('2024-08-15 09:00:00')
+      const initialWorkerPerformance: WorkerPerformance[] = [
+        {
+          workerId: 'W001',
+          projectId: 'P001',
+          projectName: '奈良県民家リフォーム',
+          plannedDays: 45,
+          actualDays: 40,
+          daysSaved: 5,
+          incentiveEarned: 150000,
+          qualityScore: 4.9,
+          clientSatisfaction: 5.0
+        },
+        {
+          workerId: 'W002',
+          projectId: 'P002',
+          projectName: '南大阪マンション改修',
+          plannedDays: 50,
+          actualDays: 46,
+          daysSaved: 4,
+          incentiveEarned: 120000,
+          qualityScore: 4.7,
+          clientSatisfaction: 4.8
+        }
+      ]
+
+      setWorkers(initialWorkers)
+      setProjects(initialProjects)
+      setWorkerPerformance(initialWorkerPerformance)
+      setSelectedWorker(initialWorkers[0]?.id || '')
+      setIsLoading(false)
+    } catch (err) {
+      console.error('データ初期化エラー:', err)
+      setError('データの読み込み中にエラーが発生しました')
+      setIsLoading(false)
+    }
+  }, [])
+
+  // エラーが発生した場合の表示
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-red-800 mb-2">エラーが発生しました</h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            ページを再読み込み
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ローディング中の表示
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">データを読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // データが空の場合の表示
+  if (!workers.length || !projects.length) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-yellow-800 mb-2">データが見つかりません</h2>
+          <p className="text-yellow-600">職人またはプロジェクトのデータが設定されていません。</p>
+        </div>
+      </div>
+    )
+  }
 
   // 職人ランキング（インセンティブ獲得額順）
   const workerRanking = [...workers].sort((a, b) => b.incentiveEarnings - a.incentiveEarnings)
