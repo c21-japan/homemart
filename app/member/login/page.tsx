@@ -25,6 +25,11 @@ export default function MemberLogin() {
                 footerActionLink: 'text-orange-600 hover:text-orange-500'
               }
             }}
+            routing="path"
+            path="/member/login"
+            signUpUrl="/member/register"
+            afterSignInUrl="/admin"
+            redirectUrl="/admin"
           />
           
           <div className="mt-6">
