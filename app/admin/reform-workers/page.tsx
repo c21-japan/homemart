@@ -263,6 +263,24 @@ export default function ReformWorkersPage() {
     project.workers.includes(selectedWorker)
   )
 
+  // selectedWorkerDataが存在しない場合の処理
+  if (!selectedWorkerData) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-yellow-800 mb-2">職人データが見つかりません</h2>
+          <p className="text-yellow-600">選択された職人のデータが存在しません。</p>
+          <button
+            onClick={() => setSelectedWorker(workers[0]?.id || '')}
+            className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors mt-4"
+          >
+            最初の職人を選択
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800'

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
-import { UserRole, PERMISSIONS, hasPermission } from '@/lib/auth/permissions'
+import { UserRole, PERMISSIONS, hasPermission, OWNER_EMAILS, ADMIN_EMAILS } from '@/lib/auth/permissions'
 
 interface User {
   id: string
@@ -23,13 +23,28 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  // メールアドレスベースの権限チェック
+  const currentUserEmail = currentUser?.emailAddresses[0]?.emailAddress
+  let currentUserRole: UserRole = UserRole.STAFF
+  
+  if (currentUserEmail) {
+    if (OWNER_EMAILS.includes(currentUserEmail)) {
+      currentUserRole = UserRole.OWNER
+    } else if (ADMIN_EMAILS.includes(currentUserEmail)) {
+      currentUserRole = UserRole.ADMIN
+    }
+  }
+
   // 権限チェック
-  if (!currentUser || !hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManageUsers')) {
+  if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">アクセス拒否</h1>
           <p className="text-gray-600 mb-4">ユーザー管理の権限がありません。</p>
+          <div className="text-sm text-gray-500 mb-4">
+            メール: {currentUserEmail} | 権限: {currentUserRole}
+          </div>
           <Link
             href="/admin"
             className="text-orange-600 hover:text-orange-700 font-medium"
@@ -135,6 +150,9 @@ export default function UsersPage() {
             <p className="mt-2 text-gray-600">
               社員アカウントの管理と権限設定を行います
             </p>
+            <div className="text-sm text-gray-500 mt-1">
+              現在の権限: {currentUserRole} - {PERMISSIONS[currentUserRole]?.name}
+            </div>
           </div>
           <Link
             href="/admin/users/new"
@@ -217,12 +235,12 @@ export default function UsersPage() {
                     <select
                       value={user.role}
                       onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
-                      disabled={!hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManagePermissions')}
+                      disabled={!hasPermission(currentUserRole, 'canManagePermissions')}
                       className="text-sm border border-gray-300 rounded px-2 py-1 disabled:bg-gray-100"
                     >
                       <option value={UserRole.STAFF}>社員</option>
                       <option value={UserRole.ADMIN}>管理者</option>
-                      {hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManagePermissions') && (
+                      {hasPermission(currentUserRole, 'canManagePermissions') && (
                         <option value={UserRole.OWNER}>オーナー</option>
                       )}
                     </select>

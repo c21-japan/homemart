@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { UserRole, PERMISSIONS, hasPermission } from '@/lib/auth/permissions'
+import { UserRole, PERMISSIONS, hasPermission, OWNER_EMAILS, ADMIN_EMAILS } from '@/lib/auth/permissions'
 import { useUser } from '@clerk/nextjs'
 
 export default function NewUserPage() {
@@ -20,13 +20,28 @@ export default function NewUserPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  // メールアドレスベースの権限チェック
+  const currentUserEmail = currentUser?.emailAddresses[0]?.emailAddress
+  let currentUserRole: UserRole = UserRole.STAFF
+  
+  if (currentUserEmail) {
+    if (OWNER_EMAILS.includes(currentUserEmail)) {
+      currentUserRole = UserRole.OWNER
+    } else if (ADMIN_EMAILS.includes(currentUserEmail)) {
+      currentUserRole = UserRole.ADMIN
+    }
+  }
+
   // 権限チェック
-  if (!currentUser || !hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManageUsers')) {
+  if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">アクセス拒否</h1>
           <p className="text-gray-600 mb-4">ユーザー管理の権限がありません。</p>
+          <div className="text-sm text-gray-500 mb-4">
+            メール: {currentUserEmail} | 権限: {currentUserRole}
+          </div>
           <button
             onClick={() => router.back()}
             className="text-orange-600 hover:text-orange-700 font-medium"
@@ -94,6 +109,9 @@ export default function NewUserPage() {
         <p className="mt-2 text-gray-600">
           新しい社員アカウントを作成し、適切な権限を設定します
         </p>
+        <div className="text-sm text-gray-500 mt-1">
+          現在の権限: {currentUserRole} - {PERMISSIONS[currentUserRole]?.name}
+        </div>
       </div>
 
       <div className="bg-white shadow rounded-lg">
@@ -195,7 +213,7 @@ export default function NewUserPage() {
               >
                 <option value={UserRole.STAFF}>社員</option>
                 <option value={UserRole.ADMIN}>管理者</option>
-                {hasPermission(currentUser.publicMetadata?.role as UserRole, 'canManagePermissions') && (
+                {hasPermission(currentUserRole, 'canManagePermissions') && (
                   <option value={UserRole.OWNER}>オーナー</option>
                 )}
               </select>

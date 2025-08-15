@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useUser, SignOutButton } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { UserRole, PERMISSIONS, canAccessPage, hasPermission } from '@/lib/auth/permissions'
+import { UserRole, PERMISSIONS, canAccessPage, hasPermission, OWNER_EMAILS, ADMIN_EMAILS } from '@/lib/auth/permissions'
 
 export default function AdminLayout({
   children,
@@ -26,8 +26,19 @@ export default function AdminLayout({
       }
 
       if (isSignedIn && user) {
-        // ユーザーの権限を取得
-        const userRole = user.publicMetadata?.role as UserRole || UserRole.STAFF
+        // ユーザーのメールアドレスを取得
+        const userEmail = user.emailAddresses[0]?.emailAddress
+        
+        // メールアドレスベースの権限チェック
+        let userRole: UserRole = UserRole.STAFF
+        
+        if (userEmail) {
+          if (OWNER_EMAILS.includes(userEmail)) {
+            userRole = UserRole.OWNER
+          } else if (ADMIN_EMAILS.includes(userEmail)) {
+            userRole = UserRole.ADMIN
+          }
+        }
         
         // 現在のページにアクセス権限があるかチェック
         if (!canAccessPage(userRole, pathname)) {
@@ -54,8 +65,18 @@ export default function AdminLayout({
     )
   }
 
-  // ユーザーの権限を取得
-  const userRole = user?.publicMetadata?.role as UserRole || UserRole.STAFF
+  // ユーザーの権限を取得（メールアドレスベース）
+  const userEmail = user?.emailAddresses[0]?.emailAddress
+  let userRole: UserRole = UserRole.STAFF
+  
+  if (userEmail) {
+    if (OWNER_EMAILS.includes(userEmail)) {
+      userRole = UserRole.OWNER
+    } else if (ADMIN_EMAILS.includes(userEmail)) {
+      userRole = UserRole.ADMIN
+    }
+  }
+  
   const userPermissions = PERMISSIONS[userRole]
 
   // 権限に応じたナビゲーションメニューを生成
@@ -118,6 +139,9 @@ export default function AdminLayout({
                 <div>ようこそ、{user?.firstName || user?.emailAddresses[0]?.emailAddress}</div>
                 <div className="text-xs text-gray-500">
                   {userPermissions?.name} - {userPermissions?.description}
+                </div>
+                <div className="text-xs text-gray-400">
+                  メール: {userEmail} | 権限: {userRole}
                 </div>
               </div>
               <SignOutButton>
