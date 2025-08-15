@@ -49,12 +49,12 @@ export default function MemberPage() {
         setUser(user)
         await fetchUserData(user.id)
       } else {
-        // 未ログインの場合はログインページにリダイレクト
-        window.location.href = '/member/login'
+        // 未ログインの場合はトップページにリダイレクト
+        window.location.href = '/'
       }
     } catch (error) {
       console.error('ユーザー認証エラー:', error)
-      window.location.href = '/member/login'
+      window.location.href = '/'
     } finally {
       setLoading(false)
     }

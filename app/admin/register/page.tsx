@@ -209,10 +209,10 @@ export default function RegisterPage() {
             </button>
             
             <Link
-              href="/admin/login"
+              href="/admin"
               className="block w-full py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center"
             >
-              ログイン画面に戻る
+              管理画面に戻る
             </Link>
           </form>
         </div>
