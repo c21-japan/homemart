@@ -3,309 +3,482 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  UserGroupIcon,
+  UsersIcon,
   BuildingOfficeIcon,
   ChartBarIcon,
   ClockIcon,
   DocumentTextIcon,
   ClipboardDocumentListIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  CalendarIcon,
-  CurrencyYenIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  MapPinIcon,
-  ExclamationTriangleIcon,
+  PlusIcon,
+  EyeIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  CalendarDaysIcon,
   CheckCircleIcon,
-  ClockIcon as ClockOutlineIcon
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  TrendingUpIcon,
+  TrendingDownIcon
 } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
+
+interface DashboardCard {
+  title: string;
+  description: string;
+  icon: any;
+  href: string;
+  action?: string;
+  count?: number;
+  gradient: string;
+  iconColor: string;
+}
+
+interface StatCard {
+  title: string;
+  value: number;
+  change: number;
+  changeType: 'increase' | 'decrease';
+  icon: any;
+  color: string;
+  bgColor: string;
+}
+
+interface Activity {
+  id: string;
+  type: 'success' | 'warning' | 'info' | 'error';
+  message: string;
+  time: string;
+  user?: string;
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    // サンプルデータ
-    setTimeout(() => {
-      setStats({
-        revenue: {
-          current: 8500000,
-          previous: 7200000,
-          growth: 18.1
-        },
-        leads: {
-          total: 156,
-          new: 23,
-          hot: 12,
-          contacted: 45
-        },
-        properties: {
-          total: 24,
-          active: 18,
-          pending: 4,
-          sold: 2
-        },
-        team: {
-          total: 8,
-          present: 6,
-          absent: 2
-        },
-        tasks: {
-          urgent: 3,
-          today: 8,
-          overdue: 2
-        }
-      });
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="animate-pulse">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-xl p-6 h-32"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const quickStats = [
+  // 統計カード定義
+  const statCards: StatCard[] = [
     {
-      title: '今月の売上',
-      value: `¥${stats.revenue.current.toLocaleString()}`,
-      change: `+${stats.revenue.growth}%`,
+      title: '総ユーザー数',
+      value: stats.userCount || 0,
+      change: 12.5,
       changeType: 'increase',
-      icon: CurrencyYenIcon,
-      bgColor: 'bg-gradient-to-br from-green-500 to-emerald-600',
-      href: '/admin/reports'
+      icon: UsersIcon,
+      color: 'text-blue-600',
+      bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100'
+    },
+    {
+      title: '登録物件数',
+      value: stats.propertyCount || 0,
+      change: 8.2,
+      changeType: 'increase',
+      icon: BuildingOfficeIcon,
+      color: 'text-emerald-600',
+      bgColor: 'bg-gradient-to-br from-emerald-50 to-emerald-100'
     },
     {
       title: 'アクティブリード',
-      value: stats.leads.total,
-      subtext: `新規 ${stats.leads.new}件`,
-      icon: UserGroupIcon,
-      bgColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-      href: '/admin/leads',
-      badge: stats.leads.hot > 0 ? `HOT ${stats.leads.hot}` : null
+      value: stats.leadCount || 0,
+      change: -3.1,
+      changeType: 'decrease',
+      icon: TrendingUpIcon,
+      color: 'text-orange-600',
+      bgColor: 'bg-gradient-to-br from-orange-50 to-orange-100'
     },
     {
-      title: '登録物件',
-      value: stats.properties.total,
-      subtext: `成約 ${stats.properties.sold}件`,
-      icon: BuildingOfficeIcon,
-      bgColor: 'bg-gradient-to-br from-purple-500 to-pink-600',
-      href: '/admin/properties'
-    },
-    {
-      title: '本日の出勤',
-      value: `${stats.team.present}/${stats.team.total}`,
-      subtext: '出勤率 75%',
+      title: '今日の出勤者',
+      value: stats.attendanceCount || 0,
+      change: 5.7,
+      changeType: 'increase',
       icon: ClockIcon,
-      bgColor: 'bg-gradient-to-br from-orange-500 to-red-600',
-      href: '/admin/attendance'
+      color: 'text-purple-600',
+      bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100'
     }
   ];
 
-  const recentActivities = [
-    { type: 'lead', message: '山田太郎様から新規問い合わせ', time: '10分前', status: 'new' },
-    { type: 'property', message: '広陵町の物件が成約', time: '2時間前', status: 'success' },
-    { type: 'task', message: '物件写真撮影の予定', time: '3時間前', status: 'pending' },
-    { type: 'alert', message: '契約書類の提出期限', time: '5時間前', status: 'warning' }
+  // ダッシュボードカード定義
+  const dashboardCards: DashboardCard[] = [
+    {
+      title: 'ユーザー管理',
+      description: '社員・アルバイトの管理',
+      icon: UsersIcon,
+      href: '/admin/users',
+      action: 'ユーザー一覧',
+      count: stats.userCount,
+      gradient: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      iconColor: 'text-blue-600'
+    },
+    {
+      title: '物件管理',
+      description: '物件情報の登録・編集',
+      icon: BuildingOfficeIcon,
+      href: '/admin/properties',
+      action: '物件一覧',
+      count: stats.propertyCount,
+      gradient: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
+      iconColor: 'text-emerald-600'
+    },
+    {
+      title: 'リード管理',
+      description: '顧客リードの管理',
+      icon: TrendingUpIcon,
+      href: '/admin/leads',
+      action: 'リード一覧',
+      count: stats.leadCount,
+      gradient: 'bg-gradient-to-br from-orange-500 to-orange-600',
+      iconColor: 'text-orange-600'
+    },
+    {
+      title: '書類管理',
+      description: '物件報告書等の管理',
+      icon: DocumentTextIcon,
+      href: '/admin/documents',
+      action: '書類一覧',
+      count: stats.documentCount,
+      gradient: 'bg-gradient-to-br from-purple-500 to-purple-600',
+      iconColor: 'text-purple-600'
+    },
+    {
+      title: '内部申請',
+      description: '各種申請の管理',
+      icon: ClipboardDocumentListIcon,
+      href: '/admin/internal-applications',
+      action: '申請一覧',
+      count: stats.applicationCount,
+      gradient: 'bg-gradient-to-br from-amber-500 to-amber-600',
+      iconColor: 'text-amber-600'
+    },
+    {
+      title: 'レポート',
+      description: '各種レポート・分析',
+      icon: ChartBarIcon,
+      href: '/admin/reports',
+      action: 'レポート表示',
+      count: stats.reportCount,
+      gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
+      iconColor: 'text-indigo-600'
+    }
   ];
 
-  const upcomingTasks = [
-    { title: '物件内覧（田中様）', time: '14:00', location: '広陵町百済', priority: 'high' },
-    { title: 'リフォーム見積もり作成', time: '16:00', location: 'オフィス', priority: 'medium' },
-    { title: '月次レポート作成', time: '18:00', location: 'オフィス', priority: 'low' }
+  // アクティビティログ
+  const recentActivities: Activity[] = [
+    {
+      id: '1',
+      type: 'success',
+      message: '新しいリードが登録されました（田中様）',
+      time: '2時間前',
+      user: '佐藤'
+    },
+    {
+      id: '2',
+      type: 'info',
+      message: '物件情報が更新されました（物件ID: P-001）',
+      time: '4時間前',
+      user: '山田'
+    },
+    {
+      id: '3',
+      type: 'warning',
+      message: '新しい内部申請が提出されました',
+      time: '6時間前',
+      user: '田中'
+    },
+    {
+      id: '4',
+      type: 'success',
+      message: '月次レポートが生成されました',
+      time: '8時間前',
+      user: 'システム'
+    }
   ];
+
+  // 統計データの初期化
+  useEffect(() => {
+    setStats({
+      userCount: 28,
+      propertyCount: 147,
+      leadCount: 89,
+      documentCount: 234,
+      applicationCount: 12,
+      attendanceCount: 18,
+      reportCount: 15
+    });
+
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const getActivityIcon = (type: Activity['type']) => {
+    switch (type) {
+      case 'success':
+        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+      case 'warning':
+        return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />;
+      case 'error':
+        return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
+      default:
+        return <InformationCircleIcon className="h-5 w-5 text-blue-500" />;
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* ウェルカムメッセージ */}
-      <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl p-8 text-white shadow-xl">
-        <div className="flex justify-between items-start">
+    <div className="space-y-8">
+      {/* ヘッダー */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 text-white shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">おはようございます、乾代表</h1>
+            <h1 className="text-3xl font-bold mb-2">おかえりなさい！</h1>
             <p className="text-orange-100 text-lg">
-              今日も素晴らしい一日にしましょう。現在{stats.tasks.urgent}件の緊急タスクがあります。
+              今日も一日お疲れ様です。管理業務を効率的に進めましょう。
             </p>
+            <div className="mt-4 flex items-center space-x-4 text-sm text-orange-100">
+              <div className="flex items-center">
+                <CalendarDaysIcon className="h-4 w-4 mr-1" />
+                {currentTime.toLocaleDateString('ja-JP', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  weekday: 'long'
+                })}
+              </div>
+              <div className="flex items-center">
+                <ClockIcon className="h-4 w-4 mr-1" />
+                {currentTime.toLocaleTimeString('ja-JP')}
+              </div>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-4xl font-bold">{new Date().getHours()}:{String(new Date().getMinutes()).padStart(2, '0')}</div>
-            <div className="text-orange-100">{new Date().toLocaleDateString('ja-JP', { weekday: 'long' })}</div>
+          <div className="mt-6 md:mt-0">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
+              <p className="text-sm text-orange-100 mb-1">今日のタスク</p>
+              <p className="text-2xl font-bold">12 / 15</p>
+              <div className="w-full bg-orange-400 bg-opacity-30 rounded-full h-2 mt-2">
+                <div className="bg-white h-2 rounded-full" style={{width: '80%'}}></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* クイック統計 */}
+      {/* 統計カード */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quickStats.map((stat, index) => (
-          <Link 
-            key={index}
-            href={stat.href}
-            className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
-          >
-            <div className={`absolute inset-0 ${stat.bgColor} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
-            <div className="relative p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${stat.bgColor} shadow-lg`}>
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-                {stat.badge && (
-                  <span className="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                    {stat.badge}
-                  </span>
-                )}
-              </div>
+        {statCards.map((stat, index) => (
+          <div key={index} className={`${stat.bgColor} rounded-2xl p-6 border border-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                {stat.change && (
-                  <div className="flex items-center mt-2">
-                    {stat.changeType === 'increase' ? (
-                      <ArrowTrendingUpIcon className="h-4 w-4 text-green-600 mr-1" />
-                    ) : (
-                      <ArrowTrendingDownIcon className="h-4 w-4 text-red-600 mr-1" />
-                    )}
-                    <span className={`text-sm font-medium ${
-                      stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {stat.change}
-                    </span>
-                  </div>
-                )}
-                {stat.subtext && (
-                  <p className="text-gray-500 text-sm mt-1">{stat.subtext}</p>
-                )}
+                <p className="text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
+                <p className="text-3xl font-bold text-slate-900">{stat.value.toLocaleString()}</p>
+                <div className="flex items-center mt-2">
+                  {stat.changeType === 'increase' ? (
+                    <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                  ) : (
+                    <ArrowDownIcon className="h-4 w-4 text-red-500 mr-1" />
+                  )}
+                  <span className={`text-sm font-medium ${
+                    stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {Math.abs(stat.change)}%
+                  </span>
+                  <span className="text-sm text-slate-500 ml-1">前月比</span>
+                </div>
               </div>
-              <ArrowRightIcon className="absolute bottom-4 right-4 h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+              <div className={`p-3 rounded-xl bg-white shadow-sm`}>
+                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+              </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* 今日のタスク */}
-        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm">
-          <div className="p-6 border-b">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">今日のスケジュール</h2>
-              <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-1 rounded-full">
-                {upcomingTasks.length}件
-              </span>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            {upcomingTasks.map((task, index) => (
-              <div key={index} className="flex items-start space-x-3">
-                <div className={`w-2 h-2 rounded-full mt-2 ${
-                  task.priority === 'high' ? 'bg-red-500' :
-                  task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                }`}></div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">{task.title}</p>
-                      <div className="flex items-center space-x-3 mt-1">
-                        <span className="flex items-center text-xs text-gray-500">
-                          <ClockOutlineIcon className="h-3 w-3 mr-1" />
-                          {task.time}
-                        </span>
-                        <span className="flex items-center text-xs text-gray-500">
-                          <MapPinIcon className="h-3 w-3 mr-1" />
-                          {task.location}
-                        </span>
-                      </div>
+      {/* クイックアクション */}
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-200">
+        <div className="px-8 py-6 border-b border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900">クイックアクション</h2>
+          <p className="text-slate-600 mt-1">よく使用する機能に素早くアクセス</p>
+        </div>
+        <div className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dashboardCards.map((card, index) => (
+              <div key={index} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1 group">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className={`p-3 rounded-xl ${card.bgColor} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300`}>
+                      <card.icon className={`h-6 w-6 ${card.iconColor}`} />
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-lg font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-sm text-slate-500">{card.description}</p>
                     </div>
                   </div>
+                  {card.count !== undefined && (
+                    <div className="flex flex-col items-end">
+                      <span className={`${card.gradient} text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg`}>
+                        {card.count}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex space-x-3">
+                  <Link
+                    href={card.href}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center group-hover:shadow-md"
+                  >
+                    <EyeIcon className="h-4 w-4 mr-2" />
+                    {card.action}
+                  </Link>
+                  <Link
+                    href={`${card.href}/new`}
+                    className={`${card.gradient} hover:shadow-lg text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center transform hover:scale-105`}
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
             ))}
-            <Link 
-              href="/admin/calendar"
-              className="block w-full text-center py-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
-            >
-              すべて表示 →
-            </Link>
           </div>
         </div>
+      </div>
 
-        {/* 最近の活動 */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-bold text-gray-900">最近の活動</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* 最近のアクティビティ */}
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200">
+          <div className="px-8 py-6 border-b border-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">最近のアクティビティ</h2>
+                <p className="text-slate-600 text-sm mt-1">システム内の最新の動きをチェック</p>
+              </div>
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
           </div>
-          <div className="p-6">
+          <div className="p-8">
             <div className="space-y-4">
-              {recentActivities.map((activity, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-lg ${
-                    activity.status === 'new' ? 'bg-blue-100' :
-                    activity.status === 'success' ? 'bg-green-100' :
-                    activity.status === 'warning' ? 'bg-yellow-100' : 'bg-gray-100'
-                  }`}>
-                    {activity.status === 'new' && <EnvelopeIcon className="h-4 w-4 text-blue-600" />}
-                    {activity.status === 'success' && <CheckCircleIcon className="h-4 w-4 text-green-600" />}
-                    {activity.status === 'warning' && <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600" />}
-                    {activity.status === 'pending' && <ClockOutlineIcon className="h-4 w-4 text-gray-600" />}
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                  <div className="mt-0.5">
+                    {getActivityIcon(activity.type)}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-gray-900 font-medium">{activity.message}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900">{activity.message}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-xs text-slate-500">{activity.time}</span>
+                      <span className="text-xs text-slate-400">•</span>
+                      <span className="text-xs text-slate-500">by {activity.user}</span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
+            <div className="mt-6 pt-4 border-t border-slate-200">
+              <Link
+                href="/admin/activity-log"
+                className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center justify-center py-2 hover:bg-orange-50 rounded-lg transition-colors"
+              >
+                すべてのアクティビティを表示
+                <ArrowUpIcon className="h-4 w-4 ml-1 rotate-45" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* パフォーマンス概要 */}
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200">
+          <div className="px-8 py-6 border-b border-slate-200">
+            <h2 className="text-xl font-bold text-slate-900">今月のパフォーマンス</h2>
+            <p className="text-slate-600 text-sm mt-1">チーム全体の業績概要</p>
+          </div>
+          <div className="p-8">
+            <div className="space-y-6">
+              {/* 売上目標 */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-slate-700">売上目標達成率</span>
+                  <span className="text-sm font-bold text-green-600">87%</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-3">
+                  <div className="bg-gradient-to-r from-green-400 to-green-500 h-3 rounded-full shadow-sm" style={{width: '87%'}}></div>
+                </div>
+              </div>
+
+              {/* リード変換率 */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-slate-700">リード変換率</span>
+                  <span className="text-sm font-bold text-blue-600">23%</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-3">
+                  <div className="bg-gradient-to-r from-blue-400 to-blue-500 h-3 rounded-full shadow-sm" style={{width: '23%'}}></div>
+                </div>
+              </div>
+
+              {/* 顧客満足度 */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-slate-700">顧客満足度</span>
+                  <span className="text-sm font-bold text-purple-600">94%</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-3">
+                  <div className="bg-gradient-to-r from-purple-400 to-purple-500 h-3 rounded-full shadow-sm" style={{width: '94%'}}></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center">
+                <p className="text-2xl font-bold text-blue-600">¥24.8M</p>
+                <p className="text-sm text-blue-700 font-medium">今月の売上</p>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center">
+                <p className="text-2xl font-bold text-green-600">156</p>
+                <p className="text-sm text-green-700 font-medium">成約件数</p>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-200">
+              <Link
+                href="/admin/reports"
+                className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center justify-center py-2 hover:bg-orange-50 rounded-lg transition-colors"
+              >
+                詳細レポートを表示
+                <ChartBarIcon className="h-4 w-4 ml-1" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* クイックアクション */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link
-          href="/admin/leads/new"
-          className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group"
-        >
-          <div className="inline-flex p-3 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors mb-2">
-            <UserGroupIcon className="h-6 w-6 text-blue-600" />
+      {/* 今日のタスク・リマインダー */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">今日のリマインダー</h2>
+            <div className="space-y-2">
+              <div className="flex items-center text-slate-300">
+                <CheckCircleIcon className="h-5 w-5 text-green-400 mr-3" />
+                <span>チームミーティング 14:00 - 会議室A</span>
+              </div>
+              <div className="flex items-center text-slate-300">
+                <ClockIcon className="h-5 w-5 text-yellow-400 mr-3" />
+                <span>月次レポート作成締切 - 今日中</span>
+              </div>
+              <div className="flex items-center text-slate-300">
+                <UsersIcon className="h-5 w-5 text-blue-400 mr-3" />
+                <span>新人研修フォローアップ - 田中さん</span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm font-medium text-gray-900">新規リード登録</p>
-        </Link>
-        
-        <Link
-          href="/admin/properties/new"
-          className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group"
-        >
-          <div className="inline-flex p-3 rounded-lg bg-purple-100 group-hover:bg-purple-200 transition-colors mb-2">
-            <BuildingOfficeIcon className="h-6 w-6 text-purple-600" />
+          <div className="mt-6 md:mt-0">
+            <Link
+              href="/admin/calendar"
+              className="bg-white text-slate-900 px-6 py-3 rounded-xl font-medium hover:bg-slate-100 transition-colors inline-flex items-center"
+            >
+              <CalendarDaysIcon className="h-5 w-5 mr-2" />
+              カレンダーを表示
+            </Link>
           </div>
-          <p className="text-sm font-medium text-gray-900">物件登録</p>
-        </Link>
-        
-        <Link
-          href="/admin/documents/new"
-          className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group"
-        >
-          <div className="inline-flex p-3 rounded-lg bg-green-100 group-hover:bg-green-200 transition-colors mb-2">
-            <DocumentTextIcon className="h-6 w-6 text-green-600" />
-          </div>
-          <p className="text-sm font-medium text-gray-900">書類作成</p>
-        </Link>
-        
-        <Link
-          href="/admin/reports"
-          className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group"
-        >
-          <div className="inline-flex p-3 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors mb-2">
-            <ChartBarIcon className="h-6 w-6 text-orange-600" />
-          </div>
-          <p className="text-sm font-medium text-gray-900">レポート確認</p>
-        </Link>
+        </div>
       </div>
     </div>
   );

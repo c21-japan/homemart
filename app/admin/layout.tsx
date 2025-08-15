@@ -17,31 +17,28 @@ import {
 } from '@/lib/auth/permissions'
 import {
   HomeIcon,
-  UserGroupIcon,
+  UsersIcon,
   BuildingOfficeIcon,
   DocumentTextIcon,
   ClockIcon,
+  ClipboardDocumentListIcon,
   ChartBarIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
   BellIcon,
+  UserCircleIcon,
   Bars3Icon,
   XMarkIcon,
-  UserCircleIcon,
-  WrenchScrewdriverIcon,
+  ShieldCheckIcon,
   TrophyIcon,
-  AcademicCapIcon
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline'
-import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(3) // 通知数のサンプル
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (isLoaded) {
@@ -77,13 +74,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!isLoaded || isChecking) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
-            <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-orange-600 mx-auto"></div>
-            <div className="absolute inset-0 animate-ping rounded-full h-20 w-20 border-b-4 border-orange-300 mx-auto opacity-20"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-400 animate-pulse mx-auto"></div>
           </div>
-          <p className="mt-6 text-gray-600 font-medium">システム準備中...</p>
+          <p className="mt-6 text-slate-600 font-medium">権限を確認しています...</p>
         </div>
       </div>
     )
@@ -100,355 +97,281 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
   const userPermissions = PERMISSIONS[userRole]
 
-  const navigationItems = [
-    {
-      name: 'ダッシュボード',
-      href: '/admin',
-      icon: HomeIcon,
-      requiredRole: UserRole.STAFF,
-      isSensitive: false,
-      badge: null
-    },
-    {
-      name: 'リード管理',
-      href: '/admin/leads',
-      icon: UserGroupIcon,
-      requiredRole: UserRole.STAFF,
-      isSensitive: true,
-      badge: '新着12'
-    },
-    {
-      name: '物件管理',
-      href: '/admin/properties',
-      icon: BuildingOfficeIcon,
-      requiredRole: UserRole.STAFF,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: '社内申請',
-      href: '/admin/internal-applications',
-      icon: DocumentTextIcon,
-      requiredRole: UserRole.STAFF,
-      isSensitive: true,
-      badge: '承認待ち3'
-    },
-    {
-      name: 'アルバイト勤怠',
-      href: '/admin/part-time-attendance',
-      icon: ClockIcon,
-      requiredRole: UserRole.STAFF,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: 'ユーザー管理',
-      href: '/admin/users',
-      icon: UserCircleIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: '書類管理',
-      href: '/admin/documents',
-      icon: DocumentTextIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: '勤怠管理',
-      href: '/admin/attendance',
-      icon: ClockIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: 'レポート',
-      href: '/admin/reports',
-      icon: ChartBarIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: 'キャリアパス',
-      href: '/admin/career-path',
-      icon: AcademicCapIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: 'チーム成績',
-      href: '/admin/team-performance',
-      icon: TrophyIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
-    },
-    {
-      name: '職人管理',
-      href: '/admin/reform-workers',
-      icon: WrenchScrewdriverIcon,
-      requiredRole: UserRole.ADMIN,
-      isSensitive: true,
-      badge: null
+  const getNavigationItems = () => {
+    const items = [
+      {
+        name: 'ダッシュボード',
+        href: '/admin',
+        icon: HomeIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: false,
+        color: 'text-blue-600'
+      },
+      {
+        name: 'リード管理',
+        href: '/admin/leads',
+        icon: UsersIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: true,
+        color: 'text-emerald-600'
+      },
+      {
+        name: '物件管理',
+        href: '/admin/properties',
+        icon: BuildingOfficeIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: true,
+        color: 'text-purple-600'
+      },
+      {
+        name: '社内申請',
+        href: '/admin/internal-applications',
+        icon: ClipboardDocumentListIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: true,
+        color: 'text-amber-600'
+      },
+      {
+        name: 'アルバイト勤怠',
+        href: '/admin/part-time-attendance',
+        icon: ClockIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: true,
+        color: 'text-cyan-600'
+      },
+      {
+        name: 'ユーザー管理',
+        href: '/admin/users',
+        icon: UserCircleIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-indigo-600'
+      },
+      {
+        name: '書類管理',
+        href: '/admin/documents',
+        icon: DocumentTextIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-rose-600'
+      },
+      {
+        name: '勤怠管理',
+        href: '/admin/attendance',
+        icon: ClockIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-teal-600'
+      },
+      {
+        name: 'レポート',
+        href: '/admin/reports',
+        icon: ChartBarIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-orange-600'
+      },
+      {
+        name: 'キャリアパス管理',
+        href: '/admin/career-path',
+        icon: ShieldCheckIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-violet-600'
+      },
+      {
+        name: 'チーム成績管理',
+        href: '/admin/team-performance',
+        icon: TrophyIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-yellow-600'
+      },
+      {
+        name: 'リフォーム職人管理',
+        href: '/admin/reform-workers',
+        icon: WrenchScrewdriverIcon,
+        requiredRole: UserRole.ADMIN,
+        isSensitive: true,
+        color: 'text-stone-600'
+      }
+    ]
+
+    return items.filter(item => {
+      if (userRole < item.requiredRole) return false
+      if (item.isSensitive && !canAccessSensitiveInfo(userRole, item.href)) return false
+      return true
+    })
+  }
+
+  const navigationItems = getNavigationItems()
+
+  const getRoleInfo = () => {
+    switch (userRole) {
+      case UserRole.OWNER:
+        return { label: 'オーナー', color: 'bg-red-500', textColor: 'text-red-700' }
+      case UserRole.ADMIN:
+        return { label: '管理者', color: 'bg-blue-500', textColor: 'text-blue-700' }
+      default:
+        return { label: 'スタッフ', color: 'bg-green-500', textColor: 'text-green-700' }
     }
-  ].filter(item => {
-    if (userRole < item.requiredRole) return false
-    if (item.isSensitive && !canAccessSensitiveInfo(userRole, item.href)) return false
-    return true
-  })
-
-  const roleColors = {
-    [UserRole.OWNER]: 'bg-gradient-to-r from-purple-600 to-purple-700',
-    [UserRole.ADMIN]: 'bg-gradient-to-r from-blue-600 to-blue-700',
-    [UserRole.STAFF]: 'bg-gradient-to-r from-gray-600 to-gray-700'
   }
 
-  const roleBadgeColors = {
-    [UserRole.OWNER]: 'bg-purple-100 text-purple-800 border-purple-200',
-    [UserRole.ADMIN]: 'bg-blue-100 text-blue-800 border-blue-200',
-    [UserRole.STAFF]: 'bg-gray-100 text-gray-800 border-gray-200'
-  }
+  const roleInfo = getRoleInfo()
+
+  // サイドバーコンポーネント
+  const Sidebar = () => (
+    <div className="h-full flex flex-col bg-white border-r border-slate-200 shadow-sm">
+      {/* ロゴ・ヘッダー部分 */}
+      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 bg-gradient-to-r from-orange-500 to-orange-600">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <span className="text-orange-600 font-bold text-lg">H</span>
+          </div>
+          <span className="text-white font-bold text-lg">ホームマート</span>
+        </div>
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="md:hidden text-white hover:bg-orange-400 p-1 rounded"
+        >
+          <XMarkIcon className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* ユーザー情報 */}
+      <div className="p-6 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-sm">
+              {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-slate-900 truncate">
+              {user?.firstName || user?.emailAddresses[0]?.emailAddress}
+            </p>
+            <div className="flex items-center space-x-2">
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleInfo.color} text-white`}>
+                {roleInfo.label}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ナビゲーション */}
+      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        {navigationItems.map((item) => {
+          const isActive = pathname === item.href
+          const canAccess = canAccessPage(userRole, item.href)
+          
+          if (!canAccess) return null
+          
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25'
+                  : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
+              <span className="flex-1">{item.name}</span>
+              {item.isSensitive && (
+                <div className={`ml-2 w-2 h-2 rounded-full ${isActive ? 'bg-orange-200' : 'bg-red-400'}`} />
+              )}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* フッター */}
+      <div className="p-4 border-t border-slate-200 bg-slate-50">
+        <div className="space-y-2">
+          <SignOutButton>
+            <button className="w-full flex items-center px-3 py-2 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              ログアウト
+            </button>
+          </SignOutButton>
+          <Link 
+            href="/" 
+            className="w-full flex items-center px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <svg className="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            サイトトップ
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* サイドバー - デスクトップ */}
-      <div className={`fixed inset-y-0 left-0 z-50 ${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-xl transition-all duration-300 transform hidden lg:block`}>
-        <div className="flex flex-col h-full">
-          {/* ロゴエリア */}
-          <div className={`${roleColors[userRole]} p-4`}>
-            <div className="flex items-center justify-between">
-              <div className={`flex items-center ${!isSidebarOpen && 'justify-center'}`}>
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-xl">H</span>
-                </div>
-                {isSidebarOpen && (
-                  <div className="ml-3">
-                    <h2 className="text-white font-bold text-lg">ホームマート</h2>
-                    <p className="text-white/80 text-xs">管理システム</p>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="text-white hover:bg-white/10 p-1 rounded-lg transition-colors"
-              >
-                <Bars3Icon className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* ユーザー情報 */}
-          {isSidebarOpen && (
-            <div className="p-4 border-b bg-gray-50">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
-                  {user?.firstName?.[0] || user?.emailAddresses[0]?.emailAddress[0].toUpperCase()}
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-semibold text-gray-900">
-                    {user?.firstName || user?.emailAddresses[0]?.emailAddress.split('@')[0]}
-                  </p>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${roleBadgeColors[userRole]}`}>
-                    {userPermissions?.name}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ナビゲーション */}
-          <nav className="flex-1 overflow-y-auto p-4">
-            <ul className="space-y-1">
-              {navigationItems.map((item) => {
-                const isActive = pathname === item.href
-                const Icon = item.icon
-                
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`
-                        flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
-                        ${isActive 
-                          ? 'bg-orange-50 text-orange-600 shadow-sm border-l-4 border-orange-600' 
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                        }
-                        ${!isSidebarOpen && 'justify-center'}
-                      `}
-                      title={!isSidebarOpen ? item.name : undefined}
-                    >
-                      <div className="flex items-center">
-                        <Icon className={`h-5 w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`} />
-                        {isSidebarOpen && (
-                          <span className="ml-3 font-medium">{item.name}</span>
-                        )}
-                      </div>
-                      {isSidebarOpen && item.badge && (
-                        <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </nav>
-
-          {/* 下部メニュー */}
-          <div className="p-4 border-t">
-            <SignOutButton>
-              <button className={`
-                flex items-center w-full px-3 py-2.5 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors
-                ${!isSidebarOpen && 'justify-center'}
-              `}>
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                {isSidebarOpen && <span className="ml-3 font-medium">ログアウト</span>}
-              </button>
-            </SignOutButton>
+    <div className="h-screen flex bg-slate-50">
+      {/* モバイル用サイドバーオーバーレイ */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div className="fixed inset-0 bg-slate-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+          <div className="relative flex flex-col w-64 h-full">
+            <Sidebar />
           </div>
         </div>
+      )}
+
+      {/* デスクトップ用サイドバー */}
+      <div className="hidden md:flex md:w-64 md:flex-col">
+        <Sidebar />
       </div>
 
-      {/* モバイルメニュー */}
-      <div className="lg:hidden">
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white shadow-md">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-700 hover:text-gray-900"
-              >
-                {isMobileMenuOpen ? (
-                  <XMarkIcon className="h-6 w-6" />
-                ) : (
-                  <Bars3Icon className="h-6 w-6" />
-                )}
-              </button>
-              <div className="ml-3">
-                <h2 className="text-lg font-bold text-gray-900">ホームマート</h2>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button className="relative p-2">
-                {notifications > 0 ? (
-                  <>
-                    <BellIconSolid className="h-6 w-6 text-orange-600" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {notifications}
-                    </span>
-                  </>
-                ) : (
-                  <BellIcon className="h-6 w-6 text-gray-600" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* モバイルサイドバー */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-30 bg-black/50" onClick={() => setIsMobileMenuOpen(false)}>
-            <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex flex-col h-full pt-16">
-                <nav className="flex-1 overflow-y-auto p-4">
-                  <ul className="space-y-1">
-                    {navigationItems.map((item) => {
-                      const isActive = pathname === item.href
-                      const Icon = item.icon
-                      
-                      return (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className={`
-                              flex items-center justify-between px-3 py-2.5 rounded-lg
-                              ${isActive 
-                                ? 'bg-orange-50 text-orange-600' 
-                                : 'text-gray-700 hover:bg-gray-100'
-                              }
-                            `}
-                          >
-                            <div className="flex items-center">
-                              <Icon className="h-5 w-5" />
-                              <span className="ml-3">{item.name}</span>
-                            </div>
-                            {item.badge && (
-                              <span className="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                                {item.badge}
-                              </span>
-                            )}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* メインコンテンツ */}
-      <div className={`${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} transition-all duration-300`}>
-        {/* トップバー */}
-        <header className="bg-white shadow-sm border-b sticky top-0 z-20 hidden lg:block">
-          <div className="flex justify-between items-center px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {navigationItems.find(item => item.href === pathname)?.name || 'ダッシュボード'}
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date().toLocaleDateString('ja-JP', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric',
-                  weekday: 'long'
-                })}
-              </p>
-            </div>
-            
+      {/* メインコンテンツエリア */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* トップヘッダー */}
+        <header className="bg-white border-b border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between h-16 px-6">
             <div className="flex items-center space-x-4">
-              {/* 通知 */}
-              <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                {notifications > 0 ? (
-                  <>
-                    <BellIconSolid className="h-6 w-6 text-orange-600" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                      {notifications}
-                    </span>
-                  </>
-                ) : (
-                  <BellIcon className="h-6 w-6" />
-                )}
-              </button>
-
-              {/* 設定 */}
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Cog6ToothIcon className="h-6 w-6" />
-              </button>
-
-              {/* サイトトップリンク */}
-              <Link 
-                href="/" 
-                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium shadow-sm"
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="md:hidden text-slate-500 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100"
               >
-                サイトトップ
-              </Link>
+                <Bars3Icon className="h-6 w-6" />
+              </button>
+              
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">管理画面</h1>
+                <p className="text-sm text-slate-500">センチュリー21 広陵店</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              {/* 通知アイコン */}
+              <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                <BellIcon className="h-6 w-6" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+
+              {/* 機密情報表示 */}
+              {PAGE_PERMISSIONS.find(p => p.path === pathname)?.isSensitive && (
+                <div className="flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+                  <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  機密情報
+                </div>
+              )}
             </div>
           </div>
         </header>
-        
-        <main className="p-4 lg:p-6 mt-16 lg:mt-0">
-          <div className="max-w-7xl mx-auto">
+
+        {/* メインコンテンツ */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">
             {children}
           </div>
         </main>
