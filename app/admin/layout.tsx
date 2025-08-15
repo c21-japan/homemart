@@ -10,11 +10,6 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname()
 
-  // ログインページは除外
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}

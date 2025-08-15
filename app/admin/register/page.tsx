@@ -68,7 +68,7 @@ export default function RegisterPage() {
         })
         
         setTimeout(() => {
-          router.push('/admin/login')
+          router.push('/admin')
         }, 3000)
       } else {
         setError('登録に失敗しました。もう一度お試しください。')

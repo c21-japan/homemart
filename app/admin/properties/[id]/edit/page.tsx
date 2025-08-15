@@ -26,16 +26,6 @@ export default function EditProperty() {
   const [property, setProperty] = useState<Property | null>(null)
   const [message, setMessage] = useState('')
 
-  // 認証チェック
-  useEffect(() => {
-    const auth = localStorage.getItem('adminAuth')
-    const expiry = localStorage.getItem('authExpiry')
-    
-    if (auth !== 'true' || !expiry || Date.now() >= Number(expiry)) {
-      router.push('/admin')
-    }
-  }, [router])
-
   // 物件データを取得
   useEffect(() => {
     fetchProperty()

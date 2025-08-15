@@ -30,18 +30,8 @@ function SearchContent() {
   })
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-      });
-      
-      if (response.ok) {
-        router.push('/admin/login');
-        router.refresh();
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    // ログアウト処理を削除 - トップページへ移動
+    router.push('/');
   }
 
   useEffect(() => {

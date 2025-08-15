@@ -81,9 +81,9 @@ export default function MemberRegister() {
           setMessage('会員アカウントが作成されました。確認メールをチェックしてください。')
         }
         
-        // 3秒後にログインページにリダイレクト
+        // 3秒後にトップページにリダイレクト
         setTimeout(() => {
-          router.push('/member/login')
+          router.push('/')
         }, 3000)
       }
     } catch (error) {

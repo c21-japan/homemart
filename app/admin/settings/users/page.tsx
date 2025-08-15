@@ -21,14 +21,6 @@ export default function UserManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter()
 
-  // 権限チェック
-  useEffect(() => {
-    const role = localStorage.getItem('userRole')
-    if (role !== 'owner' && role !== 'admin') {
-      router.push('/admin')
-    }
-  }, [router])
-
   // ダミーデータ（実際はSupabaseから取得）
   useEffect(() => {
     setUsers([
