@@ -17,8 +17,8 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
-  TrendingUpIcon,
-  TrendingDownIcon
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 
 interface DashboardCard {
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
       value: stats.leadCount || 0,
       change: -3.1,
       changeType: 'decrease',
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       color: 'text-orange-600',
       bgColor: 'bg-gradient-to-br from-orange-50 to-orange-100'
     },
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
     {
       title: 'リード管理',
       description: '顧客リードの管理',
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       href: '/admin/leads',
       action: 'リード一覧',
       count: stats.leadCount,
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
               <div key={index} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1 group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center">
-                    <div className={`p-3 rounded-xl ${card.bgColor} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300`}>
+                    <div className={`p-3 rounded-xl ${card.gradient} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300`}>
                       <card.icon className={`h-6 w-6 ${card.iconColor}`} />
                     </div>
                     <div className="ml-4">
