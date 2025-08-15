@@ -71,6 +71,46 @@ export default function AdminLayout({
                 >
                   アルバイト勤怠
                 </Link>
+                <Link
+                  href="/admin/users"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin/users'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                >
+                  ユーザー管理
+                </Link>
+                <Link
+                  href="/admin/documents"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin/documents'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                >
+                  書類管理
+                </Link>
+                <Link
+                  href="/admin/attendance"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin/attendance'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                >
+                  勤怠管理
+                </Link>
+                <Link
+                  href="/admin/reports"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/admin/reports'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                >
+                  レポート
+                </Link>
               </nav>
             </div>
             
