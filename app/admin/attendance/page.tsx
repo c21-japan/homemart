@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function AttendancePage() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
@@ -72,9 +73,12 @@ export default function AttendancePage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">勤怠管理</h1>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <Link
+          href="/admin/attendance/new"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
           勤怠登録
-        </button>
+        </Link>
       </div>
 
       <div className="mb-4 flex space-x-4">

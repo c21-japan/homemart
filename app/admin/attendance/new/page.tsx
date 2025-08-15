@@ -4,21 +4,20 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function NewLeadPage() {
+export default function NewAttendancePage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    propertyInterest: '',
-    budget: '',
-    timeline: '',
+    employeeName: '',
+    date: new Date().toISOString().split('T')[0],
+    checkIn: '',
+    checkOut: '',
+    breakTime: '60',
     notes: '',
-    source: 'website'
+    status: 'present'
   });
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -32,14 +31,14 @@ export default function NewLeadPage() {
 
     try {
       // TODO: 実際のAPIエンドポイントに置き換え
-      console.log('リード追加データ:', formData);
+      console.log('勤怠登録データ:', formData);
       
       // 成功時の処理
-      alert('リードが正常に追加されました');
-      router.push('/admin/leads');
+      alert('勤怠が正常に登録されました');
+      router.push('/admin/attendance');
     } catch (error) {
-      console.error('リード追加エラー:', error);
-      alert('リード追加中にエラーが発生しました');
+      console.error('勤怠登録エラー:', error);
+      alert('勤怠登録中にエラーが発生しました');
     } finally {
       setLoading(false);
     }
@@ -49,12 +48,12 @@ export default function NewLeadPage() {
     <div className="p-6">
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">新規リード追加</h1>
+          <h1 className="text-2xl font-bold text-gray-900">勤怠登録</h1>
           <Link
-            href="/admin/leads"
+            href="/admin/attendance"
             className="text-gray-600 hover:text-gray-900"
           >
-            ← リード一覧に戻る
+            ← 勤怠一覧に戻る
           </Link>
         </div>
       </div>
@@ -64,122 +63,101 @@ export default function NewLeadPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                お名前 *
+                従業員名 *
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="employeeName"
+                value={formData.employeeName}
                 onChange={handleInputChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="お名前を入力"
+                placeholder="従業員名を入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                メールアドレス *
+                日付 *
               </label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="date"
+                name="date"
+                value={formData.date}
                 onChange={handleInputChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="メールアドレスを入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                電話番号
+                出勤時刻
               </label>
               <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
+                type="time"
+                name="checkIn"
+                value={formData.checkIn}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="電話番号を入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                興味のある物件
+                退勤時刻
               </label>
               <input
-                type="text"
-                name="propertyInterest"
-                value={formData.propertyInterest}
+                type="time"
+                name="checkOut"
+                value={formData.checkOut}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="物件名や地域を入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                予算
+                休憩時間（分）
               </label>
               <select
-                name="budget"
-                value={formData.budget}
+                name="breakTime"
+                value={formData.breakTime}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">選択してください</option>
-                <option value="under_30m">3,000万円未満</option>
-                <option value="30m_50m">3,000万円〜5,000万円</option>
-                <option value="50m_80m">5,000万円〜8,000万円</option>
-                <option value="80m_100m">8,000万円〜1億円</option>
-                <option value="over_100m">1億円以上</option>
+                <option value="0">0分</option>
+                <option value="30">30分</option>
+                <option value="60">60分</option>
+                <option value="90">90分</option>
+                <option value="120">120分</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                購入予定時期
+                ステータス *
               </label>
               <select
-                name="timeline"
-                value={formData.timeline}
+                name="status"
+                value={formData.status}
                 onChange={handleInputChange}
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">選択してください</option>
-                <option value="immediate">すぐに</option>
-                <option value="within_3months">3ヶ月以内</option>
-                <option value="within_6months">6ヶ月以内</option>
-                <option value="within_1year">1年以内</option>
-                <option value="over_1year">1年以上</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                情報源
-              </label>
-              <select
-                name="source"
-                value={formData.source}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="website">ウェブサイト</option>
-                <option value="referral">紹介</option>
-                <option value="advertisement">広告</option>
-                <option value="social_media">SNS</option>
-                <option value="other">その他</option>
+                <option value="present">出勤</option>
+                <option value="late">遅刻</option>
+                <option value="absent">欠勤</option>
+                <option value="half_day">半休</option>
+                <option value="paid_leave">有給休暇</option>
+                <option value="sick_leave">病気休暇</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              備考・要望
+              備考
             </label>
             <textarea
               name="notes"
@@ -187,13 +165,13 @@ export default function NewLeadPage() {
               onChange={handleInputChange}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="特記事項やご要望があれば入力してください"
+              placeholder="特記事項があれば入力してください"
             />
           </div>
 
           <div className="flex justify-end space-x-4">
             <Link
-              href="/admin/leads"
+              href="/admin/attendance"
               className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
               キャンセル
@@ -203,7 +181,7 @@ export default function NewLeadPage() {
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? '追加中...' : 'リードを追加'}
+              {loading ? '登録中...' : '勤怠を登録'}
             </button>
           </div>
         </form>

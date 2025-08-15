@@ -4,26 +4,33 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function NewLeadPage() {
+export default function NewPropertyPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    propertyInterest: '',
-    budget: '',
-    timeline: '',
-    notes: '',
-    source: 'website'
+    title: '',
+    address: '',
+    price: '',
+    description: '',
+    propertyType: 'apartment',
+    status: 'available',
+    featured: false
   });
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const target = e.target as HTMLInputElement;
+      setFormData(prev => ({
+        ...prev,
+        [name]: target.checked
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,14 +39,14 @@ export default function NewLeadPage() {
 
     try {
       // TODO: 実際のAPIエンドポイントに置き換え
-      console.log('リード追加データ:', formData);
+      console.log('物件登録データ:', formData);
       
       // 成功時の処理
-      alert('リードが正常に追加されました');
-      router.push('/admin/leads');
+      alert('物件が正常に登録されました');
+      router.push('/admin/properties');
     } catch (error) {
-      console.error('リード追加エラー:', error);
-      alert('リード追加中にエラーが発生しました');
+      console.error('物件登録エラー:', error);
+      alert('物件登録中にエラーが発生しました');
     } finally {
       setLoading(false);
     }
@@ -49,12 +56,12 @@ export default function NewLeadPage() {
     <div className="p-6">
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">新規リード追加</h1>
+          <h1 className="text-2xl font-bold text-gray-900">新規物件登録</h1>
           <Link
-            href="/admin/leads"
+            href="/admin/properties"
             className="text-gray-600 hover:text-gray-900"
           >
-            ← リード一覧に戻る
+            ← 物件一覧に戻る
           </Link>
         </div>
       </div>
@@ -64,136 +71,114 @@ export default function NewLeadPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                お名前 *
+                物件名 *
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="title"
+                value={formData.title}
                 onChange={handleInputChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="お名前を入力"
+                placeholder="物件名を入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                メールアドレス *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="メールアドレスを入力"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                電話番号
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="電話番号を入力"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                興味のある物件
+                住所 *
               </label>
               <input
                 type="text"
-                name="propertyInterest"
-                value={formData.propertyInterest}
+                name="address"
+                value={formData.address}
                 onChange={handleInputChange}
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="物件名や地域を入力"
+                placeholder="住所を入力"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                予算
+                価格 *
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="価格を入力"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                物件種別
               </label>
               <select
-                name="budget"
-                value={formData.budget}
+                name="propertyType"
+                value={formData.propertyType}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">選択してください</option>
-                <option value="under_30m">3,000万円未満</option>
-                <option value="30m_50m">3,000万円〜5,000万円</option>
-                <option value="50m_80m">5,000万円〜8,000万円</option>
-                <option value="80m_100m">8,000万円〜1億円</option>
-                <option value="over_100m">1億円以上</option>
+                <option value="apartment">マンション</option>
+                <option value="house">一戸建て</option>
+                <option value="land">土地</option>
+                <option value="commercial">商業施設</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                購入予定時期
+                ステータス
               </label>
               <select
-                name="timeline"
-                value={formData.timeline}
+                name="status"
+                value={formData.status}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">選択してください</option>
-                <option value="immediate">すぐに</option>
-                <option value="within_3months">3ヶ月以内</option>
-                <option value="within_6months">6ヶ月以内</option>
-                <option value="within_1year">1年以内</option>
-                <option value="over_1year">1年以上</option>
+                <option value="available">空室</option>
+                <option value="occupied">入居中</option>
+                <option value="reserved">予約済み</option>
+                <option value="maintenance">メンテナンス中</option>
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                情報源
-              </label>
-              <select
-                name="source"
-                value={formData.source}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                name="featured"
+                checked={formData.featured}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="website">ウェブサイト</option>
-                <option value="referral">紹介</option>
-                <option value="advertisement">広告</option>
-                <option value="social_media">SNS</option>
-                <option value="other">その他</option>
-              </select>
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label className="ml-2 block text-sm text-gray-900">
+                おすすめ物件として表示
+              </label>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              備考・要望
+              物件説明
             </label>
             <textarea
-              name="notes"
-              value={formData.notes}
+              name="description"
+              value={formData.description}
               onChange={handleInputChange}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="特記事項やご要望があれば入力してください"
+              placeholder="物件の詳細説明を入力"
             />
           </div>
 
           <div className="flex justify-end space-x-4">
             <Link
-              href="/admin/leads"
+              href="/admin/properties"
               className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
             >
               キャンセル
@@ -203,7 +188,7 @@ export default function NewLeadPage() {
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? '追加中...' : 'リードを追加'}
+              {loading ? '登録中...' : '物件を登録'}
             </button>
           </div>
         </form>
