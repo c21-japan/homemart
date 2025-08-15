@@ -8,7 +8,7 @@
      · serverActions
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 6.0s
+ ✓ Compiled successfully in 8.0s
    Skipping validation of types
    Skipping linting
    Collecting page data ...
@@ -37,14 +37,14 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY: 未設定
    Collecting build traces ...
 
 Route (app)                                           Size  First Load JS
-┌ ○ /                                              2.73 kB         156 kB
+┌ ○ /                                              2.78 kB         156 kB
 ├ ○ /_not-found                                       1 kB         101 kB
 ├ ○ /about                                         3.35 kB         107 kB
-├ ○ /admin                                         3.15 kB         107 kB
+├ ○ /admin                                          4.4 kB         108 kB
 ├ ○ /admin/attendance                              1.54 kB         105 kB
 ├ ○ /admin/attendance/new                          1.67 kB         105 kB
 ├ ○ /admin/career-path                             2.66 kB         103 kB
-├ ○ /admin/dashboard                               3.85 kB         159 kB
+├ ○ /admin/dashboard                               3.89 kB         159 kB
 ├ ○ /admin/documents                               1.52 kB         105 kB
 ├ ○ /admin/documents/upload                        2.25 kB         106 kB
 ├ ○ /admin/inquiries                               2.55 kB         145 kB
@@ -63,7 +63,7 @@ Route (app)                                           Size  First Load JS
 ├ ○ /admin/part-time-attendance/form               3.93 kB         147 kB
 ├ ○ /admin/part-time-attendance/reports            4.65 kB         147 kB
 ├ ○ /admin/part-time-attendance/shift-request      3.81 kB         146 kB
-├ ○ /admin/properties                               4.2 kB         147 kB
+├ ○ /admin/properties                              4.13 kB         147 kB
 ├ ○ /admin/properties-list                         3.69 kB         146 kB
 ├ ƒ /admin/properties/[id]/edit                    2.76 kB         145 kB
 ├ ○ /admin/properties/new                          4.52 kB         108 kB
