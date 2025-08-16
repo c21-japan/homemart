@@ -25,17 +25,64 @@ interface AttendanceRecord {
   employee_name: string
 }
 
+interface RealtimeAttendance {
+  id: string
+  employee_id: string
+  attendance_type: 'clock_in' | 'clock_out'
+  location_data: {
+    latitude: number
+    longitude: number
+    address: string
+  }
+  timestamp: string
+  created_at: string
+  part_time_employees: {
+    name: string
+  }
+}
+
 export default function PartTimeAttendancePage() {
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
+  const [realtimeAttendances, setRealtimeAttendances] = useState<RealtimeAttendance[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEmployee, setSelectedEmployee] = useState<string>('')
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1)
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     fetchData()
+    fetchRealtimeData()
+    
+    // 現在時刻を1分ごとに更新
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+      fetchRealtimeData() // 1分ごとにリアルタイムデータを更新
+    }, 60000)
+    
+    // リアルタイムデータを5秒ごとに更新
+    const realtimeTimer = setInterval(() => {
+      fetchRealtimeData()
+    }, 5000)
+
+    return () => {
+      clearInterval(timer)
+      clearInterval(realtimeTimer)
+    }
   }, [selectedEmployee, selectedYear, selectedMonth])
+
+  const fetchRealtimeData = async () => {
+    try {
+      const response = await fetch('/api/part-time-attendance/realtime')
+      if (response.ok) {
+        const { data } = await response.json()
+        setRealtimeAttendances(data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching realtime data:', error)
+    }
+  }
 
   const fetchData = async () => {
     try {
@@ -118,6 +165,67 @@ export default function PartTimeAttendancePage() {
     return Array.from({ length: 12 }, (_, i) => i + 1)
   }
 
+  // カレンダー用の日付配列を生成
+  const getCalendarDays = () => {
+    const year = selectedYear
+    const month = selectedMonth
+    const firstDay = new Date(year, month - 1, 1)
+    const lastDay = new Date(year, month, 0)
+    const daysInMonth = lastDay.getDate()
+    const firstDayOfWeek = firstDay.getDay()
+    
+    const days = []
+    
+    // 前月の日付を追加
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      const prevDate = new Date(year, month - 2, lastDay.getDate() - i)
+      days.push({
+        date: prevDate,
+        isCurrentMonth: false,
+        isToday: false
+      })
+    }
+    
+    // 当月の日付を追加
+    for (let i = 1; i <= daysInMonth; i++) {
+      const currentDate = new Date(year, month - 1, i)
+      const today = new Date()
+      days.push({
+        date: currentDate,
+        isCurrentMonth: true,
+        isToday: today.getFullYear() === year && today.getMonth() === month - 1 && today.getDate() === i
+      })
+    }
+    
+    // 翌月の日付を追加（6週分になるように）
+    const remainingDays = 42 - days.length
+    for (let i = 1; i <= remainingDays; i++) {
+      const nextDate = new Date(year, month, i)
+      days.push({
+        date: nextDate,
+        isCurrentMonth: false,
+        isToday: false
+      })
+    }
+    
+    return days
+  }
+
+  // 指定日の勤怠記録を取得
+  const getAttendanceForDate = (date: Date) => {
+    const dateString = date.toISOString().split('T')[0]
+    return attendanceRecords.filter(record => record.date === dateString)
+  }
+
+  // 指定日のリアルタイム勤怠を取得
+  const getRealtimeAttendanceForDate = (date: Date) => {
+    const dateString = date.toISOString().split('T')[0]
+    return realtimeAttendances.filter(record => {
+      const recordDate = new Date(record.timestamp).toISOString().split('T')[0]
+      return recordDate === dateString
+    })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 'var(--header-height, 0px)' }}>
@@ -163,6 +271,65 @@ export default function PartTimeAttendancePage() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* リアルタイム通知 */}
+        <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">リアルタイム勤怠状況</h2>
+              <p className="text-green-100">最新の出社・退社記録がリアルタイムで表示されます</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm opacity-90">現在時刻</p>
+              <p className="text-2xl font-bold">
+                {currentTime.toLocaleTimeString('ja-JP', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </p>
+            </div>
+          </div>
+          
+          {realtimeAttendances.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {realtimeAttendances.slice(0, 3).map((attendance) => (
+                <div key={attendance.id} className="bg-white bg-opacity-20 rounded-lg p-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-bold">{attendance.part_time_employees.name}</span>
+                      <span className={`ml-2 px-2 py-1 rounded text-xs font-bold ${
+                        attendance.attendance_type === 'clock_in' 
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-red-500 text-white'
+                      }`}>
+                        {attendance.attendance_type === 'clock_in' ? '出社' : '退社'}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm opacity-90">
+                        {new Date(attendance.timestamp).toLocaleTimeString('ja-JP', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        })}
+                      </p>
+                      <p className="text-xs opacity-75">
+                        {new Date(attendance.timestamp).toLocaleDateString('ja-JP', {
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-xs opacity-90 mt-1">
+                    位置: {attendance.location_data.address}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* フィルター */}
@@ -213,6 +380,92 @@ export default function PartTimeAttendancePage() {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+        </div>
+
+        {/* カレンダー表示 */}
+        <div className="bg-white rounded-lg shadow mb-6">
+          <div className="p-6 border-b">
+            <h2 className="text-xl font-bold">カレンダー表示</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {selectedYear}年{selectedMonth}月の勤怠状況
+            </p>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-7 gap-1">
+              {/* 曜日ヘッダー */}
+              {['日', '月', '火', '水', '木', '金', '土'].map((day) => (
+                <div key={day} className="p-2 text-center font-bold text-gray-600 bg-gray-50 rounded">
+                  {day}
+                </div>
+              ))}
+              
+              {/* 日付と勤怠状況 */}
+              {getCalendarDays().map((day, index) => {
+                const dayAttendance = getAttendanceForDate(day.date)
+                const realtimeAttendance = getRealtimeAttendanceForDate(day.date)
+                
+                return (
+                  <div
+                    key={index}
+                    className={`p-2 min-h-[80px] border rounded ${
+                      day.isCurrentMonth 
+                        ? 'bg-white' 
+                        : 'bg-gray-50 text-gray-400'
+                    } ${
+                      day.isToday 
+                        ? 'ring-2 ring-blue-500' 
+                        : ''
+                    }`}
+                  >
+                    <div className="text-sm font-medium mb-1">
+                      {day.date.getDate()}
+                    </div>
+                    
+                    {/* 勤怠状況表示 */}
+                    {day.isCurrentMonth && dayAttendance.length > 0 && (
+                      <div className="space-y-1">
+                        {dayAttendance.map((record) => (
+                          <div key={record.id} className="text-xs">
+                            <div className="font-medium text-blue-600">
+                              {record.employee_name}
+                            </div>
+                            {record.clock_in_time && (
+                              <div className="text-green-600">
+                                ↑ {formatTime(record.clock_in_time)}
+                              </div>
+                            )}
+                            {record.clock_out_time && (
+                              <div className="text-red-600">
+                                ↓ {formatTime(record.clock_out_time)}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* リアルタイム通知表示 */}
+                    {day.isCurrentMonth && realtimeAttendance.length > 0 && (
+                      <div className="mt-1">
+                        {realtimeAttendance.slice(0, 2).map((attendance) => (
+                          <div
+                            key={attendance.id}
+                            className={`text-xs px-1 py-0.5 rounded ${
+                              attendance.attendance_type === 'clock_in'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {attendance.attendance_type === 'clock_in' ? '出社' : '退社'}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>

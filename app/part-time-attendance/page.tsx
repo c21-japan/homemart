@@ -227,14 +227,40 @@ export default function PartTimeAttendancePublicPage() {
         updatedRecord = insertData
       }
 
+      // リアルタイム通知用のデータを送信
+      try {
+        const realtimeData = {
+          employee_id: selectedEmployee,
+          attendance_type: attendanceType,
+          location_data: {
+            latitude: locationData.latitude,
+            longitude: locationData.longitude,
+            address: locationData.address
+          },
+          timestamp: now.toISOString()
+        }
+
+        await fetch('/api/part-time-attendance/realtime', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(realtimeData)
+        })
+      } catch (realtimeError) {
+        console.warn('Realtime notification failed:', realtimeError)
+        // リアルタイム通知が失敗してもメインの処理は続行
+      }
+
       // 成功メッセージ
       const actionText = attendanceType === 'clock_in' ? '出社' : '退社'
       const timeText = now.toLocaleTimeString('ja-JP', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        second: '2-digit'
       })
       
-      alert(`${actionText}を記録しました！\n時間: ${timeText}\n従業員: ${employees.find(e => e.id === selectedEmployee)?.name}`)
+      alert(`${actionText}を記録しました！\n時間: ${timeText}\n従業員: ${employees.find(e => e.id === selectedEmployee)?.name}\n位置情報: ${locationData.address}`)
 
       // フォームをリセット
       setNotes('')

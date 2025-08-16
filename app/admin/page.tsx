@@ -166,6 +166,16 @@ export default function AdminDashboard() {
       count: stats.attendanceCount,
       gradient: 'bg-gradient-to-br from-teal-500 to-teal-600',
       iconColor: 'text-teal-600'
+    },
+    {
+      title: 'アルバイト勤怠管理',
+      description: 'アルバイトのGPS位置情報付き勤怠管理',
+      icon: CalendarDaysIcon,
+      href: '/admin/part-time-attendance',
+      action: 'アルバイト勤怠',
+      count: stats.partTimeAttendanceCount,
+      gradient: 'bg-gradient-to-br from-pink-500 to-pink-600',
+      iconColor: 'text-pink-600'
     }
   ];
 
