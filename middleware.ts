@@ -1,6 +1,34 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+// 認証が必要なルートを定義
+const isProtectedRoute = createRouteMatcher([
+  '/admin(.*)',
+  '/member(.*)',
+  '/attendance(.*)',
+  '/part-time-attendance(.*)',
+  '/api/leads(.*)',
+  '/api/attachments(.*)',
+  '/api/photos(.*)',
+  '/api/upload(.*)',
+  '/api/send-email(.*)',
+  '/api/cron(.*)',
+  '/api/reporting(.*)',
+  '/api/integrations(.*)',
+  '/api/webpush(.*)',
+  '/api/favorites(.*)',
+  '/api/github(.*)',
+  '/api/google(.*)',
+  '/api/properties(.*)',
+  '/api/send-application-status-email(.*)',
+  '/api/test-email(.*)'
+]);
+
+export default clerkMiddleware((auth, req) => {
+  // 保護されたルートでのみ認証を要求
+  if (isProtectedRoute(req)) {
+    return auth().protect();
+  }
+});
 
 export const config = {
   matcher: [

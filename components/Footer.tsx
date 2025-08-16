@@ -1,6 +1,47 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function Footer() {
+  useEffect(() => {
+    // フッターへのスムーズスクロール機能
+    const handleSmoothScroll = () => {
+      // スクロールイベントの最適化
+      let ticking = false;
+      
+      const updateScroll = () => {
+        ticking = false;
+      };
+      
+      const requestTick = () => {
+        if (!ticking) {
+          requestAnimationFrame(updateScroll);
+          ticking = true;
+        }
+      };
+      
+      window.addEventListener('scroll', requestTick, { passive: true });
+      
+      return () => {
+        window.removeEventListener('scroll', requestTick);
+      };
+    };
+    
+    handleSmoothScroll();
+  }, []);
+
+  // フッターへのスムーズスクロール関数
+  const scrollToFooter = () => {
+    const footer = document.getElementById('footer');
+    if (footer) {
+      footer.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <footer className="bg-[#121212] text-white py-28" id="footer">
       <div className="max-w-7xl mx-auto px-6">

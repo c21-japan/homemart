@@ -2,9 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* スムーズスクロールを有効化 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* スクロールバーのスタイリング */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 /* ヘッダーの高さ分のマージンを追加 */
 body {
   padding-top: var(--header-height, 0px);
+  /* スクロールの動作を改善 */
+  overflow-x: hidden;
 }
 
 /* 既存のCSSの最後に追加 */

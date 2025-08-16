@@ -33,12 +33,73 @@ import {
   WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline'
 
+interface Activity {
+  id: string;
+  type: 'success' | 'warning' | 'info' | 'error';
+  message: string;
+  time: string;
+  user?: string;
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  // 最近のアクティビティデータ（サンプル）
+  const [recentActivities] = useState<Activity[]>([
+    {
+      id: '1',
+      type: 'success',
+      message: '新しい物件が登録されました',
+      time: '5分前',
+      user: '田中太郎'
+    },
+    {
+      id: '2',
+      type: 'info',
+      message: 'システムメンテナンスが完了しました',
+      time: '1時間前',
+      user: 'システム'
+    },
+    {
+      id: '3',
+      type: 'warning',
+      message: 'リードのフォローアップが必要です',
+      time: '2時間前',
+      user: '佐藤花子'
+    },
+    {
+      id: '4',
+      type: 'error',
+      message: 'ファイルのアップロードに失敗しました',
+      time: '3時間前',
+      user: '山田次郎'
+    }
+  ]);
+
+  // 通知を閉じる
+  const closeNotifications = () => {
+    setNotificationsOpen(false);
+  };
+
+  // 通知外をクリックした時に閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsOpen) {
+        const target = event.target as Element;
+        if (!target.closest('.notifications-dropdown')) {
+          setNotificationsOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notificationsOpen]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -348,10 +409,73 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <div className="flex items-center space-x-4">
               {/* 通知アイコン */}
-              <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
-                <BellIcon className="h-6 w-6" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
+              <div className="relative notifications-dropdown">
+                <button 
+                  onClick={() => setNotificationsOpen(!notificationsOpen)}
+                  className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <BellIcon className="h-6 w-6" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+
+                {/* 通知ドロップダウン */}
+                {notificationsOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 z-50">
+                    <div className="p-4 border-b border-slate-200">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-900">最近のアクティビティ</h3>
+                        <button
+                          onClick={closeNotifications}
+                          className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="max-h-96 overflow-y-auto">
+                      {recentActivities.length > 0 ? (
+                        <div className="divide-y divide-slate-100">
+                          {recentActivities.map((activity) => (
+                            <div key={activity.id} className="p-4 hover:bg-slate-50 transition-colors">
+                              <div className="flex items-start space-x-3">
+                                <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                  activity.type === 'success' ? 'bg-green-500' :
+                                  activity.type === 'warning' ? 'bg-yellow-500' :
+                                  activity.type === 'error' ? 'bg-red-500' :
+                                  'bg-blue-500'
+                                }`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-slate-900">{activity.message}</p>
+                                  <div className="flex items-center justify-between mt-1">
+                                    <p className="text-xs text-slate-500">
+                                      {activity.user && `by ${activity.user}`}
+                                    </p>
+                                    <p className="text-xs text-slate-400">{activity.time}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-8 text-center text-slate-500">
+                          <BellIcon className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                          <p className="text-sm">新しいアクティビティはありません</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="p-4 border-t border-slate-200 bg-slate-50">
+                      <button className="w-full text-center text-sm text-slate-600 hover:text-slate-800 font-medium">
+                        すべての通知を表示
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* 機密情報表示 */}
               {PAGE_PERMISSIONS.find(p => p.path === pathname)?.isSensitive && (
