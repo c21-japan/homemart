@@ -13,7 +13,7 @@ export default function FPConsultationExample() {
       message: '住宅購入について相談したいです',
       fp_consultation_requested: true,
       fp_info: {
-        consultationDate: '2024-01-15T10:00',
+        consultationDate: '2025-01-15T10:00',
         consultation_topics: ['住宅ローン', 'ライフプラン'],
         financial_goals: ['住宅購入'],
         monthly_income: 500000,
@@ -36,7 +36,7 @@ export default function FPConsultationExample() {
       message: 'FP相談を希望します',
       fp_consultation_requested: true,
       fp_info: {
-        consultationDate: '2024-01-20T14:00',
+        consultationDate: '2025-01-20T14:00',
         consultation_topics: ['資産運用', '老後資金準備'],
         financial_goals: ['資産運用', '老後資金準備'],
         monthly_income: 800000,

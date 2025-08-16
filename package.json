@@ -9,13 +9,20 @@
     "lint": "next lint",
     "setup:db": "node scripts/setup-supabase.js",
     "setup:env": "cp .env.example .env.local",
-    "setup:all": "npm run setup:env && npm run setup:db"
+    "setup:all": "npm run setup:env && npm run setup:db",
+    "seed:customers": "npx tsx scripts/seed-customers.ts",
+    "cron:daily": "curl -X POST http://localhost:3000/api/cron/daily",
+    "cron:manager": "curl -X POST http://localhost:3000/api/cron/manager"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.1",
+    "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
     "@prisma/client": "^6.14.0",
+    "@react-email/components": "^0.5.0",
+    "@react-email/render": "^1.2.0",
+    "@react-pdf/renderer": "^4.3.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.55.0",
@@ -24,8 +31,11 @@
     "@types/google-apps-script": "^1.0.99",
     "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "cookies-next": "^6.1.0",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.1",
     "googleapis": "^155.0.1",
     "idb-keyval": "^6.2.2",
@@ -39,7 +49,8 @@
     "react-dom": "19.1.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.62.0",
-    "resend": "^6.0.1",
+
+    "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
     "zod": "^4.0.17"
   },

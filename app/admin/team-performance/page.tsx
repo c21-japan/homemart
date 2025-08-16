@@ -304,7 +304,7 @@ export default function TeamPerformancePage() {
 
   const [selectedStore, setSelectedStore] = useState<string>('1')
   const [selectedTeam, setSelectedTeam] = useState<string>('1A')
-  const [lastUpdated, setLastUpdated] = useState<string>('2024-08-15 09:00:00')
+  const [lastUpdated, setLastUpdated] = useState<string>('2025-08-15 08:00:00')
 
   // 全店舗ランキング
   const storeRanking = [...stores].sort((a, b) => b.monthlyAchievement - a.monthlyAchievement)

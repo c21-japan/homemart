@@ -52,7 +52,7 @@ export default function AboutPage() {
                   <td className="py-6 px-8 bg-[#F8F7F2] font-semibold text-[#121212]">設立</td>
                   <td className="py-6 px-8">
                     2014年6月19日（個人事業創業）<br />
-                    2024年5月7日（法人設立）
+                    2025年5月7日（法人設立）
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
@@ -160,7 +160,7 @@ export default function AboutPage() {
               
               <div className="flex gap-8 items-start">
                 <div className="w-28 flex-shrink-0">
-                  <span className="font-bold text-[#BEAF87] text-lg">2024年5月</span>
+                  <span className="font-bold text-[#BEAF87] text-lg">2025年5月</span>
                 </div>
                 <div className="flex-1 pt-1">
                   <p className="text-lg">株式会社ホームマート設立</p>

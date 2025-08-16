@@ -81,7 +81,7 @@ export default function ReasonsPage() {
       <div className="bg-[#F5F5DC] py-4">
         <div className="max-w-7xl mx-auto px-4">
           <p className="text-xs text-gray-600">
-            ※店舗数No.1表記について：売買・賃貸の両方を取り扱う不動産仲介フランチャイズ業としての全国における店舗数（2024年7月時点／東京商工リサーチ調べ）
+            ※店舗数No.1表記について：売買・賃貸の両方を取り扱う不動産仲介フランチャイズ業としての全国における店舗数（2025年7月時点／東京商工リサーチ調べ）
           </p>
         </div>
       </div>

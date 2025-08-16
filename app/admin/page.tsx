@@ -40,6 +40,8 @@ interface StatCard {
   icon: any;
   color: string;
   bgColor: string;
+  prefix?: string;
+  suffix?: string;
 }
 
 interface Activity {
@@ -58,8 +60,8 @@ export default function AdminDashboard() {
   // 統計カード定義
   const statCards: StatCard[] = [
     {
-      title: '総ユーザー数',
-      value: stats.userCount || 0,
+      title: '今月媒介取得数',
+      value: stats.brokerageCount || 0,
       change: 12.5,
       changeType: 'increase',
       icon: UsersIcon,
@@ -67,17 +69,18 @@ export default function AdminDashboard() {
       bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100'
     },
     {
-      title: '登録物件数',
-      value: stats.propertyCount || 0,
+      title: '報告達成率',
+      value: stats.reportAchievementRate || 0,
       change: 8.2,
       changeType: 'increase',
       icon: BuildingOfficeIcon,
       color: 'text-emerald-600',
-      bgColor: 'bg-gradient-to-br from-emerald-50 to-emerald-100'
+      bgColor: 'bg-gradient-to-br from-emerald-50 to-emerald-100',
+      suffix: '%'
     },
     {
-      title: 'アクティブリード',
-      value: stats.leadCount || 0,
+      title: '期日超過件数',
+      value: stats.overdueCount || 0,
       change: -3.1,
       changeType: 'decrease',
       icon: ArrowTrendingUpIcon,
@@ -85,18 +88,30 @@ export default function AdminDashboard() {
       bgColor: 'bg-gradient-to-br from-orange-50 to-orange-100'
     },
     {
-      title: '今日の出勤者',
-      value: stats.attendanceCount || 0,
+      title: 'リフォーム見込み粗利',
+      value: stats.totalExpectedProfit || 0,
       change: 5.7,
       changeType: 'increase',
       icon: ClockIcon,
       color: 'text-purple-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100'
+      bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100',
+      prefix: '¥',
+      suffix: '万'
     }
   ];
 
   // ダッシュボードカード定義
   const dashboardCards: DashboardCard[] = [
+    {
+      title: '顧客管理',
+      description: '売却・購入・リフォーム顧客の一元管理',
+      icon: UsersIcon,
+      href: '/admin/customers',
+      action: '顧客一覧',
+      count: stats.customerCount,
+      gradient: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      iconColor: 'text-blue-600'
+    },
     {
       title: 'ユーザー管理',
       description: '社員・アルバイトの管理',
@@ -219,15 +234,34 @@ export default function AdminDashboard() {
 
   // 統計データの初期化
   useEffect(() => {
-    setStats({
-      userCount: 28,
-      propertyCount: 147,
-      leadCount: 89,
-      documentCount: 234,
-      applicationCount: 12,
-      attendanceCount: 18,
-      reportCount: 15
-    });
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/admin/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('統計データ取得エラー:', error);
+        // フォールバック用のサンプルデータ
+        setStats({
+          userCount: 28,
+          propertyCount: 147,
+          leadCount: 89,
+          documentCount: 234,
+          applicationCount: 12,
+          attendanceCount: 18,
+          reportCount: 15,
+          customerCount: 156,
+          brokerageCount: 23,
+          reportAchievementRate: 87,
+          overdueCount: 5,
+          totalExpectedProfit: 1250
+        });
+      }
+    };
+
+    fetchStats();
 
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -294,7 +328,9 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
-                <p className="text-3xl font-bold text-slate-900">{stat.value.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-slate-900">
+                  {stat.prefix || ''}{stat.value.toLocaleString()}{stat.suffix || ''}
+                </p>
                 <div className="flex items-center mt-2">
                   {stat.changeType === 'increase' ? (
                     <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />

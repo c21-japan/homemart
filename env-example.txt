@@ -20,10 +20,6 @@ GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_REDIRECT_URI=http://localhost:3000/api/google/auth
 
-# SendGrid設定（メール送信用）
-SENDGRID_API_KEY=your_sendgrid_api_key_here
-SENDGRID_FROM_EMAIL=your_verified_sender_email@example.com
-
 # Mailjet設定（メール送信用）
 MAILJET_API_KEY=your_mailjet_api_key_here
 MAILJET_SECRET_KEY=your_mailjet_secret_key_here
@@ -65,3 +61,11 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 # その他の設定
 NODE_ENV=development
 CRON_SECRET=your_cron_secret_here
+
+
+
+# 管理者設定
+ADMIN_EMAIL=admin@homemart.co.jp
+
+# ベースURL設定
+NEXT_PUBLIC_BASE_URL=http://localhost:3000

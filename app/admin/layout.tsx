@@ -171,6 +171,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         color: 'text-blue-600'
       },
       {
+        name: '顧客管理',
+        href: '/admin/customers',
+        icon: UsersIcon,
+        requiredRole: UserRole.STAFF,
+        isSensitive: true,
+        color: 'text-emerald-600'
+      },
+      {
         name: 'リード管理',
         href: '/admin/leads',
         icon: UsersIcon,

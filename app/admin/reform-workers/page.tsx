@@ -48,7 +48,7 @@ export default function ReformWorkersPage() {
   const [projects, setProjects] = useState<ReformProject[]>([])
   const [workerPerformance, setWorkerPerformance] = useState<WorkerPerformance[]>([])
   const [selectedWorker, setSelectedWorker] = useState<string>('')
-  const [lastUpdated, setLastUpdated] = useState<string>('2024-08-15 08:00:00')
+  const [lastUpdated, setLastUpdated] = useState<string>('2025-08-15 08:00:00')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -128,9 +128,9 @@ export default function ReformWorkersPage() {
           id: 'P001',
           name: '奈良県民家リフォーム',
           clientName: '山田様',
-          startDate: '2024-08-01',
-          plannedEndDate: '2024-09-15',
-          actualEndDate: '2024-09-10',
+          startDate: '2025-08-01',
+          plannedEndDate: '2025-09-15',
+          actualEndDate: '2025-09-10',
           budget: 2500000,
           status: 'completed',
           workers: ['W001', 'W003'],
@@ -141,8 +141,8 @@ export default function ReformWorkersPage() {
           id: 'P002',
           name: '南大阪マンション改修',
           clientName: '佐藤様',
-          startDate: '2024-08-10',
-          plannedEndDate: '2024-09-30',
+          startDate: '2025-08-10',
+          plannedEndDate: '2025-09-30',
           budget: 3000000,
           status: 'in_progress',
           workers: ['W002', 'W005'],
@@ -153,8 +153,8 @@ export default function ReformWorkersPage() {
           id: 'P003',
           name: '京都古民家修復',
           clientName: '田中様',
-          startDate: '2024-08-15',
-          plannedEndDate: '2024-10-15',
+          startDate: '2025-08-15',
+          plannedEndDate: '2025-10-15',
           budget: 4000000,
           status: 'in_progress',
           workers: ['W001', 'W004'],
@@ -165,8 +165,8 @@ export default function ReformWorkersPage() {
           id: 'P004',
           name: '神戸オフィス改装',
           clientName: '株式会社ABC',
-          startDate: '2024-08-20',
-          plannedEndDate: '2024-10-20',
+          startDate: '2025-08-20',
+          plannedEndDate: '2025-10-20',
           budget: 3500000,
           status: 'in_progress',
           workers: ['W003', 'W005'],
