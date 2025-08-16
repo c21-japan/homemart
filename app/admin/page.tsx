@@ -155,6 +155,16 @@ export default function AdminDashboard() {
       count: stats.reportCount,
       gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
       iconColor: 'text-indigo-600'
+    },
+    {
+      title: '勤怠管理',
+      description: '従業員の勤怠記録管理',
+      icon: ClockIcon,
+      href: '/admin/attendance',
+      action: '勤怠一覧',
+      count: stats.attendanceCount,
+      gradient: 'bg-gradient-to-br from-teal-500 to-teal-600',
+      iconColor: 'text-teal-600'
     }
   ];
 

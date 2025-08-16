@@ -50,6 +50,12 @@ export default function Header() {
             <SignedIn>
               <div className="flex items-center space-x-4">
                 <Link
+                  href="/attendance"
+                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  勤怠管理
+                </Link>
+                <Link
                   href="/admin"
                   className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
@@ -60,11 +66,7 @@ export default function Header() {
             </SignedIn>
             <SignedOut>
               <div className="flex items-center space-x-4">
-                <SignInButton mode="modal">
-                  <button className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors">
-                    社員ログイン
-                  </button>
-                </SignInButton>
+                {/* 社員ログインボタンを非表示 - 一般ユーザーには見られたくない */}
                 <Link
                   href="/contact"
                   className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
@@ -144,6 +146,13 @@ export default function Header() {
                 <SignedIn>
                   <div className="space-y-1">
                     <Link
+                      href="/attendance"
+                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      勤怠管理
+                    </Link>
+                    <Link
                       href="/admin"
                       className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
                       onClick={() => setIsMenuOpen(false)}
@@ -157,11 +166,7 @@ export default function Header() {
                 </SignedIn>
                 <SignedOut>
                   <div className="space-y-1">
-                    <SignInButton mode="modal">
-                      <button className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors">
-                        社員ログイン
-                      </button>
-                    </SignInButton>
+                    {/* 社員ログインボタンを非表示 - 一般ユーザーには見られたくない */}
                     <Link
                       href="/contact"
                       className="block w-full px-3 py-2 text-base font-medium bg-orange-600 text-white hover:bg-orange-700 rounded-md transition-colors"

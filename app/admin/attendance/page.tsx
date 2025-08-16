@@ -1,173 +1,308 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useUser } from '@clerk/nextjs'
+import { useEffect, useState } from 'react'
+import { attendanceAPI, AttendanceRecord, Employee } from '@/lib/supabase/attendance'
 
-export default function AttendancePage() {
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState('today');
+interface AttendanceRecordWithEmployee extends AttendanceRecord {
+  employees: {
+    name: string
+  }
+}
+
+export default function AdminAttendancePage() {
+  const { user, isLoaded } = useUser()
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecordWithEmployee[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedEmployee, setSelectedEmployee] = useState<string>('all')
+  const [dateRange, setDateRange] = useState(30)
 
   useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        setLoading(true);
-        // モックデータ
-        const mockRecords = [
-          {
-            id: 1,
-            employeeName: '田中太郎',
-            date: '2025-08-15',
-            checkIn: '09:00',
-            checkOut: '18:00',
-            breakTime: '60分',
-            workingHours: '8時間',
-            status: '出勤'
-          },
-          {
-            id: 2,
-            employeeName: '佐藤花子',
-            date: '2025-08-15',
-            checkIn: '09:15',
-            checkOut: '17:45',
-            breakTime: '60分',
-            workingHours: '7時間30分',
-            status: '出勤'
-          },
-          {
-            id: 3,
-            employeeName: '山田次郎',
-            date: '2025-08-15',
-            checkIn: '-',
-            checkOut: '-',
-            breakTime: '-',
-            workingHours: '-',
-            status: '欠勤'
-          }
-        ];
-        setAttendanceRecords(mockRecords);
-      } catch (error) {
-        console.error('勤怠データ取得エラー:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAttendance();
-  }, [dateFilter]);
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case '出勤':
-        return 'bg-green-100 text-green-800';
-      case '遅刻':
-        return 'bg-yellow-100 text-yellow-800';
-      case '欠勤':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+    if (isLoaded && user) {
+      fetchData()
     }
-  };
+  }, [isLoaded, user, selectedDate, dateRange, selectedEmployee])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      
+      // 全従業員を取得
+      const employeesData = await attendanceAPI.getAllEmployees()
+      setEmployees(employeesData)
+      
+      // 勤怠記録を取得
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - dateRange)
+      
+      let records: AttendanceRecordWithEmployee[] = []
+      
+      if (selectedEmployee === 'all') {
+        // 全従業員の記録を取得
+        const allRecords = await attendanceAPI.getAttendanceRecords(startDate, new Date())
+        records = allRecords as AttendanceRecordWithEmployee[]
+      } else {
+        // 特定の従業員の記録を取得
+        const employeeRecords = await attendanceAPI.getAttendanceRecordsByEmployee(selectedEmployee, dateRange)
+        const employee = employeesData.find(emp => emp.id === selectedEmployee)
+        if (employee) {
+          records = employeeRecords.map(record => ({
+            ...record,
+            employees: { name: employee.name }
+          }))
+        }
+      }
+      
+      setAttendanceRecords(records)
+    } catch (error) {
+      console.error('データの取得に失敗しました:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const exportCSV = () => {
+    const headers = ['従業員名', '出社時刻', '退勤時刻', '勤務時間(時間)', '日付']
+    const csvContent = [
+      headers.join(','),
+      ...attendanceRecords.map(record => [
+        record.employees.name,
+        new Date(record.clock_in_at).toLocaleString('ja-JP'),
+        record.clock_out_at ? new Date(record.clock_out_at).toLocaleString('ja-JP') : '勤務中',
+        record.clock_out_at 
+          ? ((new Date(record.clock_out_at).getTime() - new Date(record.clock_in_at).getTime()) / (1000 * 60 * 60)).toFixed(2)
+          : ((new Date().getTime() - new Date(record.clock_in_at).getTime()) / (1000 * 60 * 60)).toFixed(2),
+        new Date(record.clock_in_at).toLocaleDateString('ja-JP')
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `attendance_${selectedDate}_${dateRange}days.csv`
+    link.click()
+  }
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('ja-JP')
+  }
+
+  const formatHours = (hours: number) => {
+    const h = Math.floor(hours)
+    const m = Math.round((hours - h) * 60)
+    return `${h}時間${m}分`
+  }
+
+  const getWorkHours = (record: AttendanceRecord) => {
+    if (record.clock_out_at) {
+      return (new Date(record.clock_out_at).getTime() - new Date(record.clock_in_at).getTime()) / (1000 * 60 * 60)
+    } else {
+      return (new Date().getTime() - new Date(record.clock_in_at).getTime()) / (1000 * 60 * 60)
+    }
+  }
+
+  const getTotalWorkHours = () => {
+    return attendanceRecords.reduce((total, record) => {
+      return total + getWorkHours(record)
+    }, 0)
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">ログインが必要です</h1>
+          <p className="text-gray-600">管理者画面にアクセスするにはログインしてください</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">勤怠管理</h1>
-        <Link
-          href="/admin/attendance/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          勤怠登録
-        </Link>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+          勤怠管理（管理者）
+        </h1>
+
+        {/* コントロール */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                表示期間
+              </label>
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              >
+                <option value={7}>直近7日</option>
+                <option value={14}>直近14日</option>
+                <option value={30}>直近30日</option>
+                <option value={60}>直近60日</option>
+                <option value={90}>直近90日</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                従業員
+              </label>
+              <select
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              >
+                <option value="all">全従業員</option>
+                {employees.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                基準日
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+            
+            <div>
+              <button
+                onClick={exportCSV}
+                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                CSV出力
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 統計情報 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">総勤務時間</h3>
+            <p className="text-3xl font-bold text-blue-600">
+              {formatHours(getTotalWorkHours())}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">記録件数</h3>
+            <p className="text-3xl font-bold text-green-600">
+              {attendanceRecords.length}件
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">対象従業員数</h3>
+            <p className="text-3xl font-bold text-purple-600">
+              {selectedEmployee === 'all' ? employees.length : 1}名
+            </p>
+          </div>
+        </div>
+
+        {/* 勤怠記録一覧 */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold">勤怠記録一覧</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {dateRange}日間の記録を表示中
+            </p>
+          </div>
+          
+          {loading ? (
+            <div className="p-6 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-500">読み込み中...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      従業員名
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      出社時刻
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      退勤時刻
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      勤務時間
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      日付
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ステータス
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {attendanceRecords.map((record) => (
+                    <tr key={record.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {record.employees.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatTime(record.clock_in_at)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {record.clock_out_at ? formatTime(record.clock_out_at) : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatHours(getWorkHours(record))}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(record.clock_in_at).toLocaleDateString('ja-JP')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          record.clock_out_at 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {record.clock_out_at ? '完了' : '勤務中'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          
+          {!loading && attendanceRecords.length === 0 && (
+            <div className="p-6 text-center text-gray-500">
+              該当する勤怠記録がありません
+            </div>
+          )}
+        </div>
       </div>
-
-      <div className="mb-4 flex space-x-4">
-        <select
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-        >
-          <option value="today">今日</option>
-          <option value="week">今週</option>
-          <option value="month">今月</option>
-        </select>
-        <input
-          type="date"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  従業員名
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  日付
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  出勤時刻
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  退勤時刻
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  労働時間
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ステータス
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  操作
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {attendanceRecords.map((record) => (
-                <tr key={record.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {record.employeeName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.checkIn}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.checkOut}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.workingHours}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(record.status)}`}>
-                      {record.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-3">編集</button>
-                    <button className="text-red-600 hover:text-red-900">削除</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {attendanceRecords.length === 0 && !loading && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">勤怠記録が見つかりません</p>
-        </div>
-      )}
     </div>
-  );
+  )
 }

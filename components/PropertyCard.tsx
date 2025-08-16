@@ -108,18 +108,9 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
     router.push(`/properties/${property.id}`)
   }
 
-  const handleDetailClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    router.push(`/properties/${property.id}`)
-  }
-
   return (
-    <div 
-      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-      onClick={handleCardClick}
-    >
-      <div className="relative">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+      <div className="relative cursor-pointer" onClick={handleCardClick}>
         {property.image_url ? (
           <div className="relative w-full h-48">
             <Image
@@ -184,7 +175,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 cursor-pointer" onClick={handleCardClick}>
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {property.name}
         </h3>
@@ -203,7 +194,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
           </span>
           
           <button
-            onClick={handleDetailClick}
+            onClick={handleCardClick}
             className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors z-10"
           >
             詳細を見る
