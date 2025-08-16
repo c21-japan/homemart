@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserRole, PERMISSIONS, hasPermission, OWNER_EMAILS, ADMIN_EMAILS } from '@/lib/auth/permissions'
-import { useUser } from '@clerk/nextjs'
+import { useSession } from 'next-auth/react'
 
 export default function NewUserPage() {
   const { user: currentUser } = useUser()

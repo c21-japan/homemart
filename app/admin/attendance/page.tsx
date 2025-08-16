@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { attendanceAPI, AttendanceRecord, Employee } from '@/lib/supabase/attendance'
 

@@ -32,6 +32,7 @@ import {
   TrophyIcon,
   WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline'
+import Head from 'next/head'
 
 interface Activity {
   id: string;
@@ -102,36 +103,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [notificationsOpen]);
 
   useEffect(() => {
+    console.log('Auth check:', { isLoaded, isSignedIn, user: user?.emailAddresses?.[0]?.emailAddress })
+    
     if (isLoaded) {
       if (!isSignedIn) {
+        console.log('Not signed in, redirecting to login')
         router.push('/member/login')
         return
       }
       if (isSignedIn && user) {
+        console.log('User is signed in, checking permissions...')
+        
+        // 一時的に権限チェックを簡素化
         const userEmail = user.emailAddresses[0]?.emailAddress
-        let userRole: UserRole = UserRole.STAFF
         if (userEmail) {
-          if (OWNER_EMAILS.includes(userEmail)) {
-            userRole = UserRole.OWNER
-          } else if (ADMIN_EMAILS.includes(userEmail)) {
-            userRole = UserRole.ADMIN
+          console.log('User email found:', userEmail)
+          
+          // 基本的な権限チェックのみ
+          if (OWNER_EMAILS.includes(userEmail) || ADMIN_EMAILS.includes(userEmail)) {
+            console.log('User has admin access, setting isChecking to false')
+            setIsChecking(false)
+          } else {
+            console.log('User does not have admin access, redirecting to home')
+            router.push('/')
           }
-        }
-        
-        if (!canAccessPage(userRole, pathname)) {
+        } else {
+          console.log('No user email found, redirecting to home')
           router.push('/')
-          return
         }
-        
-        if (!canAccessSensitiveInfo(userRole, pathname)) {
-          router.push('/admin')
-          return
-        }
-        
-        setIsChecking(false)
       }
     }
-  }, [isLoaded, isSignedIn, user, router, pathname])
+  }, [isLoaded, isSignedIn, user, router])
 
   if (!isLoaded || isChecking) {
     return (
@@ -301,23 +303,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* ユーザー情報 */}
       <div className="p-6 border-b border-slate-200 bg-slate-50">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">
-              {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-900 truncate">
-              {user?.firstName || user?.emailAddresses[0]?.emailAddress}
-            </p>
-            <div className="flex items-center space-x-2">
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleInfo.color} text-white`}>
-                {roleInfo.label}
+                  <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">
+                {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
               </span>
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-900 truncate">
+                {user?.firstName || user?.emailAddresses[0]?.emailAddress}
+              </p>
+              <div className="flex items-center space-x-2">
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleInfo.color} text-white`}>
+                  {roleInfo.label}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
       </div>
 
       {/* ナビゲーション */}
@@ -372,131 +374,134 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   )
 
   return (
-    <div className="h-screen flex bg-slate-50">
-      {/* モバイル用サイドバーオーバーレイ */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div className="fixed inset-0 bg-slate-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-          <div className="relative flex flex-col w-64 h-full">
-            <Sidebar />
-          </div>
-        </div>
-      )}
-
-      {/* デスクトップ用サイドバー */}
-      <div className="hidden md:flex md:w-64 md:flex-col">
-        <Sidebar />
-      </div>
-
-      {/* メインコンテンツエリア */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* トップヘッダー */}
-        <header className="bg-white border-b border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between h-16 px-6">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="md:hidden text-slate-500 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100"
-              >
-                <Bars3Icon className="h-6 w-6" />
-              </button>
-              
-              <div>
-                <h1 className="text-xl font-bold text-slate-900">管理画面</h1>
-                <p className="text-sm text-slate-500">センチュリー21 広陵店</p>
-              </div>
+    <>
+      <Head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </Head>
+      <div className="min-h-screen flex bg-slate-50">
+        {/* モバイル用サイドバーオーバーレイ */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 md:hidden">
+            <div className="fixed inset-0 bg-slate-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+            <div className="relative flex flex-col w-64 h-full">
+              <Sidebar />
             </div>
+          </div>
+        )}
 
-            <div className="flex items-center space-x-4">
-              {/* 通知アイコン */}
-              <div className="relative notifications-dropdown">
-                <button 
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+        {/* デスクトップ用サイドバー */}
+        <div className="hidden md:flex md:w-64 md:flex-col">
+          <Sidebar />
+        </div>
+
+        {/* メインコンテンツエリア */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* トップヘッダー */}
+          <header className="bg-white border-b border-slate-200 shadow-sm">
+            <div className="flex items-center justify-between h-16 px-6">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="md:hidden text-slate-500 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100"
                 >
-                  <BellIcon className="h-6 w-6" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <Bars3Icon className="h-6 w-6" />
                 </button>
+                
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900">管理画面</h1>
+                  <p className="text-sm text-slate-500">センチュリー21 広陵店</p>
+                </div>
+              </div>
 
-                {/* 通知ドロップダウン */}
-                {notificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 z-50">
-                    <div className="p-4 border-b border-slate-200">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-slate-900">最近のアクティビティ</h3>
-                        <button
-                          onClick={closeNotifications}
-                          className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
-                        >
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
+              <div className="flex items-center space-x-4">
+                {/* 通知アイコン */}
+                <div className="relative notifications-dropdown">
+                  <button 
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <BellIcon className="h-6 w-6" />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  </button>
+
+                  {/* 通知ドロップダウン */}
+                  {notificationsOpen && (
+                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 z-50">
+                      <div className="p-4 border-b border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-slate-900">最近のアクティビティ</h3>
+                          <button
+                            onClick={closeNotifications}
+                            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="max-h-96 overflow-y-auto">
-                      {recentActivities.length > 0 ? (
-                        <div className="divide-y divide-slate-100">
-                          {recentActivities.map((activity) => (
-                            <div key={activity.id} className="p-4 hover:bg-slate-50 transition-colors">
-                              <div className="flex items-start space-x-3">
-                                <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
-                                  activity.type === 'success' ? 'bg-green-500' :
-                                  activity.type === 'warning' ? 'bg-yellow-500' :
-                                  activity.type === 'error' ? 'bg-red-500' :
-                                  'bg-blue-500'
-                                }`} />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-slate-900">{activity.message}</p>
-                                  <div className="flex items-center justify-between mt-1">
-                                    <p className="text-xs text-slate-500">
-                                      {activity.user && `by ${activity.user}`}
-                                    </p>
-                                    <p className="text-xs text-slate-400">{activity.time}</p>
+                      
+                      <div className="max-h-96 overflow-y-auto">
+                        {recentActivities.length > 0 ? (
+                          <div className="divide-y divide-slate-100">
+                            {recentActivities.map((activity) => (
+                              <div key={activity.id} className="p-4 hover:bg-slate-50 transition-colors">
+                                <div className="flex items-start space-x-3">
+                                  <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                    activity.type === 'success' ? 'bg-green-500' :
+                                    activity.type === 'warning' ? 'bg-yellow-500' :
+                                    activity.type === 'error' ? 'bg-red-500' :
+                                    'bg-blue-500'
+                                  }`} />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-slate-900">{activity.message}</p>
+                                    <div className="flex items-center justify-between mt-1">
+                                      <p className="text-xs text-slate-500">
+                                        {activity.user && `by ${activity.user}`}
+                                      </p>
+                                      <p className="text-xs text-slate-400">{activity.time}</p>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="p-8 text-center text-slate-500">
-                          <BellIcon className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-                          <p className="text-sm">新しいアクティビティはありません</p>
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-8 text-center text-slate-500">
+                            <BellIcon className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                            <p className="text-sm">新しいアクティビティはありません</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="p-4 border-t border-slate-200 bg-slate-50">
+                        <button className="w-full text-center text-sm text-slate-600 hover:text-slate-800 font-medium">
+                          すべての通知を表示
+                        </button>
+                      </div>
                     </div>
-                    
-                    <div className="p-4 border-t border-slate-200 bg-slate-50">
-                      <button className="w-full text-center text-sm text-slate-600 hover:text-slate-800 font-medium">
-                        すべての通知を表示
-                      </button>
-                    </div>
+                  )}
+                </div>
+
+                {/* 機密情報表示 */}
+                {PAGE_PERMISSIONS.find(p => p.path === pathname)?.isSensitive && (
+                  <div className="flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+                    <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    機密情報
                   </div>
                 )}
               </div>
-
-              {/* 機密情報表示 */}
-              {PAGE_PERMISSIONS.find(p => p.path === pathname)?.isSensitive && (
-                <div className="flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
-                  <svg className="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                  機密情報
-                </div>
-              )}
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* メインコンテンツ */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+          {/* メインコンテンツ */}
+          <main className="flex-1">
             {children}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

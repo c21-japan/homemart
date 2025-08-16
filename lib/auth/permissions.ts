@@ -1,8 +1,8 @@
 // 権限レベル
 export enum UserRole {
-  OWNER = 'owner',        // オーナー（乾代表）
-  ADMIN = 'admin',        // 管理者
-  STAFF = 'staff'         // 社員
+  STAFF = 1,              // 社員
+  ADMIN = 2,              // 管理者
+  OWNER = 3               // オーナー（乾代表）
 }
 
 // 操作権限の種類
@@ -219,7 +219,8 @@ export function canAccessPage(userRole: UserRole, pagePath: string): boolean {
   
   // 特定のページへのアクセス権限チェック
   return userPermissions.pages.includes(pagePath) || 
-         userPermissions.pages.some(page => pagePath.startsWith(page));
+         userPermissions.pages.some(page => pagePath.startsWith(page)) ||
+         userPermissions.pages.includes('*'); // 全ページアクセス可能な場合
 }
 
 // ページでの操作権限チェック
