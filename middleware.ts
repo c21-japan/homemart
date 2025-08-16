@@ -23,10 +23,10 @@ const isProtectedRoute = createRouteMatcher([
   '/api/test-email(.*)'
 ]);
 
-export default clerkMiddleware((auth, req) => {
-  // 保護されたルートでのみ認証を要求
+export default clerkMiddleware(async (auth, req) => {
+  // 保護されたルートの場合、認証を要求
   if (isProtectedRoute(req)) {
-    return auth().protect();
+    await auth.protect(); // auth()ではなく、authを直接使用
   }
 });
 

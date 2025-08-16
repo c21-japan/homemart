@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
-  const [isChecking, setIsChecking] = useState(true)
+  const [isChecking, setIsChecking] = useState(false) // 認証チェックをスキップ
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
