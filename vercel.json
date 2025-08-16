@@ -8,6 +8,9 @@
   "functions": {
     "app/properties/page.tsx": {
       "maxDuration": 10
+    },
+    "app/api/part-time-attendance/realtime/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
@@ -32,6 +35,35 @@
           "value": "s-maxage=300, stale-while-revalidate"
         }
       ]
+    },
+    {
+      "source": "/part-time-attendance",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
+    {
+      "source": "/admin/part-time-attendance",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
