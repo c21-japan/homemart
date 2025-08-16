@@ -263,9 +263,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href
-          const canAccess = canAccessPage(userRole, item.href)
-          
-          if (!canAccess) return null
           
           return (
             <Link
