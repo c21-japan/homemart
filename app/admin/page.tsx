@@ -53,6 +53,7 @@ interface Activity {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>({});
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState('');
 
   // 統計カード定義
   const statCards: StatCard[] = [
@@ -167,6 +168,12 @@ export default function AdminDashboard() {
       iconColor: 'text-teal-600'
     }
   ];
+
+  // 検索フィルタリング
+  const filteredCards = dashboardCards.filter(card =>
+    card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    card.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // アクティビティログ
   const recentActivities: Activity[] = [
@@ -298,6 +305,105 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* 検索ボックス */}
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-200">
+        <div className="px-8 py-6 border-b border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900">機能検索</h2>
+          <p className="text-slate-600 mt-1">管理画面の各機能を素早く見つける</p>
+        </div>
+        <div className="p-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="機能名や説明を入力してください..."
+              className="w-full px-4 py-3 pl-12 border border-slate-300 rounded-xl text-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg className="h-6 w-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+          
+          {/* 検索結果 */}
+          {searchQuery && (
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">検索結果</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredCards.map((card, index) => (
+                  <Link
+                    key={index}
+                    href={card.href}
+                    className="group block p-4 border border-slate-200 rounded-xl hover:border-orange-300 hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-lg ${card.gradient} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-200`}>
+                        <card.icon className={`h-5 w-5 ${card.iconColor}`} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-slate-900 group-hover:text-orange-600 transition-colors">
+                          {card.title}
+                        </h4>
+                        <p className="text-sm text-slate-600">{card.description}</p>
+                      </div>
+                      <div className="text-slate-400 group-hover:text-orange-500 transition-colors">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              {filteredCards.length === 0 && (
+                <div className="text-center py-8 text-slate-500">
+                  <svg className="h-12 w-12 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.562M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <p className="text-lg font-medium">該当する機能が見つかりません</p>
+                  <p className="text-sm">別のキーワードで検索してみてください</p>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* 全機能一覧 */}
+          {!searchQuery && (
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">全機能一覧</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {dashboardCards.map((card, index) => (
+                  <Link
+                    key={index}
+                    href={card.href}
+                    className="group block p-4 border border-slate-200 rounded-xl hover:border-orange-300 hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-lg ${card.gradient} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-200`}>
+                        <card.icon className={`h-5 w-5 ${card.iconColor}`} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-slate-900 group-hover:text-orange-600 transition-colors">
+                          {card.title}
+                        </h4>
+                        <p className="text-sm text-slate-600">{card.description}</p>
+                      </div>
+                      <div className="text-slate-400 group-hover:text-orange-500 transition-colors">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* クイックアクション */}

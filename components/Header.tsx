@@ -50,12 +50,6 @@ export default function Header() {
             <SignedIn>
               <div className="flex items-center space-x-4">
                 <Link
-                  href="/attendance"
-                  className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
-                >
-                  勤怠管理
-                </Link>
-                <Link
                   href="/admin"
                   className="text-gray-700 hover:text-orange-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
@@ -145,13 +139,6 @@ export default function Header() {
               <div className="border-t border-gray-200 pt-4 mt-4">
                 <SignedIn>
                   <div className="space-y-1">
-                    <Link
-                      href="/attendance"
-                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      勤怠管理
-                    </Link>
                     <Link
                       href="/admin"
                       className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 rounded-md transition-colors"
