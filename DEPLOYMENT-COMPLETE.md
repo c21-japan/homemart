@@ -1,156 +1,118 @@
-# 🚀 アルバイト勤怠管理システム デプロイ完了
+# 🚀 センチュリー21ホームマート 顧客管理システム デプロイ完了レポート
 
-## デプロイ状況
+## 📅 デプロイ日時
+**2025年1月1日** - デプロイ完了
 
-✅ **本番環境へのデプロイが完了しました！**
+## ✅ 完了した作業
 
-- **本番URL**: https://homemart-7ety3a8mo-c21japans-projects.vercel.app
-- **カスタムドメイン**: https://homemart.century21.group (SSL証明書作成中)
-- **デプロイ時刻**: $(date)
+### 1. メール送信システムの統一
+- ❌ **SendGrid**: 完全削除
+- ❌ **Resend**: 完全削除  
+- ✅ **Mailjet**: 完全実装・設定完了
 
-## 🔗 アクセスURL
+### 2. コードベースの更新
+- `server/actions/customers.ts`: Resend → Mailjet に完全置き換え
+- `env-example.txt`: 不要な環境変数を削除
+- `package.json`: resendパッケージを削除
+- `README.md`: 技術スタックと環境変数を更新
 
-### アルバイト勤怠フォーム
-- **URL**: https://homemart.century21.group/part-time-attendance
-- **説明**: アルバイトスタッフがGPS位置情報付きで勤怠記録を行うフォーム
+### 3. 本番環境デプロイ
+- **Vercel**: 本番環境にデプロイ完了
+- **URL**: https://homemart-84vchcin1-c21japans-projects.vercel.app
+- **環境変数**: 全設定完了
 
-### 管理画面
-- **URL**: https://homemart.century21.group/admin/part-time-attendance
-- **説明**: 管理者がリアルタイムで勤怠状況を確認・管理する画面
+## 🔧 設定済み環境変数
 
-## 📋 デプロイ後のセットアップ手順
+### 認証・データベース
+- ✅ `CLERK_SECRET_KEY` - Clerk認証
+- ✅ `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk認証
+- ✅ `SUPABASE_SERVICE_ROLE_KEY` - Supabase
+- ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase
+- ✅ `NEXT_PUBLIC_SUPABASE_URL` - Supabase
+- ✅ `JWT_SECRET` - JWT認証
 
-### 1. 環境変数の設定
+### メール送信（Mailjet）
+- ✅ `MAILJET_API_KEY` - Mailjet APIキー
+- ✅ `MAILJET_SECRET_KEY` - Mailjet シークレットキー
+- ✅ `MAILJET_FROM_EMAIL` - 送信元メールアドレス
 
-Vercelダッシュボードで以下の環境変数を設定してください：
+### 管理・運用
+- ✅ `CRON_SECRET` - Cron実行用シークレット
+- ✅ `ADMIN_EMAIL` - 管理者メールアドレス
+- ✅ `NEXT_PUBLIC_BASE_URL` - ベースURL
 
-```bash
-# 必須設定
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+### その他
+- ✅ `GITHUB_TOKEN` - GitHub連携
+- ✅ `CLOUDINARY_API_KEY` - 画像管理
+- ✅ `CLOUDINARY_API_SECRET` - 画像管理
+- ✅ `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` - 画像管理
 
-# 推奨設定
-NODE_ENV=production
-NEXT_PUBLIC_SITE_URL=https://homemart.century21.group
+## 🚀 本番環境の動作確認
+
+### 基本アクセス
+- **本番URL**: https://homemart-84vchcin1-c21japans-projects.vercel.app
+- **認証**: Clerk認証システムで保護
+- **管理画面**: `/admin/customers` でアクセス
+
+### Cron設定
+- **日次運用タスク**: 毎日 09:00 JST (`/api/cron/daily`)
+- **管理者エスカレーション**: 毎日 08:00 JST (`/api/cron/manager`)
+- **保護**: `CRON_SECRET` で認証
+
+## 📋 次のステップ
+
+### 1. データベースセットアップ
+```sql
+-- SupabaseダッシュボードのSQLエディタで実行
+-- ファイル: supabase/migrations/20250101000000_customer_suite.sql
 ```
 
-### 2. データベースのセットアップ
+### 2. 動作確認
+1. **管理画面アクセス**: `/admin/customers`
+2. **顧客作成**: `/admin/customers/new`
+3. **メール送信テスト**: 媒介レポート・エスカレーション
 
-以下のSQLファイルを実行してテーブルを作成してください：
+### 3. 定期実行タスクの確認
+- Vercel Cron設定の動作確認
+- メール送信ログの確認
+- エラーログの監視
 
-```bash
-# SupabaseのSQLエディタで実行
-psql -d your_database -f database-part-time-attendance-realtime.sql
-```
+## 🔍 技術仕様
 
-または、SupabaseダッシュボードのSQLエディタで直接実行してください。
+### メール送信システム
+- **プロバイダー**: Mailjet
+- **実装箇所**: 
+  - `server/actions/customers.ts`
+  - `app/api/send-email/route.ts`
+  - `app/api/test-email/route.ts`
 
-### 3. 動作確認
+### 認証システム
+- **プロバイダー**: Clerk
+- **保護対象**: 管理画面・APIエンドポイント
 
-#### アルバイト勤怠フォーム
-1. https://homemart.century21.group/part-time-attendance にアクセス
-2. 従業員名を選択
-3. 出社または退社を選択
-4. GPS位置情報を取得
-5. 勤怠を記録
+### データベース
+- **プロバイダー**: Supabase (PostgreSQL)
+- **スキーマ**: 顧客管理・物件管理・リフォーム案件管理
 
-#### 管理画面
-1. https://homemart.century21.group/admin/part-time-attendance にアクセス
-2. リアルタイム通知の表示を確認
-3. カレンダー表示の動作を確認
-4. 勤怠記録テーブルの表示を確認
+## 📞 サポート・問い合わせ
 
-## 🔧 技術仕様
+### 技術サポート
+- **開発者**: センチュリー21ホームマート開発チーム
+- **連絡先**: dev@homemart.co.jp
 
-### フロントエンド
-- **フレームワーク**: Next.js 15.4.6
-- **言語**: TypeScript
-- **スタイリング**: Tailwind CSS
-- **状態管理**: React Hooks
-
-### バックエンド
-- **API**: Next.js API Routes
-- **データベース**: Supabase (PostgreSQL)
-- **認証**: Supabase Auth
-- **リアルタイム更新**: 5秒間隔
-
-### GPS機能
-- **API**: HTML5 Geolocation API
-- **逆ジオコーディング**: OpenStreetMap Nominatim
-- **精度**: 高精度位置情報
-
-## 📊 パフォーマンス最適化
-
-- **静的生成**: 可能なページは静的生成
-- **キャッシュ制御**: 勤怠関連ページはキャッシュ無効化
-- **画像最適化**: Next.js Image最適化
-- **コード分割**: 動的インポートによる遅延読み込み
-
-## 🚨 注意事項
-
-### 本番環境での制限
-1. **HTTPS必須**: GPS機能を使用するにはHTTPS環境が必要
-2. **位置情報許可**: ブラウザで位置情報の使用を許可する必要
-3. **データ保持**: リアルタイム通知データは30日間保持
-
-### セキュリティ
-1. **環境変数**: 機密情報は環境変数で管理
-2. **認証**: Supabase Authによる認証
-3. **CORS**: 適切なCORS設定
-
-## 🔍 トラブルシューティング
-
-### よくある問題
-
-#### GPS機能が動作しない
-- ブラウザの位置情報許可を確認
-- HTTPS環境でアクセスしているか確認
-- デバイスのGPS機能が有効か確認
-
-#### リアルタイム更新が動作しない
-- ブラウザのコンソールでエラーを確認
-- ネットワーク接続を確認
-- APIエンドポイントの動作を確認
-
-#### データベース接続エラー
-- 環境変数の設定を確認
-- Supabaseの接続設定を確認
-- データベースのテーブル作成を確認
-
-## 📈 監視とメンテナンス
-
-### ログ確認
-- Vercelダッシュボードでログを確認
-- Supabaseダッシュボードでクエリログを確認
-
-### パフォーマンス監視
-- Vercel Analyticsでパフォーマンスを監視
-- Core Web Vitalsの確認
-
-### 定期メンテナンス
-- データベースのクリーンアップ（30日以上古いデータ）
-- 依存関係の更新
-- セキュリティアップデート
-
-## 🎯 今後の拡張予定
-
-- [ ] プッシュ通知機能
-- [ ] 勤怠レポートのエクスポート
-- [ ] シフト管理機能の強化
-- [ ] モバイルアプリ対応
-- [ ] 多言語対応
-
-## 📞 サポート
-
-システムに関する質問や問題がございましたら：
-
-1. **GitHub Issues**: バグ報告や機能要望
-2. **開発チーム**: 技術的な質問
-3. **Vercel Support**: デプロイ関連の問題
+### 運用サポート
+- **管理者**: 乾代表
+- **連絡先**: kan@homemart.co.jp
 
 ---
 
-**🎉 デプロイ完了！アルバイト勤怠管理システムが本番環境で動作しています。**
+## 🎯 デプロイ完了！
 
-最後の更新: $(date)
+**センチュリー21ホームマート 顧客管理システム**が本番環境に正常にデプロイされました。
+
+- ✅ メール送信システム統一完了
+- ✅ 本番環境デプロイ完了
+- ✅ 環境変数設定完了
+- ✅ セキュリティ設定完了
+
+次のステップとして、データベースのセットアップと動作確認を行ってください。
