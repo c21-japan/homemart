@@ -43,8 +43,10 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
 
-# メール送信（Resend）
-RESEND_API_KEY=your_resend_api_key
+# メール送信（Mailjet）
+MAILJET_API_KEY=your_mailjet_api_key
+MAILJET_SECRET_KEY=your_mailjet_secret_key
+MAILJET_FROM_EMAIL=your_verified_sender_email
 
 # ベースURL
 NEXT_PUBLIC_BASE_URL=https://your-domain.com

@@ -545,10 +545,51 @@ async function processBrokerageReminders() {
   }
 }
 
-// 媒介レポートメール送信（Resend使用）
+// 媒介レポートメール送信（Mailjet使用）
 async function sendBrokerageReportEmail(seller: any) {
-  // TODO: Resendを使用したメール送信実装
-  console.log('媒介レポートメール送信:', seller.customer_id);
+  try {
+    const emailData = {
+      Messages: [{
+        From: {
+          Email: process.env.MAILJET_FROM_EMAIL || 'noreply@homemart.co.jp',
+          Name: 'センチュリー21ホームマート'
+        },
+        To: [{
+          Email: seller.customers.email,
+          Name: seller.customers.name
+        }],
+        Subject: '【媒介報告】進捗のご報告',
+        HTMLPart: `
+          <h2>媒介報告</h2>
+          <p>${seller.customers.name} 様</p>
+          <p>いつもお世話になっております。<br>
+          センチュリー21ホームマート　乾です。</p>
+          
+          <h3>物件情報</h3>
+          <p>住所: ${seller.customers.properties?.[0]?.address || '未設定'}</p>
+          <p>種別: ${seller.customers.properties?.[0]?.property_type || '未設定'}</p>
+          
+          <h3>活動実績（${new Date().toLocaleDateString('ja-JP')}）</h3>
+          <p>内覧件数: 0件</p>
+          <p>反響件数: 0件</p>
+          
+          <h3>提案内容</h3>
+          <p>物件の現況確認と市場調査を実施中です。</p>
+          
+          <h3>次回方針</h3>
+          <p>物件情報の詳細化とマーケティング戦略の策定を進めます。</p>
+          
+          <p>引き続きよろしくお願いいたします。</p>
+          <p>センチュリー21ホームマート　乾</p>
+        `
+      }]
+    };
+
+    await mailjet.post('send', { version: 'v3.1' }).request(emailData);
+    console.log('媒介レポートメール送信完了:', seller.customer_id);
+  } catch (error) {
+    console.error('媒介レポートメール送信エラー:', error);
+  }
 }
 
 // 管理者エスカレーション処理
@@ -595,6 +636,41 @@ export async function runManagerEscalation() {
 
 // 管理者エスカレーションメール送信
 async function sendManagerEscalationEmail(assigneeId: string, reminders: any[]) {
-  // TODO: 管理者へのエスカレーションメール送信実装
-  console.log('管理者エスカレーション:', assigneeId, reminders.length);
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@homemart.co.jp';
+    
+    const emailData = {
+      Messages: [{
+        From: {
+          Email: process.env.MAILJET_FROM_EMAIL || 'noreply@homemart.co.jp',
+          Name: 'センチュリー21ホームマート'
+        },
+        To: [{
+          Email: adminEmail,
+          Name: '管理者'
+        }],
+        Subject: '【エスカレーション】未対応通知の件',
+        HTMLPart: `
+          <h2>未対応通知のエスカレーション</h2>
+          <p>担当者ID: ${assigneeId}</p>
+          <p>未対応の通知が ${reminders.length} 件あります。</p>
+          
+          <h3>未対応通知一覧</h3>
+          <ul>
+            ${reminders.map(reminder => `
+              <li>${reminder.title} - ${reminder.customers?.name || '顧客名不明'}</li>
+            `).join('')}
+          </ul>
+          
+          <p>担当者へのフォローアップをお願いいたします。</p>
+          <p>センチュリー21ホームマート</p>
+        `
+      }]
+    };
+
+    await mailjet.post('send', { version: 'v3.1' }).request(emailData);
+    console.log('管理者エスカレーションメール送信完了:', assigneeId);
+  } catch (error) {
+    console.error('管理者エスカレーションメール送信エラー:', error);
+  }
 }
