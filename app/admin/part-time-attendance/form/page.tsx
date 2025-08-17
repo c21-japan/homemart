@@ -77,12 +77,16 @@ export default function PartTimeAttendanceFormPage() {
       // 住所情報を取得（逆ジオコーディング）
       let address = '位置情報を取得しました'
       try {
+        // 国土地理院の逆ジオコーディングAPI（無料）
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1&accept-language=ja`
+          `https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${latitude}&lon=${longitude}`
         )
         const data = await response.json()
-        if (data.display_name) {
-          address = data.display_name
+        if (data.results && data.results[0] && data.results[0].muni) {
+          const result = data.results[0]
+          address = `${result.pref}${result.muni}${result.local}`
+        } else {
+          address = `緯度: ${latitude.toFixed(6)}, 経度: ${longitude.toFixed(6)}`
         }
       } catch (error) {
         console.warn('Address lookup failed:', error)
