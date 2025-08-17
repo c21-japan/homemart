@@ -46,7 +46,7 @@ interface Customer {
 
 interface KPIData {
   totalCustomers: number;
-  newCustomersThisMonth: number;
+  newCustomersCount: number;
   pendingReports: number;
   overdueTasks: number;
   reformGrossProfit: number;
@@ -64,9 +64,10 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "all");
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [kpiData, setKpiData] = useState<KPIData>({
     totalCustomers: 0,
-    newCustomersThisMonth: 0,
+    newCustomersCount: 0,
     pendingReports: 0,
     overdueTasks: 0,
     reformGrossProfit: 0,
@@ -93,7 +94,7 @@ export default function CustomersPage() {
       
       const kpi: KPIData = {
         totalCustomers: data?.length || 0,
-        newCustomersThisMonth: data?.filter((c: Customer) => 
+        newCustomersCount: data?.filter((c: Customer) => 
           new Date(c.created_at) >= thisMonthStart
         ).length || 0,
         pendingReports: 0, // 後で実装
@@ -139,6 +140,18 @@ export default function CustomersPage() {
   useEffect(() => {
     fetchCustomers();
   }, [fetchCustomers]);
+
+  // ドロップダウンの外をクリックした時に閉じる
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdown(null);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   // リアルタイム更新
   useEffect(() => {
@@ -239,7 +252,7 @@ export default function CustomersPage() {
           <div className="text-sm font-medium text-gray-500 mb-2">総顧客数</div>
           <div className="text-2xl font-bold">{kpiData.totalCustomers}</div>
           <p className="text-xs text-gray-500">
-            今月 +{kpiData.newCustomersThisMonth}
+            今月 +{kpiData.newCustomersCount}
           </p>
         </div>
         
@@ -481,18 +494,29 @@ export default function CustomersPage() {
                       
                       <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="relative">
-                          <button className="text-gray-400 hover:text-gray-600">
+                          <button 
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => setOpenDropdown(openDropdown === customer.id ? null : customer.id)}
+                          >
                             ⋯
                           </button>
-                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                          <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 ${
+                            openDropdown === customer.id ? 'block' : 'hidden'
+                          }`}>
                             <button
-                              onClick={() => router.push(`/admin/customers/${customer.id}`)}
+                              onClick={() => {
+                                setOpenDropdown(null);
+                                router.push(`/admin/customers/${customer.id}`);
+                              }}
                               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               詳細を見る
                             </button>
                             <button
-                              onClick={() => router.push(`/admin/properties/new?sellerId=${customer.id}`)}
+                              onClick={() => {
+                                setOpenDropdown(null);
+                                router.push(`/admin/properties/new?sellerId=${customer.id}`);
+                              }}
                               className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               🏠 新規物件登録

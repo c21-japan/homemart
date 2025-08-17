@@ -90,6 +90,12 @@ interface CustomerFormData {
   scheduled_end_date?: string;
   sales_user_id?: string;
   project_manager_id?: string;
+  
+  // 打ち合わせ記録
+  meeting_title?: string;
+  meeting_date?: string;
+  meeting_content?: string;
+  meeting_photos?: File[];
 }
 
 export default function NewCustomerPage() {
@@ -113,7 +119,11 @@ export default function NewCustomerPage() {
     preferred_property_types: ['mansion'],
     pre_approved: false,
     requested_works: [],
-    is_existing_customer: false
+    is_existing_customer: false,
+    meeting_title: '',
+    meeting_date: '',
+    meeting_content: '',
+    meeting_photos: []
   });
   
   const [loading, setLoading] = useState(false);
@@ -286,6 +296,55 @@ export default function NewCustomerPage() {
           });
         
         if (reformError) throw reformError;
+      }
+      
+      // 打ち合わせ記録の保存
+      if (formData.meeting_title && formData.meeting_date && formData.meeting_content) {
+        try {
+          // ミーティングを保存
+          const { data: meeting, error: meetingError } = await supabase
+            .from('meetings')
+            .insert({
+              customer_id: customer.id,
+              started_at: formData.meeting_date,
+              summary: formData.meeting_title,
+              source: 'manual'
+            })
+            .select()
+            .single();
+
+          if (meetingError) throw meetingError;
+
+          // ミーティングノートを保存
+          const { error: noteError } = await supabase
+            .from('meeting_notes')
+            .insert({
+              meeting_id: meeting.id,
+              raw_text: formData.meeting_content
+            });
+
+          if (noteError) throw noteError;
+
+          // 写真があれば文書テーブルに保存
+          if (formData.meeting_photos && formData.meeting_photos.length > 0) {
+            for (const photo of formData.meeting_photos) {
+              await supabase
+                .from('documents')
+                .insert({
+                  customer_id: customer.id,
+                  type: 'meeting_photo',
+                  filename: photo.name,
+                  file_path: `meetings/${meeting.id}/${photo.name}`,
+                  file_size: photo.size,
+                  mime_type: photo.type,
+                  uploaded_by: user?.id || 'unknown'
+                });
+            }
+          }
+        } catch (meetingError) {
+          console.error('打ち合わせ記録保存エラー:', meetingError);
+          // 打ち合わせ記録の保存に失敗しても顧客登録は成功とする
+        }
       }
       
       alert('顧客を正常に登録しました！');
@@ -697,6 +756,73 @@ export default function NewCustomerPage() {
               </div>
             </div>
           )}
+
+          {/* 打ち合わせ記録 */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">打ち合わせ記録</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  打ち合わせタイトル
+                </label>
+                <input
+                  type="text"
+                  value={formData.meeting_title || ''}
+                  onChange={(e) => handleInputChange('meeting_title', e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="例：物件の現況確認と査定依頼"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  打ち合わせ日時
+                </label>
+                <input
+                  type="datetime-local"
+                  value={formData.meeting_date || ''}
+                  onChange={(e) => handleInputChange('meeting_date', e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  打ち合わせ内容
+                </label>
+                <textarea
+                  value={formData.meeting_content || ''}
+                  onChange={(e) => handleInputChange('meeting_content', e.target.value)}
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="打ち合わせの詳細内容を記載してください..."
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  写真アップロード（最大30枚）
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length > 30) {
+                      alert('写真は最大30枚までアップロードできます');
+                      return;
+                    }
+                    handleInputChange('meeting_photos', files);
+                  }}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  選択された写真: {formData.meeting_photos?.length || 0}枚
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* 送信ボタン */}
           <div className="flex justify-end space-x-4">

@@ -1,23 +1,16 @@
 'use server';
 
 import { supabaseServer } from '@/lib/supabase-server';
-import { customerUnion, CustomerInput } from '@/lib/zod-schemas';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import Mailjet from 'node-mailjet';
 
-// Mailjetクライアントの初期化
-const mailjet = new Mailjet(
-  process.env.MAILJET_API_KEY || '',
-  process.env.MAILJET_API_SECRET || ''
-);
-
-// 顧客作成
-export async function createCustomer(data: CustomerInput) {
+// 顧客作成（自動チェックリスト・リマインド生成付き）
+export async function createCustomer(data: any) {
   const supabase = supabaseServer;
   
   try {
-    // 顧客テーブルに挿入
+    // 1. 顧客テーブルに挿入
     const { data: customer, error: customerError } = await supabase
       .from('customers')
       .insert({
@@ -29,50 +22,60 @@ export async function createCustomer(data: CustomerInput) {
         address: data.address,
         source: data.source,
         assignee_user_id: data.assignee_user_id,
+        assignee_name: data.assignee_name,
+        is_vip: data.is_vip || false,
+        priority: data.priority || 'medium',
+        notes: data.notes,
+        status: 'active'
       })
       .select()
       .single();
 
     if (customerError) throw customerError;
 
-    // 物件テーブルに挿入
-    const { data: property, error: propertyError } = await supabase
-      .from('properties')
-      .insert({
-        customer_id: customer.id,
-        property_type: data.property_type,
-        address: data.address,
-        mansion_name: data.mansion_name,
-        room_no: data.room_no,
-        land_info: data.land_info,
-        building_area: data.building_area,
-        floor_plan: data.floor_plan,
-        built_year: data.built_year,
-        area: data.area,
-      })
-      .select()
-      .single();
+    // 2. 物件テーブルに挿入
+    if (data.property_type && data.address) {
+      const { error: propertyError } = await supabase
+        .from('properties')
+        .insert({
+          customer_id: customer.id,
+          property_type: data.property_type,
+          address: data.address,
+          mansion_name: data.mansion_name,
+          room_number: data.room_number,
+          land_number: data.land_number,
+          land_type: data.land_type,
+          boundary_status: data.boundary_status,
+          building_area: data.building_area,
+          floor_plan: data.floor_plan,
+          built_year: data.built_year,
+          area: data.area,
+          reform_history: data.reform_history
+        });
 
-    if (propertyError) throw propertyError;
+      if (propertyError) throw propertyError;
+    }
 
-    // カテゴリ別の詳細テーブルに挿入
+    // 3. カテゴリ別の詳細テーブルに挿入
     if (data.category === 'seller') {
       const { error: sellerError } = await supabase
         .from('seller_details')
         .insert({
           customer_id: customer.id,
-          property_id: property.id,
           desired_price: data.desired_price,
-          brokerage: data.brokerage,
-          brokerage_start: data.brokerage_start,
-          report_channel: data.report_channel,
-          purchase_or_brokerage: data.purchase_or_brokerage,
+          brokerage: data.brokerage || 'general',
+          brokerage_start: data.brokerage_start || new Date().toISOString().split('T')[0],
+          contact_method: data.contact_method || 'email',
+          deal_type: data.deal_type || 'brokerage'
         });
 
       if (sellerError) throw sellerError;
 
-      // チェックリストを作成
+      // 売却チェックリストを自動生成
       await createSellerChecklist(customer.id);
+      
+      // 媒介開始日のリマインドを自動生成
+      await createBrokerageReminders(customer.id, data.brokerage_start);
     }
 
     if (data.category === 'buyer') {
@@ -80,18 +83,17 @@ export async function createCustomer(data: CustomerInput) {
         .from('buyer_details')
         .insert({
           customer_id: customer.id,
-          property_id: property.id,
           preferred_area: data.preferred_area,
           budget_min: data.budget_min,
           budget_max: data.budget_max,
           conditions: data.conditions,
           finance_plan: data.finance_plan,
-          interested_property_id: data.interested_property_id,
+          interested_property_id: data.interested_property_id
         });
 
       if (buyerError) throw buyerError;
 
-      // チェックリストを作成
+      // 購入チェックリストを自動生成
       await createBuyerChecklist(customer.id);
     }
 
@@ -100,16 +102,25 @@ export async function createCustomer(data: CustomerInput) {
         .from('reform_projects')
         .insert({
           customer_id: customer.id,
-          property_id: property.id,
-          is_existing_customer: data.is_existing_customer,
-          requested_works: data.requested_works,
-          expected_revenue: data.expected_revenue,
+          is_existing_customer: data.is_existing_customer || false,
+          existing_customer_id: data.existing_customer_id,
+          work_types: data.work_types || [],
+          estimated_budget: data.estimated_budget,
+          desired_period: data.desired_period,
+          survey_date: data.survey_date,
+          status: 'estimate',
+          progress_percentage: 0
         });
 
       if (reformError) throw reformError;
 
-      // チェックリストを作成
+      // リフォームチェックリストを自動生成
       await createReformChecklist(customer.id);
+      
+      // 現地調査日のリマインドを自動生成
+      if (data.survey_date) {
+        await createSurveyReminder(customer.id, data.survey_date);
+      }
     }
 
     revalidatePath('/admin/customers');
@@ -121,22 +132,325 @@ export async function createCustomer(data: CustomerInput) {
   }
 }
 
+// 売却チェックリスト作成
+async function createSellerChecklist(customerId: string) {
+  const supabase = supabaseServer;
+  
+  try {
+    // テンプレートからチェックリストをコピー
+    const { data: template, error: templateError } = await supabase
+      .from('checklists')
+      .select('*')
+      .eq('type', 'seller')
+      .is('customer_id', null)
+      .single();
+
+    if (templateError) throw templateError;
+
+    // 顧客用のチェックリストを作成
+    const { data: checklist, error: checklistError } = await supabase
+      .from('checklists')
+      .insert({
+        customer_id: customerId,
+        type: 'seller',
+        title: template.title,
+        due_date: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 90日後
+      })
+      .select()
+      .single();
+
+    if (checklistError) throw checklistError;
+
+    // チェックリスト項目をコピー
+    const { data: templateItems, error: itemsError } = await supabase
+      .from('checklist_items')
+      .select('*')
+      .eq('checklist_id', template.id)
+      .order('order_index');
+
+    if (itemsError) throw itemsError;
+
+    // 各項目を顧客用にコピー
+    for (const item of templateItems || []) {
+      await supabase
+        .from('checklist_items')
+        .insert({
+          checklist_id: checklist.id,
+          label: item.label,
+          order_index: item.order_index
+        });
+    }
+
+  } catch (error) {
+    console.error('売却チェックリスト作成エラー:', error);
+  }
+}
+
+// 購入チェックリスト作成
+async function createBuyerChecklist(customerId: string) {
+  const supabase = supabaseServer;
+  
+  try {
+    // テンプレートからチェックリストをコピー
+    const { data: template, error: templateError } = await supabase
+      .from('checklists')
+      .select('*')
+      .eq('type', 'buyer')
+      .is('customer_id', null)
+      .single();
+
+    if (templateError) throw templateError;
+
+    // 顧客用のチェックリストを作成
+    const { data: checklist, error: checklistError } = await supabase
+      .from('checklists')
+      .insert({
+        customer_id: customerId,
+        type: 'buyer',
+        title: template.title,
+        due_date: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 120日後
+      })
+      .select()
+      .single();
+
+    if (checklistError) throw checklistError;
+
+    // チェックリスト項目をコピー
+    const { data: templateItems, error: itemsError } = await supabase
+      .from('checklist_items')
+      .select('*')
+      .eq('checklist_id', template.id)
+      .order('order_index');
+
+    if (itemsError) throw itemsError;
+
+    // 各項目を顧客用にコピー
+    for (const item of templateItems || []) {
+      await supabase
+        .from('checklist_items')
+        .insert({
+          checklist_id: checklist.id,
+          label: item.label,
+          order_index: item.order_index
+        });
+    }
+
+  } catch (error) {
+    console.error('購入チェックリスト作成エラー:', error);
+  }
+}
+
+// リフォームチェックリスト作成
+async function createReformChecklist(customerId: string) {
+  const supabase = supabaseServer;
+  
+  try {
+    // テンプレートからチェックリストをコピー
+    const { data: template, error: templateError } = await supabase
+      .from('checklists')
+      .select('*')
+      .eq('type', 'reform')
+      .is('customer_id', null)
+      .single();
+
+    if (templateError) throw templateError;
+
+    // 顧客用のチェックリストを作成
+    const { data: checklist, error: checklistError } = await supabase
+      .from('checklists')
+      .insert({
+        customer_id: customerId,
+        type: 'reform',
+        title: template.title,
+        due_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 60日後
+      })
+      .select()
+      .single();
+
+    if (checklistError) throw checklistError;
+
+    // チェックリスト項目をコピー
+    const { data: templateItems, error: itemsError } = await supabase
+      .from('checklist_items')
+      .select('*')
+      .eq('checklist_id', template.id)
+      .order('order_index');
+
+    if (itemsError) throw itemsError;
+
+    // 各項目を顧客用にコピー
+    for (const item of templateItems || []) {
+      await supabase
+        .from('checklist_items')
+        .insert({
+          checklist_id: checklist.id,
+          label: item.label,
+          order_index: item.order_index
+        });
+    }
+
+  } catch (error) {
+    console.error('リフォームチェックリスト作成エラー:', error);
+  }
+}
+
+// 媒介開始日のリマインド作成
+async function createBrokerageReminders(customerId: string, brokerageStart: string) {
+  const supabase = supabaseServer;
+  
+  try {
+    const startDate = new Date(brokerageStart);
+    
+    // 媒介開始日のリマインド
+    await supabase
+      .from('reminders')
+      .insert({
+        customer_id: customerId,
+        title: '媒介開始',
+        scheduled_at: startDate.toISOString(),
+        channel: 'email',
+        priority: 'medium'
+      });
+
+    // 媒介開始1週間後のリマインド
+    const weekLater = new Date(startDate);
+    weekLater.setDate(weekLater.getDate() + 7);
+    
+    await supabase
+      .from('reminders')
+      .insert({
+        customer_id: customerId,
+        title: '媒介開始1週間経過',
+        scheduled_at: weekLater.toISOString(),
+        channel: 'email',
+        priority: 'medium'
+      });
+
+    // 媒介開始1ヶ月後のリマインド
+    const monthLater = new Date(startDate);
+    monthLater.setMonth(monthLater.getMonth() + 1);
+    
+    await supabase
+      .from('reminders')
+      .insert({
+        customer_id: customerId,
+        title: '媒介開始1ヶ月経過',
+        scheduled_at: monthLater.toISOString(),
+        channel: 'email',
+        priority: 'high'
+      });
+
+  } catch (error) {
+    console.error('媒介リマインド作成エラー:', error);
+  }
+}
+
+// 現地調査日のリマインド作成
+async function createSurveyReminder(customerId: string, surveyDate: string) {
+  const supabase = supabaseServer;
+  
+  try {
+    const survey = new Date(surveyDate);
+    
+    // 現地調査前日のリマインド
+    const dayBefore = new Date(survey);
+    dayBefore.setDate(dayBefore.getDate() - 1);
+    
+    await supabase
+      .from('reminders')
+      .insert({
+        customer_id: customerId,
+        title: '現地調査前日リマインド',
+        scheduled_at: dayBefore.toISOString(),
+        channel: 'email',
+        priority: 'high'
+      });
+
+    // 現地調査当日のリマインド
+    await supabase
+      .from('reminders')
+      .insert({
+        customer_id: customerId,
+        title: '現地調査当日',
+        scheduled_at: survey.toISOString(),
+        channel: 'email',
+        priority: 'urgent'
+      });
+
+  } catch (error) {
+    console.error('現地調査リマインド作成エラー:', error);
+  }
+}
+
+// 打ち合わせ記録の保存
+export async function saveMeetingRecord(customerId: string, meetingData: any) {
+  const supabase = supabaseServer;
+  
+  try {
+    // ミーティングを保存
+    const { data: meeting, error: meetingError } = await supabase
+      .from('meetings')
+      .insert({
+        customer_id: customerId,
+        started_at: meetingData.meeting_date,
+        summary: meetingData.title,
+        source: 'manual'
+      })
+      .select()
+      .single();
+
+    if (meetingError) throw meetingError;
+
+    // ミーティングノートを保存
+    if (meetingData.content) {
+      const { error: noteError } = await supabase
+        .from('meeting_notes')
+        .insert({
+          meeting_id: meeting.id,
+          raw_text: meetingData.content
+        });
+
+      if (noteError) throw noteError;
+    }
+
+    // 写真があれば文書テーブルに保存
+    if (meetingData.photos && meetingData.photos.length > 0) {
+      for (const photo of meetingData.photos) {
+        // 実際の実装では、ファイルをSupabase Storageにアップロード
+        // ここではファイル名のみ保存
+        await supabase
+          .from('documents')
+          .insert({
+            customer_id: customerId,
+            type: 'meeting_photo',
+            filename: photo.name,
+            file_path: `meetings/${meeting.id}/${photo.name}`,
+            file_size: photo.size,
+            mime_type: photo.type,
+            uploaded_by: 'current_user' // 実際の実装では現在のユーザーID
+          });
+      }
+    }
+
+    revalidatePath(`/admin/customers/${customerId}`);
+    return { success: true, meeting };
+
+  } catch (error) {
+    console.error('打ち合わせ記録保存エラー:', error);
+    return { success: false, error: '打ち合わせ記録の保存に失敗しました' };
+  }
+}
+
 // 顧客更新
-export async function updateCustomer(id: string, data: Partial<CustomerInput>) {
+export async function updateCustomer(id: string, data: any) {
   const supabase = supabaseServer;
   
   try {
     const { error } = await supabase
       .from('customers')
       .update({
-        name: data.name,
-        name_kana: data.name_kana,
-        phone: data.phone,
-        email: data.email,
-        address: data.address,
-        source: data.source,
-        assignee_user_id: data.assignee_user_id,
-        updated_at: new Date().toISOString(),
+        ...data,
+        updated_at: new Date().toISOString()
       })
       .eq('id', id);
 
@@ -222,7 +536,13 @@ export async function getCustomer(id: string) {
           *,
           checklist_items(*)
         ),
-        documents(*)
+        documents(*),
+        meetings(
+          *,
+          meeting_notes(*)
+        ),
+        tasks(*),
+        reminders(*)
       `)
       .eq('id', id)
       .single();
@@ -233,139 +553,6 @@ export async function getCustomer(id: string) {
   } catch (error) {
     console.error('顧客詳細取得エラー:', error);
     return { success: false, error: '顧客詳細の取得に失敗しました' };
-  }
-}
-
-// 売却チェックリスト作成
-async function createSellerChecklist(customerId: string) {
-  const supabase = supabaseServer;
-  
-  const checklistItems = [
-    '物件の現況確認',
-    '査定依頼',
-    '媒介契約書の作成',
-    '物件情報の登録',
-    'チラシ・LPの作成',
-    '内覧の設定',
-    '買主との交渉',
-    '売買契約の締結',
-    '引渡しの完了'
-  ];
-
-  try {
-    const { data: checklist, error: checklistError } = await supabase
-      .from('checklists')
-      .insert({
-        customer_id: customerId,
-        type: 'seller',
-        title: '売却案件チェックリスト',
-        due_date: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90日後
-      })
-      .select()
-      .single();
-
-    if (checklistError) throw checklistError;
-
-    // チェックリスト項目を作成
-    for (const item of checklistItems) {
-      await supabase
-        .from('checklist_items')
-        .insert({
-          checklist_id: checklist.id,
-          label: item,
-        });
-    }
-
-  } catch (error) {
-    console.error('売却チェックリスト作成エラー:', error);
-  }
-}
-
-// 購入チェックリスト作成
-async function createBuyerChecklist(customerId: string) {
-  const supabase = supabaseServer;
-  
-  const checklistItems = [
-    '購入希望条件の詳細ヒアリング',
-    '物件の検索・提案',
-    '内覧の設定',
-    '物件の詳細調査',
-    '価格交渉',
-    'ローン審査',
-    '売買契約の締結',
-    '引渡しの完了'
-  ];
-
-  try {
-    const { data: checklist, error: checklistError } = await supabase
-      .from('checklists')
-      .insert({
-        customer_id: customerId,
-        type: 'buyer',
-        title: '購入案件チェックリスト',
-        due_date: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000), // 120日後
-      })
-      .select()
-      .single();
-
-    if (checklistError) throw checklistError;
-
-    // チェックリスト項目を作成
-    for (const item of checklistItems) {
-      await supabase
-        .from('checklist_items')
-        .insert({
-          checklist_id: checklist.id,
-          label: item,
-        });
-    }
-
-  } catch (error) {
-    console.error('購入チェックリスト作成エラー:', error);
-  }
-}
-
-// リフォームチェックリスト作成
-async function createReformChecklist(customerId: string) {
-  const supabase = supabaseServer;
-  
-  const checklistItems = [
-    '現地調査・見積もり',
-    '提案書の作成',
-    '契約の締結',
-    '着工準備',
-    '工事の開始',
-    '工事の進行管理',
-    '工事の完了',
-    '引渡し・アフターケア'
-  ];
-
-  try {
-    const { data: checklist, error: checklistError } = await supabase
-      .from('checklists')
-      .insert({
-        customer_id: customerId,
-        type: 'reform',
-        title: 'リフォーム案件チェックリスト',
-        due_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60日後
-      })
-      .select()
-      .single();
-
-    if (checklistError) throw checklistError;
-
-    // チェックリスト項目を作成
-    for (const item of checklistItems) {
-      await supabase
-        .from('checklist_items')
-        .insert({
-          checklist_id: checklist.id,
-          label: item,
-        });
-    }
-
-  } catch (error) {
-    console.error('リフォームチェックリスト作成エラー:', error);
   }
 }
 
@@ -584,6 +771,11 @@ async function sendBrokerageReportEmail(seller: any) {
       }]
     };
 
+    // Mailjetクライアントの初期化
+    const mailjet = new Mailjet({
+      apiKey: process.env.MAILJET_API_KEY || '',
+      apiSecret: process.env.MAILJET_API_SECRET || ''
+    });
     await mailjet.post('send', { version: 'v3.1' }).request(emailData);
     console.log('媒介レポートメール送信完了:', seller.customer_id);
   } catch (error) {
@@ -638,6 +830,11 @@ async function sendManagerEscalationEmail(assigneeId: string, reminders: any[]) 
       }]
     };
 
+    // Mailjetクライアントの初期化
+    const mailjet = new Mailjet({
+      apiKey: process.env.MAILJET_API_KEY || '',
+      apiSecret: process.env.MAILJET_API_SECRET || ''
+    });
     await mailjet.post('send', { version: 'v3.1' }).request(emailData);
     console.log('管理者エスカレーションメール送信完了:', assigneeId);
   } catch (error) {
