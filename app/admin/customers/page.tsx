@@ -1,376 +1,523 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { customersAPI } from '@/lib/supabase/customers';
-import {
-  PlusIcon,
-  MagnifyingGlassIcon,
-  EyeIcon,
-  PencilIcon,
-  TrashIcon
-} from '@heroicons/react/24/outline';
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { supabase } from "@/lib/supabase";
+import { format, differenceInDays } from "date-fns";
+import { ja } from "date-fns/locale";
 
-// 顧客の型定義
+// 型定義
 interface Customer {
   id: string;
+  category: 'seller' | 'buyer' | 'reform';
   name: string;
   name_kana?: string;
   phone?: string;
   email?: string;
-  category: 'seller' | 'buyer' | 'reform';
-  source?: string;
-  address?: string;
+  assignee_name?: string;
+  priority: 'urgent' | 'high' | 'medium' | 'low';
   created_at: string;
-  updated_at?: string;
+  
+  // 関連情報
+  property_type?: string;
+  property_address?: string;
+  
+  // 売却
+  transaction_type?: 'purchase' | 'brokerage';
+  brokerage_type?: string;
+  desired_price?: number;
+  next_report_due?: string;
+  
+  // 購入
+  budget_min?: number;
+  budget_max?: number;
+  
+  // リフォーム
+  reform_status?: string;
+  contracted_amount?: number;
+  total_cost?: number;
+  gross_profit?: number;
+  progress_percent?: number;
+  
+  // タスク
+  pending_tasks?: number;
+}
+
+interface KPIData {
+  totalCustomers: number;
+  newCustomersThisMonth: number;
+  pendingReports: number;
+  overdueTasks: number;
+  reformGrossProfit: number;
+  conversionRate: number;
 }
 
 export default function CustomersPage() {
-  const { user, isLoaded } = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useUser();
+  
+  // State
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'seller' | 'buyer' | 'reform'>('all');
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [newCustomer, setNewCustomer] = useState({
-    name: '',
-    name_kana: '',
-    phone: '',
-    email: '',
-    category: 'buyer' as const,
-    source: '',
-    address: ''
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "all");
+  const [kpiData, setKpiData] = useState<KPIData>({
+    totalCustomers: 0,
+    newCustomersThisMonth: 0,
+    pendingReports: 0,
+    overdueTasks: 0,
+    reformGrossProfit: 0,
+    conversionRate: 0,
   });
 
-  // 顧客データを取得（勤怠管理と同じパターン）
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchCustomers();
-    }
-  }, [isLoaded, user, activeTab]);
-
-  const fetchCustomers = async () => {
+  // データ取得
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       
-      // 勤怠管理と同じパターン：直接Supabaseから取得
-      let data;
-      if (activeTab === 'all') {
-        data = await customersAPI.getAllCustomers();
-      } else {
-        data = await customersAPI.getCustomersByCategory(activeTab);
-      }
+      const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
       
       setCustomers(data || []);
+      
+      // KPI計算
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      const kpi: KPIData = {
+        totalCustomers: data?.length || 0,
+        newCustomersThisMonth: data?.filter((c: Customer) => 
+          new Date(c.created_at) >= thisMonthStart
+        ).length || 0,
+        pendingReports: 0, // 後で実装
+        overdueTasks: 0,   // 後で実装
+        reformGrossProfit: 0, // 後で実装
+        conversionRate: 0, // 後で実装
+      };
+      
+      setKpiData(kpi);
+      
     } catch (error) {
-      console.error('顧客データ取得エラー:', error);
-      setError('顧客データの取得中にエラーが発生しました');
-      setCustomers([]);
+      console.error('Error fetching customers:', error);
+      alert('顧客データの取得に失敗しました');
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // フィルタリング
+  useEffect(() => {
+    let filtered = [...customers];
+    
+    // タブフィルタ
+    if (activeTab !== 'all') {
+      filtered = filtered.filter(c => c.category === activeTab);
+    }
+    
+    // 検索フィルタ
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(c => 
+        c.name.toLowerCase().includes(term) ||
+        c.name_kana?.toLowerCase().includes(term) ||
+        c.phone?.includes(term) ||
+        c.email?.toLowerCase().includes(term)
+      );
+    }
+    
+    setFilteredCustomers(filtered);
+  }, [customers, activeTab, searchTerm]);
+
+  // 初回ロード
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  // リアルタイム更新
+  useEffect(() => {
+    const channel = supabase
+      .channel('customers_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'customers' },
+        () => fetchCustomers()
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, fetchCustomers]);
+
+  // アクション関数
+  const handleSendReport = async (customerId: string) => {
+    try {
+      alert('報告書送信機能は後で実装されます');
+    } catch (error) {
+      alert('報告書の送信に失敗しました');
+    }
   };
 
-  // 顧客作成
-  const handleCreateCustomer = async () => {
+  const handleGeneratePDF = async (customerId: string) => {
     try {
-      if (!newCustomer.name.trim()) {
-        alert('顧客名は必須です');
-        return;
+      alert('PDF生成機能は後で実装されます');
+    } catch (error) {
+      alert('PDFの生成に失敗しました');
+    }
+  };
+
+  // UI関数
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'seller': return '🏠';
+      case 'buyer': return '👥';
+      case 'reform': return '🔨';
+      default: return '❓';
+    }
+  };
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'seller': return '売却';
+      case 'buyer': return '購入';
+      case 'reform': return 'リフォーム';
+      default: return category;
+    }
+  };
+
+  const formatCurrency = (amount?: number) => {
+    if (!amount) return '-';
+    return new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency: 'JPY',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const getStatusBadge = (customer: Customer) => {
+    // 報告期限チェック
+    if (customer.next_report_due) {
+      const daysUntilDue = differenceInDays(new Date(customer.next_report_due), new Date());
+      if (daysUntilDue < 0) {
+        return <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">報告期限超過</span>;
+      } else if (daysUntilDue <= 3) {
+        return <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">報告期限間近</span>;
       }
-
-      await customersAPI.createCustomer(newCustomer);
-      setShowCreateModal(false);
-      setNewCustomer({
-        name: '',
-        name_kana: '',
-        phone: '',
-        email: '',
-        category: 'buyer',
-        source: '',
-        address: ''
-      });
-      fetchCustomers(); // 一覧を再取得
-      alert('顧客が正常に作成されました');
-    } catch (error) {
-      console.error('顧客作成エラー:', error);
-      alert('顧客の作成に失敗しました');
     }
-  };
-
-  // 顧客削除
-  const handleDeleteCustomer = async (id: string) => {
-    try {
-      await customersAPI.deleteCustomer(id);
-      setShowDeleteConfirm(null);
-      fetchCustomers(); // 一覧を再取得
-      alert('顧客が正常に削除されました');
-    } catch (error) {
-      console.error('顧客削除エラー:', error);
-      alert('顧客の削除に失敗しました');
+    
+    // リフォームステータス
+    if (customer.reform_status) {
+      const statusLabels: Record<string, string> = {
+        inquiry: '問合せ',
+        estimating: '見積中',
+        proposing: '提案中',
+        negotiating: '交渉中',
+        contracted: '契約済',
+        preparing: '準備中',
+        started: '着工',
+        completed: '完了',
+        aftercare: 'アフター',
+        lost: '失注',
+      };
+      return <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{statusLabels[customer.reform_status]}</span>;
     }
+    
+    return null;
   };
-
-  // 検索フィルター
-  const filteredCustomers = customers.filter(customer => {
-    if (!searchQuery) return true;
-    return (
-      customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.name_kana?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.phone?.includes(searchQuery) ||
-      customer.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  // カテゴリ別の顧客数を計算
-  const getCustomerCount = (category: 'seller' | 'buyer' | 'reform') => {
-    return customers.filter(c => c.category === category).length;
-  };
-
-  // カテゴリの表示名を取得
-  const getCategoryDisplayName = (category: string) => {
-    const categoryNames: Record<string, string> = {
-      seller: '売却',
-      buyer: '購入',
-      reform: 'リフォーム'
-    };
-    return categoryNames[category] || category;
-  };
-
-  // 流入元の表示名を取得
-  const getSourceDisplayName = (source: string) => {
-    const sourceNames: Record<string, string> = {
-      flyer: 'チラシ',
-      lp: 'LP',
-      suumo: 'SUUMO',
-      homes: "HOME'S",
-      referral: '紹介',
-      other: 'その他'
-    };
-    return sourceNames[source] || source;
-  };
-
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">ログインが必要です</h1>
-          <p className="text-gray-600">管理者画面にアクセスするにはログインしてください</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* ヘッダー */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">顧客管理</h1>
-            <p className="text-gray-600">売却・購入・リフォームの顧客を一元管理</p>
+    <div className="container mx-auto py-6 space-y-6">
+      {/* KPIカード */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="text-sm font-medium text-gray-500 mb-2">総顧客数</div>
+          <div className="text-2xl font-bold">{kpiData.totalCustomers}</div>
+          <p className="text-xs text-gray-500">
+            今月 +{kpiData.newCustomersThisMonth}
+          </p>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="text-sm font-medium text-gray-500 mb-2">報告待ち</div>
+          <div className="text-2xl font-bold text-orange-600">
+            {kpiData.pendingReports}
           </div>
+          <p className="text-xs text-gray-500">要対応</p>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="text-sm font-medium text-gray-500 mb-2">期限超過</div>
+          <div className="text-2xl font-bold text-red-600">
+            {kpiData.overdueTasks}
+          </div>
+          <p className="text-xs text-gray-500">タスク</p>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="text-sm font-medium text-gray-500 mb-2">リフォーム粗利</div>
+          <div className="text-2xl font-bold text-green-600">
+            {formatCurrency(kpiData.reformGrossProfit)}
+          </div>
+          <p className="text-xs text-gray-500">今月見込み</p>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="text-sm font-medium text-gray-500 mb-2">成約率</div>
+          <div className="text-2xl font-bold">
+            {kpiData.conversionRate.toFixed(1)}%
+          </div>
+          <p className="text-xs text-gray-500">前月比</p>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow border border-blue-500">
+          <div className="text-sm font-medium text-blue-600 mb-2">本日のタスク</div>
+          <div className="space-y-1">
+            <div className="flex items-center text-xs">
+              <span className="mr-1">⏰</span>
+              <span>報告 3件</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <span className="mr-1">✅</span>
+              <span>確認 5件</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ツールバー */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            placeholder="名前、電話番号、メールで検索..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+        </div>
+        
+        <div className="flex gap-2">
           <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            onClick={() => router.push('/admin/customers/new')}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            新規顧客登録
+            <span className="mr-2">➕</span>
+            新規顧客
+          </button>
+          
+          <button className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            <span className="mr-2">🔽</span>
+            CSV
           </button>
         </div>
+      </div>
 
-        {/* 統計カード */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <div className="text-2xl font-bold text-gray-900">{customers.length}</div>
-            <div className="text-sm text-gray-600">総顧客数</div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <div className="text-2xl font-bold text-blue-600">{getCustomerCount('seller')}</div>
-            <div className="text-sm text-gray-600">売却顧客</div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <div className="text-2xl font-bold text-green-600">{getCustomerCount('buyer')}</div>
-            <div className="text-sm text-gray-600">購入顧客</div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <div className="text-2xl font-bold text-purple-600">{getCustomerCount('reform')}</div>
-            <div className="text-sm text-gray-600">リフォーム顧客</div>
-          </div>
+      {/* タブ */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8 px-6">
+            {[
+              { key: 'all', label: '全て', count: customers.length },
+              { key: 'seller', label: '売却', count: customers.filter(c => c.category === 'seller').length },
+              { key: 'buyer', label: '購入', count: customers.filter(c => c.category === 'buyer').length },
+              { key: 'reform', label: 'リフォーム', count: customers.filter(c => c.category === 'reform').length }
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === tab.key
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.label}
+                <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs font-medium">
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* タブと検索 */}
-        <div className="bg-white rounded-lg shadow border mb-8">
-          {/* タブ */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { key: 'all', label: '全顧客', count: customers.length },
-                { key: 'seller', label: '売却', count: getCustomerCount('seller') },
-                { key: 'buyer', label: '購入', count: getCustomerCount('buyer') },
-                { key: 'reform', label: 'リフォーム', count: getCustomerCount('reform') }
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as any)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === tab.key
-                      ? 'border-orange-500 text-orange-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  {tab.label}
-                  <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs font-medium">
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* 検索 */}
-          <div className="p-6">
-            <div className="relative">
-              <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="顧客名、電話番号、メールアドレスで検索..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* 顧客一覧 */}
-        <div className="bg-white rounded-lg shadow border">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold">顧客一覧</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {filteredCustomers.length}件の顧客を表示中
-            </p>
-          </div>
-          
+        <div className="p-6">
           {loading ? (
-            <div className="p-6 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-500">読み込み中...</p>
             </div>
-          ) : error ? (
-            <div className="p-6 text-center">
-              <p className="text-red-500 mb-4">{error}</p>
-              <button
-                onClick={fetchCustomers}
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-              >
-                再試行
-              </button>
-            </div>
           ) : filteredCustomers.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              顧客が見つかりません
+            <div className="text-center py-8 text-gray-500">
+              該当する顧客が見つかりません
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      顧客名
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      カテゴリ
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      連絡先
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      流入元
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      登録日
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      アクション
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12"></th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">顧客名</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">物件</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">担当</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">金額</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">次回アクション</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">アクション</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
+                    <tr 
+                      key={customer.id}
+                      className="cursor-pointer hover:bg-gray-50"
+                      onClick={() => router.push(`/admin/customers/${customer.id}`)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center justify-center text-2xl">
+                          {getCategoryIcon(customer.category)}
+                        </div>
+                      </td>
+                      
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="font-medium text-gray-900">{customer.name}</div>
-                          {customer.name_kana && (
-                            <div className="text-sm text-gray-500">{customer.name_kana}</div>
+                          <div className="font-medium">{customer.name}</div>
+                          {customer.phone && (
+                            <div className="text-sm text-gray-500">
+                              {customer.phone}
+                            </div>
                           )}
                         </div>
                       </td>
+                      
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          customer.category === 'seller' ? 'bg-blue-100 text-blue-800' :
-                          customer.category === 'buyer' ? 'bg-green-100 text-green-800' :
-                          'bg-purple-100 text-purple-800'
-                        }`}>
-                          {getCategoryDisplayName(customer.category)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div>
-                          {customer.phone && <div>{customer.phone}</div>}
-                          {customer.email && <div className="text-gray-500">{customer.email}</div>}
+                        <div className="text-sm">
+                          {customer.property_type && (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 mr-1">
+                              {customer.property_type === 'mansion' && 'マンション'}
+                              {customer.property_type === 'land' && '土地'}
+                              {customer.property_type === 'house' && '戸建'}
+                            </span>
+                          )}
+                          {customer.property_address && (
+                            <div className="text-gray-500 mt-1">
+                              {customer.property_address}
+                            </div>
+                          )}
                         </div>
                       </td>
+                      
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {customer.source ? (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                            {getSourceDisplayName(customer.source)}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">-</span>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(customer)}
+                          {customer.pending_tasks && customer.pending_tasks > 0 && (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                              ⚠️ {customer.pending_tasks}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm">
+                          {customer.assignee_name || '-'}
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        {customer.category === 'seller' && (
+                          <div>
+                            <div className="font-medium">
+                              {formatCurrency(customer.desired_price)}
+                            </div>
+                            {customer.transaction_type && (
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                customer.transaction_type === 'purchase' 
+                                  ? 'bg-blue-100 text-blue-800' 
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {customer.transaction_type === 'purchase' ? '買取' : '仲介'}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {customer.category === 'buyer' && (
+                          <div className="text-sm">
+                            {formatCurrency(customer.budget_min)} 〜 {formatCurrency(customer.budget_max)}
+                          </div>
+                        )}
+                        
+                        {customer.category === 'reform' && (
+                          <div>
+                            <div className="font-medium">
+                              {formatCurrency(customer.contracted_amount)}
+                            </div>
+                            {customer.gross_profit && (
+                              <div className="text-xs text-green-600">
+                                粗利: {formatCurrency(customer.gross_profit)}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(customer.created_at).toLocaleDateString('ja-JP')}
+                      
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {customer.next_report_due && (
+                          <div className="text-sm">
+                            <div className="font-medium">報告期限</div>
+                            <div className="text-gray-500">
+                              {format(new Date(customer.next_report_due), 'M/d', { locale: ja })}
+                            </div>
+                          </div>
+                        )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => window.open(`/admin/customers/${customer.id}`, '_blank')}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="詳細表示"
-                          >
-                            <EyeIcon className="h-4 w-4" />
+                      
+                      <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                        <div className="relative">
+                          <button className="text-gray-400 hover:text-gray-600">
+                            ⋯
                           </button>
-                          <button
-                            onClick={() => window.open(`/admin/customers/${customer.id}/edit`, '_blank')}
-                            className="text-indigo-600 hover:text-indigo-900"
-                            title="編集"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => setShowDeleteConfirm(customer.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="削除"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                            <button
+                              onClick={() => router.push(`/admin/customers/${customer.id}`)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              詳細を見る
+                            </button>
+                            
+                            {customer.category === 'seller' && customer.next_report_due && (
+                              <>
+                                <button
+                                  onClick={() => handleSendReport(customer.id)}
+                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                  📧 報告メール送信
+                                </button>
+                                <button
+                                  onClick={() => handleGeneratePDF(customer.id)}
+                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                  📄 報告書PDF作成
+                                </button>
+                              </>
+                            )}
+                            
+                            {customer.category === 'reform' && (
+                              <button
+                                onClick={() => router.push(`/admin/customers/${customer.id}/costs`)}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                💰 原価入力
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -380,158 +527,6 @@ export default function CustomersPage() {
             </div>
           )}
         </div>
-
-        {/* 新規顧客作成モーダル */}
-        {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold mb-4">新規顧客登録</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    顧客名 *
-                  </label>
-                  <input
-                    type="text"
-                    value={newCustomer.name}
-                    onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="田中太郎"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    カナ
-                  </label>
-                  <input
-                    type="text"
-                    value={newCustomer.name_kana}
-                    onChange={(e) => setNewCustomer({...newCustomer, name_kana: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="タナカタロウ"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    電話番号
-                  </label>
-                  <input
-                    type="tel"
-                    value={newCustomer.phone}
-                    onChange={(e) => setNewCustomer({...newCustomer, phone: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="090-1234-5678"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    メールアドレス
-                  </label>
-                  <input
-                    type="email"
-                    value={newCustomer.email}
-                    onChange={(e) => setNewCustomer({...newCustomer, email: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="tanaka@example.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    カテゴリ
-                  </label>
-                  <select
-                    value={newCustomer.category}
-                    onChange={(e) => setNewCustomer({...newCustomer, category: e.target.value as any})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  >
-                    <option value="buyer">購入</option>
-                    <option value="seller">売却</option>
-                    <option value="reform">リフォーム</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    流入元
-                  </label>
-                  <select
-                    value={newCustomer.source}
-                    onChange={(e) => setNewCustomer({...newCustomer, source: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  >
-                    <option value="">選択してください</option>
-                    <option value="flyer">チラシ</option>
-                    <option value="lp">LP</option>
-                    <option value="suumo">SUUMO</option>
-                    <option value="homes">HOME'S</option>
-                    <option value="referral">紹介</option>
-                    <option value="other">その他</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    住所
-                  </label>
-                  <input
-                    type="text"
-                    value={newCustomer.address}
-                    onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="東京都渋谷区..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  キャンセル
-                </button>
-                <button
-                  onClick={handleCreateCustomer}
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-                >
-                  登録
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 削除確認モーダル */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold mb-4">顧客削除の確認</h3>
-              <p className="text-gray-600 mb-6">
-                この顧客を削除しますか？この操作は取り消せません。
-              </p>
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(null)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  キャンセル
-                </button>
-                <button
-                  onClick={() => handleDeleteCustomer(showDeleteConfirm)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                >
-                  削除
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
