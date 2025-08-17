@@ -7,7 +7,8 @@ export interface AddressData {
   town: string
   block: string
   full: string
-  provider: 'nominatim' | 'gsi'
+  provider: 'google' | 'nominatim' | 'gsi'
+  formattedAddress?: string
 }
 
 interface UseCurrentAddressReturn {

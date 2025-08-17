@@ -11,6 +11,8 @@ export const AddressDisplay: React.FC<AddressDisplayProps> = ({
 }) => {
   const getProviderLabel = (provider: string) => {
     switch (provider) {
+      case 'google':
+        return 'Google Maps'
       case 'nominatim':
         return 'OpenStreetMap'
       case 'gsi':
@@ -65,6 +67,13 @@ export const AddressDisplay: React.FC<AddressDisplayProps> = ({
       <p className="text-xs text-green-700 mb-1 font-medium">
         住所: {address.full}
       </p>
+      
+      {/* Google Mapsのフォーマット済み住所 */}
+      {address.formattedAddress && address.provider === 'google' && (
+        <p className="text-xs text-blue-700 mb-1">
+          Google Maps: {address.formattedAddress}
+        </p>
+      )}
       
       {/* データ提供元 */}
       {showProvider && (

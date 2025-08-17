@@ -7,7 +7,8 @@ interface AddressData {
   town: string
   block: string
   full: string
-  provider: 'nominatim' | 'gsi'
+  provider: 'google' | 'nominatim' | 'gsi'
+  formattedAddress?: string
 }
 
 interface NominatimResponse {
@@ -28,6 +29,78 @@ interface GsiResponse {
   results: {
     muniCd: string
     lv01Nm: string
+  }
+}
+
+// Google Maps APIから住所情報を取得
+const getAddressFromGoogleMaps = async (lat: number, lng: number): Promise<AddressData | null> => {
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY
+  
+  if (!apiKey) {
+    return null // APIキーがない場合はnullを返して次のAPIを試行
+  }
+
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=ja&key=${apiKey}`
+    
+    const response = await fetch(url)
+    
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json()
+    
+    if (data.status !== 'OK' || !data.results || !data.results[0]) {
+      return null
+    }
+
+    const result = data.results[0]
+    const components = result.address_components
+    
+    // 住所コンポーネントから詳細情報を抽出
+    let postalCode = ''
+    let prefecture = ''
+    let city = ''
+    let town = ''
+    let block = ''
+    
+    components.forEach(component => {
+      const types = component.types
+      const name = component.long_name
+      
+      if (types.includes('postal_code')) {
+        postalCode = name
+      } else if (types.includes('administrative_area_level_1')) {
+        prefecture = name
+      } else if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+        city = name
+      } else if (types.includes('sublocality') || types.includes('sublocality_level_1')) {
+        town = name
+      } else if (types.includes('street_number')) {
+        block = name
+      }
+    })
+
+    // 完全な住所を構築
+    let full = result.formatted_address
+    if (postalCode) {
+      full = `〒${postalCode} ${full}`
+    }
+
+    return {
+      postalCode,
+      prefecture,
+      city,
+      town,
+      block,
+      full,
+      provider: 'google' as const,
+      formattedAddress: result.formatted_address
+    }
+  } catch (error) {
+    console.error('Google Maps API error:', error)
+    return null
   }
 }
 
@@ -167,17 +240,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // まずNominatim APIを試行
-    let addressData = await getAddressFromNominatim(lat, lng)
+    // 1. まずGoogle Maps APIを試行（最高精度）
+    let addressData = await getAddressFromGoogleMaps(lat, lng)
 
-    // Nominatimが失敗した場合は国土地理院APIにフォールバック
+    // 2. Google Mapsが失敗した場合はNominatim APIを試行
+    if (!addressData) {
+      addressData = await getAddressFromNominatim(lat, lng)
+    }
+
+    // 3. Nominatimも失敗した場合は国土地理院APIにフォールバック
     if (!addressData) {
       addressData = await getAddressFromGsi(lat, lng)
     }
 
     if (!addressData) {
       return NextResponse.json(
-        { error: 'Failed to get address information from both APIs.' },
+        { error: 'Failed to get address information from all APIs.' },
         { status: 500 }
       )
     }
@@ -188,6 +266,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    )
+      )
   }
 }
