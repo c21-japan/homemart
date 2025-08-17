@@ -78,11 +78,11 @@ export default function PropertiesPage() {
         if (sellerIds.length > 0) {
           const { data: customerData } = await supabase
             .from('customers')
-            .select('id, name, name_kana, phone, email')
+            .select('id, name, name_kana, phone, email, category, is_active, created_at, updated_at')
             .in('id', sellerIds);
           
           if (customerData) {
-            setCustomers(customerData);
+            setCustomers(customerData as Customer[]);
           }
         }
       }
@@ -243,79 +243,19 @@ export default function PropertiesPage() {
             <p className="text-gray-500">物件が見つかりません</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    物件情報
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    価格
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ステータス
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    特徴
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    登録日
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    操作
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {properties.map((property) => (
-                  <tr key={property.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{property.title}</div>
-                        <div className="text-sm text-gray-500">{property.address}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatPrice(property.price)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(property.status)}`}>
-                        {getStatusText(property.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {property.featured && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          おすすめ
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(property.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Link
-                          href={`/properties/${property.id}`}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="詳細表示"
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                        </Link>
-                        <Link
-                          href={`/admin/properties/${property.id}/edit`}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="編集"
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-4">
+            {properties.map((property) => {
+              const seller = customers.find(c => c.id === property.seller_customer_id);
+              return (
+                <PropertySummary
+                  key={property.id}
+                  property={property}
+                  seller={seller}
+                  showActions={true}
+                  className="hover:shadow-md transition-shadow"
+                />
+              );
+            })}
           </div>
         )}
 

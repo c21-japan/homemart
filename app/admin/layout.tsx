@@ -46,7 +46,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
-  const [isChecking, setIsChecking] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -102,46 +101,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [notificationsOpen]);
 
+  // シンプルな認証チェック
   useEffect(() => {
-    try {
-      console.log('Auth check:', { isLoaded, isSignedIn, user: user?.emailAddresses?.[0]?.emailAddress })
-      
-      if (isLoaded) {
-        if (!isSignedIn) {
-          console.log('Not signed in, redirecting to login')
-          router.push('/member/login')
-          return
-        }
-        if (isSignedIn && user) {
-          console.log('User is signed in, checking permissions...')
-          
-          // 一時的に権限チェックを簡素化
-          const userEmail = user.emailAddresses[0]?.emailAddress
-          if (userEmail) {
-            console.log('User email found:', userEmail)
-            
-            // 基本的な権限チェックのみ
-            if (OWNER_EMAILS.includes(userEmail) || ADMIN_EMAILS.includes(userEmail)) {
-              console.log('User has admin access, setting isChecking to false')
-              setIsChecking(false)
-            } else {
-              console.log('User does not have admin access, redirecting to home')
-              router.push('/')
-            }
-          } else {
-            console.log('No user email found, redirecting to home')
-            router.push('/')
-          }
-        }
-      }
-            } catch (error) {
-          console.error('Auth check error:', error)
-          // エラーが発生した場合は基本的なアクセスを許可
-          setIsChecking(false)
-        }
-  }, [isLoaded, isSignedIn, user, router])
+    if (isLoaded && !isSignedIn) {
+      router.push('/member/login')
+    }
+  }, [isLoaded, isSignedIn, router])
 
-  if (!isLoaded || isChecking) {
+  // ローディング中
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
@@ -149,10 +117,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mx-auto"></div>
             <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-400 animate-pulse mx-auto"></div>
           </div>
-          <p className="mt-6 text-slate-600 font-medium">権限を確認しています...</p>
+          <p className="mt-6 text-slate-600 font-medium">読み込み中...</p>
         </div>
       </div>
     )
+  }
+
+  // 未認証の場合は何も表示しない（リダイレクト中）
+  if (!isSignedIn) {
+    return null
   }
 
   const userEmail = user?.emailAddresses[0]?.emailAddress
@@ -317,23 +290,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* ユーザー情報 */}
       <div className="p-6 border-b border-slate-200 bg-slate-50">
-                  <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">
-                {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-sm">
+              {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0)?.toUpperCase()}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-slate-900 truncate">
+              {user?.firstName || user?.emailAddresses[0]?.emailAddress}
+            </p>
+            <div className="flex items-center space-x-2">
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleInfo.color} text-white`}>
+                {roleInfo.label}
               </span>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {user?.firstName || user?.emailAddresses[0]?.emailAddress}
-              </p>
-              <div className="flex items-center space-x-2">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${roleInfo.color} text-white`}>
-                  {roleInfo.label}
-                </span>
-              </div>
-            </div>
           </div>
+        </div>
       </div>
 
       {/* ナビゲーション */}

@@ -491,6 +491,12 @@ export default function CustomersPage() {
                             >
                               詳細を見る
                             </button>
+                            <button
+                              onClick={() => router.push(`/admin/properties/new?sellerId=${customer.id}`)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              🏠 新規物件登録
+                            </button>
                             
                             {customer.category === 'seller' && customer.next_report_due && (
                               <>

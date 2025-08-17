@@ -1,12 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import SellerSelect from '@/components/admin/properties/SellerSelect';
 
 export default function NewPropertyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // URLパラメータから売主IDを取得
+  const sellerId = searchParams.get('sellerId');
+  
   const [formData, setFormData] = useState({
     // 基本情報
     title: '',
@@ -16,7 +21,7 @@ export default function NewPropertyPage() {
     propertyType: 'apartment',
     status: 'available',
     featured: false,
-    seller_customer_id: '',
+    seller_customer_id: sellerId || '',
     
     // 詳細情報
     buildingAge: '',
