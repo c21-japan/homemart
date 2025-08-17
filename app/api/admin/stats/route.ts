@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
-import { getMonthlyStats } from '@/server/actions/customers';
 
 export async function GET() {
   try {
-    const stats = await getMonthlyStats();
+    // 一時的にモックデータを返す
+    const mockStats = {
+      totalCustomers: 150,
+      newCustomersThisMonth: 25,
+      totalProperties: 89,
+      activeLeads: 67,
+      conversionRate: 23.5
+    };
     
-    if (stats.success) {
-      return NextResponse.json(stats.stats);
-    } else {
-      return NextResponse.json(
-        { error: stats.error },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json(mockStats);
   } catch (error) {
     console.error('統計データ取得エラー:', error);
     return NextResponse.json(

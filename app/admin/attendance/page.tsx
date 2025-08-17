@@ -11,7 +11,7 @@ interface AttendanceRecordWithEmployee extends AttendanceRecord {
 }
 
 export default function AdminAttendancePage() {
-  const { user, isLoaded } = useUser()
+    const { user, isLoaded } = useUser()
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecordWithEmployee[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(true)

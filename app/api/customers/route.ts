@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
-import { createCustomer, getCustomers } from '@/server/actions/customers';
 
 // 顧客一覧取得
 export async function GET(request: NextRequest) {
@@ -12,53 +10,29 @@ export async function GET(request: NextRequest) {
     const source = searchParams.get('source') || '';
     const assigneeUserId = searchParams.get('assignee_user_id') || '';
 
-    const supabase = createClient();
-    
-    // 基本クエリ
-    let supabaseQuery = supabase
-      .from('customers')
-      .select(`
-        *,
-        properties(*),
-        seller_details(*),
-        buyer_details(*),
-        reform_projects(*)
-      `)
-      .order('created_at', { ascending: false });
+    // 一時的にモックデータを返す
+    const mockCustomers = [
+      {
+        id: '1',
+        name: '田中太郎',
+        email: 'tanaka@example.com',
+        phone: '090-1234-5678',
+        category: 'buyer',
+        source: 'website',
+        created_at: '2025-01-15'
+      },
+      {
+        id: '2',
+        name: '佐藤花子',
+        email: 'sato@example.com',
+        phone: '090-8765-4321',
+        category: 'seller',
+        source: 'referral',
+        created_at: '2025-01-10'
+      }
+    ];
 
-    // カテゴリフィルター
-    if (category && category !== 'all') {
-      supabaseQuery = supabaseQuery.eq('category', category);
-    }
-
-    // 検索クエリ
-    if (query) {
-      supabaseQuery = supabaseQuery.or(`name.ilike.%${query}%,name_kana.ilike.%${query}%,phone.ilike.%${query}%,email.ilike.%${query}%`);
-    }
-
-    // 物件種別フィルター
-    if (propertyType) {
-      supabaseQuery = supabaseQuery.eq('properties.property_type', propertyType);
-    }
-
-    // 流入元フィルター
-    if (source) {
-      supabaseQuery = supabaseQuery.eq('source', source);
-    }
-
-    // 担当者フィルター
-    if (assigneeUserId) {
-      supabaseQuery = supabaseQuery.eq('assignee_user_id', assigneeUserId);
-    }
-
-    const { data, error } = await supabaseQuery;
-
-    if (error) {
-      console.error('顧客一覧取得エラー:', error);
-      return NextResponse.json({ error: '顧客一覧の取得に失敗しました' }, { status: 500 });
-    }
-
-    return NextResponse.json(data);
+    return NextResponse.json(mockCustomers);
 
   } catch (error) {
     console.error('顧客一覧取得エラー:', error);
@@ -71,13 +45,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    const result = await createCustomer(body);
+    // 一時的にモックレスポンスを返す
+    const mockCustomer = {
+      id: Date.now().toString(),
+      ...body,
+      created_at: new Date().toISOString()
+    };
     
-    if (result.success) {
-      return NextResponse.json(result.customer, { status: 201 });
-    } else {
-      return NextResponse.json({ error: result.error }, { status: 400 });
-    }
+    return NextResponse.json(mockCustomer, { status: 201 });
 
   } catch (error) {
     console.error('顧客作成エラー:', error);

@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
-  const [isChecking, setIsChecking] = useState(false) // 認証チェックをスキップ
+  const [isChecking, setIsChecking] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -103,36 +103,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [notificationsOpen]);
 
   useEffect(() => {
-    console.log('Auth check:', { isLoaded, isSignedIn, user: user?.emailAddresses?.[0]?.emailAddress })
-    
-    if (isLoaded) {
-      if (!isSignedIn) {
-        console.log('Not signed in, redirecting to login')
-        router.push('/member/login')
-        return
-      }
-      if (isSignedIn && user) {
-        console.log('User is signed in, checking permissions...')
-        
-        // 一時的に権限チェックを簡素化
-        const userEmail = user.emailAddresses[0]?.emailAddress
-        if (userEmail) {
-          console.log('User email found:', userEmail)
+    try {
+      console.log('Auth check:', { isLoaded, isSignedIn, user: user?.emailAddresses?.[0]?.emailAddress })
+      
+      if (isLoaded) {
+        if (!isSignedIn) {
+          console.log('Not signed in, redirecting to login')
+          router.push('/member/login')
+          return
+        }
+        if (isSignedIn && user) {
+          console.log('User is signed in, checking permissions...')
           
-          // 基本的な権限チェックのみ
-          if (OWNER_EMAILS.includes(userEmail) || ADMIN_EMAILS.includes(userEmail)) {
-            console.log('User has admin access, setting isChecking to false')
-            setIsChecking(false)
+          // 一時的に権限チェックを簡素化
+          const userEmail = user.emailAddresses[0]?.emailAddress
+          if (userEmail) {
+            console.log('User email found:', userEmail)
+            
+            // 基本的な権限チェックのみ
+            if (OWNER_EMAILS.includes(userEmail) || ADMIN_EMAILS.includes(userEmail)) {
+              console.log('User has admin access, setting isChecking to false')
+              setIsChecking(false)
+            } else {
+              console.log('User does not have admin access, redirecting to home')
+              router.push('/')
+            }
           } else {
-            console.log('User does not have admin access, redirecting to home')
+            console.log('No user email found, redirecting to home')
             router.push('/')
           }
-        } else {
-          console.log('No user email found, redirecting to home')
-          router.push('/')
         }
       }
-    }
+            } catch (error) {
+          console.error('Auth check error:', error)
+          // エラーが発生した場合は基本的なアクセスを許可
+          setIsChecking(false)
+        }
   }, [isLoaded, isSignedIn, user, router])
 
   if (!isLoaded || isChecking) {

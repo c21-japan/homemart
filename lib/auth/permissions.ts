@@ -125,58 +125,6 @@ export const PAGE_PERMISSIONS: PagePermissions[] = [
   }
 ];
 
-// 権限設定
-export const PERMISSIONS = {
-  [UserRole.OWNER]: {
-    name: 'オーナー',
-    description: '全ての機能にアクセス可能',
-    canManageUsers: true,
-    canManagePermissions: true,
-    canAccessAllPages: true,
-    canManageSystem: true,
-    pages: ['*'] // 全ページアクセス可能
-  },
-  [UserRole.ADMIN]: {
-    name: '管理者',
-    description: '管理機能にアクセス可能',
-    canManageUsers: true,
-    canManagePermissions: false,
-    canAccessAllPages: false,
-    canManageSystem: false,
-    pages: [
-      '/admin',
-      '/admin/dashboard',
-      '/admin/leads',
-      '/admin/properties',
-      '/admin/internal-applications',
-      '/admin/part-time-attendance',
-      '/admin/users',
-      '/admin/documents',
-      '/admin/attendance',
-      '/admin/reports',
-      '/admin/career-path',
-      '/admin/team-performance',
-      '/admin/reform-workers'
-    ]
-  },
-  [UserRole.STAFF]: {
-    name: '社員',
-    description: '限定的な機能にアクセス可能',
-    canManageUsers: false,
-    canManagePermissions: false,
-    canAccessAllPages: false,
-    canManageSystem: false,
-    pages: [
-      '/admin',
-      '/admin/dashboard',
-      '/admin/leads',
-      '/admin/properties',
-      '/admin/internal-applications',
-      '/admin/part-time-attendance'
-    ]
-  }
-};
-
 // 管理者のメールアドレスリスト
 export const ADMIN_EMAILS = [
   'y-inui@century21.group',  // 乾代表（オーナー）
@@ -203,6 +151,73 @@ export interface UserPermissions {
     [permission: string]: boolean
   }
 }
+
+// 各権限レベルの権限設定
+export const PERMISSIONS = {
+  [UserRole.OWNER]: {
+    name: 'オーナー',
+    description: '全ての機能にアクセス可能',
+    canManageUsers: true,
+    canManagePermissions: true,
+    canAccessAllPages: true,
+    canManageSystem: true,
+    pages: ['*'], // 全ページアクセス可能
+    canViewSensitiveInfo: true,
+    canEditData: true,
+    canDeleteData: true,
+    canApprove: true,
+    canExport: true
+  },
+  [UserRole.ADMIN]: {
+    name: '管理者',
+    description: '管理機能にアクセス可能',
+    canManageUsers: true,
+    canManagePermissions: false,
+    canAccessAllPages: false,
+    canManageSystem: false,
+    pages: [
+      '/admin',
+      '/admin/dashboard',
+      '/admin/leads',
+      '/admin/properties',
+      '/admin/internal-applications',
+      '/admin/part-time-attendance',
+      '/admin/users',
+      '/admin/documents',
+      '/admin/attendance',
+      '/admin/reports',
+      '/admin/career-path',
+      '/admin/team-performance',
+      '/admin/reform-workers'
+    ],
+    canViewSensitiveInfo: true,
+    canEditData: true,
+    canDeleteData: true,
+    canApprove: true,
+    canExport: true
+  },
+  [UserRole.STAFF]: {
+    name: '社員',
+    description: '限定的な機能にアクセス可能',
+    canManageUsers: false,
+    canManagePermissions: false,
+    canAccessAllPages: false,
+    canManageSystem: false,
+    pages: [
+      '/admin',
+      '/admin/dashboard',
+      '/admin/leads',
+      '/admin/properties',
+      '/admin/internal-applications',
+      '/admin/part-time-attendance'
+    ],
+    canViewSensitiveInfo: false,
+    canEditData: true,
+    canDeleteData: false,
+    canApprove: false,
+    canExport: false
+  }
+};
 
 // 権限チェック関数
 export function hasPermission(userRole: UserRole, permission: keyof typeof PERMISSIONS[UserRole]) {

@@ -39,6 +39,7 @@ export default function CustomersPage() {
   const { user } = useUser();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'seller' | 'buyer' | 'reform'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
@@ -57,6 +58,8 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const response = await fetch('/api/customers?' + new URLSearchParams({
         category: activeTab === 'all' ? '' : activeTab,
         ...filters,
@@ -66,9 +69,13 @@ export default function CustomersPage() {
       if (response.ok) {
         const data = await response.json();
         setCustomers(data);
+      } else {
+        throw new Error(`顧客データの取得に失敗しました: ${response.status}`);
       }
     } catch (error) {
       console.error('顧客データ取得エラー:', error);
+      setError(error instanceof Error ? error.message : '顧客データの取得中にエラーが発生しました');
+      setCustomers([]); // エラー時は空配列を設定
     } finally {
       setLoading(false);
     }

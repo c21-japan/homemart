@@ -56,6 +56,52 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<any>({});
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // ローディング状態の表示
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-400 animate-pulse mx-auto"></div>
+          </div>
+          <p className="mt-6 text-slate-600 font-medium">データを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // エラーが発生した場合の表示
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">管理画面エラー</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="space-y-4">
+            <button 
+              onClick={() => window.location.reload()} 
+              className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            >
+              再試行
+            </button>
+            <a 
+              href="/" 
+              className="block w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+            >
+              ホームに戻る
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 統計カード定義
   const statCards: StatCard[] = [
@@ -236,13 +282,20 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
+        
         const response = await fetch('/api/admin/stats');
         if (response.ok) {
           const data = await response.json();
           setStats(data);
+        } else {
+          throw new Error(`統計データの取得に失敗しました: ${response.status}`);
         }
       } catch (error) {
         console.error('統計データ取得エラー:', error);
+        setError(error instanceof Error ? error.message : '統計データの取得中にエラーが発生しました');
+        
         // フォールバック用のサンプルデータ
         setStats({
           userCount: 28,
@@ -258,6 +311,8 @@ export default function AdminDashboard() {
           overdueCount: 5,
           totalExpectedProfit: 1250
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
