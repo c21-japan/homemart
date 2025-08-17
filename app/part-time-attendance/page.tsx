@@ -76,17 +76,23 @@ export default function PartTimeAttendancePublicPage() {
 
       const { latitude, longitude } = position.coords
 
-      // 住所情報を取得（逆ジオコーディング）
+      // 新しい逆ジオコーディングAPIを使用
       let address = '位置情報を取得しました'
       try {
-        // 国土地理院の逆ジオコーディングAPI（無料）
-        const response = await fetch(
-          `https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${latitude}&lon=${longitude}`
-        )
-        const data = await response.json()
-        if (data.results && data.results[0] && data.results[0].muni) {
-          const result = data.results[0]
-          address = `${result.pref}${result.muni}${result.local}`
+        const response = await fetch('/api/geocode/reverse', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lat: latitude,
+            lng: longitude
+          })
+        })
+
+        if (response.ok) {
+          const addressData = await response.json()
+          address = addressData.full
         } else {
           address = `緯度: ${latitude.toFixed(6)}, 経度: ${longitude.toFixed(6)}`
         }
