@@ -37,16 +37,30 @@ export default function DashboardPage() {
       setLoading(true)
       setError('')
       
+      console.log('ダッシュボードデータ取得開始...')
+      
       // 各統計データを並行取得
       const [leads, agreements, checklists] = await Promise.all([
-        getLeadStats(),
-        getAgreementStats(),
-        getChecklistStats()
+        getLeadStats().catch(err => {
+          console.error('リード統計取得エラー:', err)
+          return null
+        }),
+        getAgreementStats().catch(err => {
+          console.error('契約統計取得エラー:', err)
+          return null
+        }),
+        getChecklistStats().catch(err => {
+          console.error('チェックリスト統計取得エラー:', err)
+          return null
+        })
       ])
+
+      console.log('取得結果:', { leads, agreements, checklists })
 
       setLeadStats(leads)
       setAgreementStats(agreements)
-      setChecklistStats(checklists)
+      // getChecklistStatsは{ success: true, data: stats }の形式で返される
+      setChecklistStats(checklists?.data || null)
 
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error)
@@ -275,19 +289,19 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">
-                    {checklistStats.overall.avgProgress}%
+                    {checklistStats.overall?.avgProgress || 0}%
                   </div>
                   <p className="text-sm text-gray-600">全体平均進捗率</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-600 mb-2">
-                    {checklistStats.overall.completedItems}
+                    {checklistStats.overall?.completedItems || 0}
                   </div>
                   <p className="text-sm text-gray-600">完了項目数</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-purple-600 mb-2">
-                    {checklistStats.overall.totalItems}
+                    {checklistStats.overall?.totalItems || 0}
                   </div>
                   <p className="text-sm text-gray-600">総項目数</p>
                 </div>
