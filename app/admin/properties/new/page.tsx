@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SellerSelect from '@/components/admin/properties/SellerSelect';
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function NewPropertyPage() {
     propertyType: 'apartment',
     status: 'available',
     featured: false,
+    seller_customer_id: '',
     
     // 詳細情報
     buildingAge: '',
@@ -63,7 +65,7 @@ export default function NewPropertyPage() {
   ]);
   
   const [selectedLine, setSelectedLine] = useState('');
-  const [selectedStations, setSelectedStations] = useState<string[]>([]);
+  const [selectedStations] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,6 +84,13 @@ export default function NewPropertyPage() {
         [name]: value
       }));
     }
+  };
+
+  const handleSellerChange = (customerId: string | null) => {
+    setFormData(prev => ({
+      ...prev,
+      seller_customer_id: customerId || ''
+    }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -292,6 +301,22 @@ export default function NewPropertyPage() {
                 <label className="ml-2 block text-sm text-gray-900">
                   おすすめ物件として表示
                 </label>
+              </div>
+
+              {/* 売主選択 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  売主
+                </label>
+                <SellerSelect
+                  value={formData.seller_customer_id}
+                  onChange={handleSellerChange}
+                  placeholder="売主を検索（漢字・かな・ローマ字）"
+                  className="mb-2"
+                />
+                <p className="text-xs text-gray-500">
+                  💡 売主を選択しても物件情報は編集可能です。売主選択はロックではありません。
+                </p>
               </div>
             </div>
           </div>

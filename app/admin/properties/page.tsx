@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase';
-import { Property } from '@/types/supabase';
+import { Property, Customer } from '@/types/supabase';
+import PropertySummary from '@/components/admin/properties/PropertySummary';
 
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,7 +30,7 @@ export default function PropertiesPage() {
 
       let query = supabase
         .from('properties')
-        .select('id, title, address, price, status, featured, created_at, updated_at', { count: 'exact' })
+        .select('id, title, address, price, status, featured, created_at, updated_at, seller_customer_id', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       // ステータスフィルター
@@ -67,6 +69,22 @@ export default function PropertiesPage() {
         setProperties(data);
         setTotalProperties(count || 0);
         setHasMore((data.length === ITEMS_PER_PAGE));
+        
+        // 売主顧客情報を取得
+        const sellerIds = data
+          .filter(p => p.seller_customer_id)
+          .map(p => p.seller_customer_id);
+        
+        if (sellerIds.length > 0) {
+          const { data: customerData } = await supabase
+            .from('customers')
+            .select('id, name, name_kana, phone, email')
+            .in('id', sellerIds);
+          
+          if (customerData) {
+            setCustomers(customerData);
+          }
+        }
       }
     } catch (error: any) {
       console.error('Error fetching properties:', error);
@@ -287,7 +305,7 @@ export default function PropertiesPage() {
                         </Link>
                         <Link
                           href={`/admin/properties/${property.id}/edit`}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-blue-600 hover:text-blue-900"
                           title="編集"
                         >
                           <PencilIcon className="w-4 h-4" />

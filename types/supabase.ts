@@ -45,6 +45,7 @@ export interface Property {
   image_url?: string;
   featured: boolean;
   status: 'available' | 'contracted' | 'sold';
+  seller_customer_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +56,19 @@ export interface ReformProject {
   before_image_url: string;
   after_image_url: string;
   description?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Customer {
+  id: string;
+  category: 'seller' | 'buyer' | 'reform';
+  name: string;
+  name_kana?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
