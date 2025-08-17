@@ -3,9 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const supabase = await createClient()
     
     // 認証チェック
@@ -15,7 +16,7 @@ export async function PUT(
     }
 
     const { fp_info } = await request.json()
-    const leadId = params.id
+    const leadId = id
 
     // 顧客情報の存在確認
     const { data: existingLead, error: leadError } = await supabase
@@ -57,9 +58,10 @@ export async function PUT(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const supabase = await createClient()
     
     // 認証チェック
@@ -68,7 +70,7 @@ export async function GET(
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
     }
 
-    const leadId = params.id
+    const leadId = id
 
     // FP情報を取得
     const { data, error } = await supabase

@@ -23,6 +23,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [selectedPeriod, setSelectedPeriod] = useState('current')
+  const [debugInfo, setDebugInfo] = useState<any>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -36,6 +37,7 @@ export default function DashboardPage() {
     try {
       setLoading(true)
       setError('')
+      setDebugInfo(null)
       
       console.log('ダッシュボードデータ取得開始...')
       
@@ -43,24 +45,35 @@ export default function DashboardPage() {
       const [leads, agreements, checklists] = await Promise.all([
         getLeadStats().catch(err => {
           console.error('リード統計取得エラー:', err)
-          return null
+          return { error: err.message }
         }),
         getAgreementStats().catch(err => {
           console.error('契約統計取得エラー:', err)
-          return null
+          return { error: err.message }
         }),
         getChecklistStats().catch(err => {
           console.error('チェックリスト統計取得エラー:', err)
-          return null
+          return { error: err.message }
         })
       ])
 
       console.log('取得結果:', { leads, agreements, checklists })
 
-      setLeadStats(leads)
-      setAgreementStats(agreements)
+      // エラーチェック
+      const errors = []
+      if ('error' in leads) errors.push(`リード統計: ${leads.error}`)
+      if ('error' in agreements) errors.push(`契約統計: ${agreements.error}`)
+      if ('error' in checklists) errors.push(`チェックリスト統計: ${checklists.error}`)
+
+      if (errors.length > 0) {
+        setError(`データ取得エラー: ${errors.join(', ')}`)
+        setDebugInfo({ leads, agreements, checklists })
+      }
+
+      setLeadStats('error' in leads ? null : leads)
+      setAgreementStats('error' in agreements ? null : agreements)
       // getChecklistStatsは{ success: true, data: stats }の形式で返される
-      setChecklistStats(checklists?.data || null)
+      setChecklistStats('error' in checklists ? null : (checklists?.data || null))
 
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error)
@@ -69,8 +82,44 @@ export default function DashboardPage() {
       } else {
         setError('ダッシュボードデータの取得に失敗しました')
       }
+      setDebugInfo({ error: error.message })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const testConnection = async () => {
+    try {
+      const response = await fetch('/api/test-connection')
+      const result = await response.json()
+      console.log('接続テスト結果:', result)
+      
+      if (result.success) {
+        alert('Supabase接続成功')
+      } else {
+        alert(`接続失敗: ${result.message}`)
+      }
+    } catch (err) {
+      console.error('接続テストエラー:', err)
+      alert('接続テスト中にエラーが発生しました')
+    }
+  }
+
+  const testDashboardData = async () => {
+    try {
+      const response = await fetch('/api/test-dashboard-data')
+      const result = await response.json()
+      console.log('ダッシュボードデータテスト結果:', result)
+      
+      if (result.success) {
+        alert('データテスト完了。コンソールで詳細を確認してください。')
+        setDebugInfo(result.results)
+      } else {
+        alert(`データテスト失敗: ${result.message}`)
+      }
+    } catch (err) {
+      console.error('データテストエラー:', err)
+      alert('データテスト中にエラーが発生しました')
     }
   }
 
@@ -113,6 +162,18 @@ export default function DashboardPage() {
                 >
                   更新
                 </button>
+                <button
+                  onClick={testConnection}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
+                >
+                  接続テスト
+                </button>
+                <button
+                  onClick={testDashboardData}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700"
+                >
+                  データテスト
+                </button>
               </div>
             </div>
           </div>
@@ -129,6 +190,29 @@ export default function DashboardPage() {
               </svg>
               {error}
             </div>
+          </div>
+        )}
+
+        {/* デバッグ情報表示 */}
+        {debugInfo && (
+          <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-700 px-6 py-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span className="font-medium">デバッグ情報</span>
+              </div>
+              <button
+                onClick={() => setDebugInfo(null)}
+                className="text-yellow-600 hover:text-yellow-800"
+              >
+                ×
+              </button>
+            </div>
+            <pre className="mt-2 text-sm overflow-auto max-h-40">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
           </div>
         )}
 

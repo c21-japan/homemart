@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
-import { runManagerEscalation } from '@/server/actions/customers';
+import { runManagerEscalationTask } from '@/lib/db/customers';
 
-export async function POST() {
+export async function POST(request: Request) {
+  // ビルド時のスキップ
+  if (process.env.NODE_ENV === 'development' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ 
+      message: 'Skipped during build',
+      buildTime: true 
+    });
+  }
+
   try {
     console.log('管理者エスカレーション処理開始:', new Date().toISOString());
     
-    const result = await runManagerEscalation();
+    const result = await runManagerEscalationTask();
     
     if (result.success) {
       console.log('管理者エスカレーション処理完了:', new Date().toISOString());
@@ -33,6 +41,13 @@ export async function POST() {
 }
 
 // GETリクエストでも実行可能（テスト用）
-export async function GET() {
-  return POST();
+export async function GET(request: Request) {
+  // ビルド時のスキップ
+  if (process.env.NODE_ENV === 'development' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ 
+      message: 'Skipped during build',
+      buildTime: true 
+    });
+  }
+  return POST(request);
 }
