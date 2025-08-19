@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from "react";
+
+// 動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase-direct";
@@ -455,7 +459,7 @@ export default function CustomerDetailPage() {
                     <div key={checklist.id} className="border rounded-lg p-4">
                       <h3 className="font-medium text-gray-900 mb-3">{checklist.title}</h3>
                       <div className="space-y-2">
-                        {checklist.checklist_items?.map((item) => (
+                        {checklist.checklist_items?.map((item: any) => (
                           <label key={item.id} className="flex items-center">
                             <input
                               type="checkbox"

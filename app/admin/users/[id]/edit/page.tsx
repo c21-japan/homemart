@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useUser } from '@clerk/nextjs'
 import { 
   UserRole, 
   PERMISSIONS, 
@@ -53,6 +53,15 @@ export default function EditUserPage() {
     }
   }
 
+  useEffect(() => {
+    // 権限チェック
+    if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
+      return
+    }
+    
+    fetchUser()
+  }, [userId, currentUser, currentUserRole])
+
   // 権限チェック
   if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
     return (
@@ -73,10 +82,6 @@ export default function EditUserPage() {
       </div>
     )
   }
-
-  useEffect(() => {
-    fetchUser()
-  }, [userId])
 
   const fetchUser = async () => {
     try {
@@ -288,7 +293,7 @@ export default function EditUserPage() {
                   id="role"
                   name="role"
                   value={user.role}
-                  onChange={(e) => handleRoleChange(e.target.value as UserRole)}
+                  onChange={(e) => handleRoleChange(Number(e.target.value) as UserRole)}
                   disabled={!hasPermission(currentUserRole, 'canManagePermissions')}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100"
                 >

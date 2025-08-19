@@ -34,7 +34,7 @@ export default function SellerSelect({
   
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 選択された顧客の情報を取得
   const selectedCustomer = customers.find(c => c.id === value);

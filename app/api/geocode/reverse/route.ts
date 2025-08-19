@@ -65,7 +65,7 @@ const getAddressFromGoogleMaps = async (lat: number, lng: number): Promise<Addre
     let town = ''
     let block = ''
     
-    components.forEach(component => {
+    components.forEach((component: any) => {
       const types = component.types
       const name = component.long_name
       

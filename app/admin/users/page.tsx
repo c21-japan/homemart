@@ -48,6 +48,15 @@ export default function UsersPage() {
     }
   }
 
+  useEffect(() => {
+    // 権限チェック
+    if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
+      return
+    }
+    
+    fetchUsers()
+  }, [currentUser, currentUserRole])
+
   // 権限チェック
   if (!currentUser || !hasPermission(currentUserRole, 'canManageUsers')) {
     return (
@@ -68,10 +77,6 @@ export default function UsersPage() {
       </div>
     )
   }
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
 
   const fetchUsers = async () => {
     try {

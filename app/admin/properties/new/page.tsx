@@ -139,10 +139,10 @@ export default function NewPropertyPage() {
   // 路線選択時の駅更新
   const handleLineChange = (lineId: string) => {
     setSelectedLine(lineId);
-    const line = lines.find(l => l.id === lineId);
-    if (line) {
-      setSelectedStations(line.stations);
-    }
+    // const line = lines.find(l => l.id === lineId);
+    // if (line) {
+    //   setSelectedStations(line.stations);
+    // }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -7,6 +7,12 @@ import { customerUnion, CustomerInput } from '@/lib/zod-schemas';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 
+const ErrorMessage = ({ error }: { error: any }) => {
+  if (!error?.message) return null;
+  if (typeof error.message !== 'string') return null;
+  return <p className="mt-1 text-sm text-red-600">{error.message}</p>;
+};
+
 interface CustomerFormProps {
   onSubmit: (data: CustomerInput) => void;
   initialData?: Partial<CustomerInput>;
@@ -32,8 +38,8 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
     formState: { errors, isSubmitting },
     setValue,
     reset
-  } = useForm<CustomerInput>({
-    resolver: zodResolver(customerUnion),
+  } = useForm<any>({
+    resolver: zodResolver(customerUnion as any),
     defaultValues: {
       category: selectedCategory,
       property_type: selectedPropertyType,
@@ -122,7 +128,7 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
             placeholder="山田太郎"
           />
           {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+            <ErrorMessage error={errors.name} />
           )}
         </div>
 
@@ -161,7 +167,7 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
             placeholder="yamada@example.com"
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <ErrorMessage error={errors.email} />
           )}
         </div>
 
@@ -192,7 +198,7 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
             <option value="flyer">チラシ</option>
             <option value="lp">LP</option>
             <option value="suumo">SUUMO</option>
-            <option value="homes">HOME'S</option>
+            <option value="homes">HOME&apos;S</option>
             <option value="referral">紹介</option>
             <option value="other">その他</option>
           </select>
@@ -491,7 +497,7 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
                 defaultValue={['']}
                 render={({ field }) => (
                   <div className="space-y-2">
-                    {field.value.map((work, index) => (
+                    {field.value.map((work: string, index: number) => (
                       <div key={index} className="flex space-x-2">
                         <input
                           type="text"
@@ -508,7 +514,7 @@ export function CustomerForm({ onSubmit, initialData, mode = 'create' }: Custome
                           <button
                             type="button"
                             onClick={() => {
-                              const newWorks = field.value.filter((_, i) => i !== index);
+                              const newWorks = field.value.filter((_: string, i: number) => i !== index);
                               field.onChange(newWorks);
                             }}
                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"

@@ -1,6 +1,4 @@
-import { createClient } from '@/lib/supabase-server';
-
-const supabase = createClient();
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 async function seedCustomers() {
   try {
@@ -129,22 +127,26 @@ async function seedCustomers() {
     });
 
     // 7. 原価データの追加（リフォーム案件1）
-    await addReformCosts(reform1.reform_project_id, {
-      material_cost: 1800000,
-      outsourcing_cost: 1200000,
-      travel_cost: 50000,
-      other_cost: 45000,
-      note: '高級建材使用'
-    });
+    if (reform1 && reform1.reform_project_id) {
+      await addReformCosts(reform1.reform_project_id, {
+        material_cost: 1800000,
+        outsourcing_cost: 1200000,
+        travel_cost: 50000,
+        other_cost: 45000,
+        note: '高級建材使用'
+      });
+    }
 
     // 8. 原価データの追加（リフォーム案件2）
-    await addReformCosts(reform2.reform_project_id, {
-      material_cost: 600000,
-      outsourcing_cost: 400000,
-      travel_cost: 20000,
-      other_cost: 18000,
-      note: '標準仕様'
-    });
+    if (reform2 && reform2.reform_project_id) {
+      await addReformCosts(reform2.reform_project_id, {
+        material_cost: 600000,
+        outsourcing_cost: 400000,
+        travel_cost: 20000,
+        other_cost: 18000,
+        note: '標準仕様'
+      });
+    }
 
     console.log('✅ 顧客管理システムのSeedデータ作成が完了しました！');
     console.log(`作成された顧客数: ${seller1 ? 6 : 0}件`);

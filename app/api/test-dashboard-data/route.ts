@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
+type TableCheckResult = {
+  success: boolean
+  count: number
+}
+
 export async function GET() {
   try {
     console.log('ダッシュボードデータテスト開始...')
@@ -9,7 +14,12 @@ export async function GET() {
     const supabase = await createClient()
     
     // 各テーブルの存在確認とデータ取得テスト
-    const results = {
+    const results: {
+      customer_leads: TableCheckResult | null
+      listing_agreements: TableCheckResult | null
+      customer_checklists: TableCheckResult | null
+      errors: string[]
+    } = {
       customer_leads: null,
       listing_agreements: null,
       customer_checklists: null,

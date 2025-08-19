@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from "react";
+
+// 動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase";
@@ -468,7 +472,7 @@ export default function NewCustomerPage() {
                   <option value="flyer">チラシ</option>
                   <option value="lp">LP</option>
                   <option value="suumo">SUUMO</option>
-                  <option value="homes">HOME'S</option>
+                  <option value="homes">HOME&apos;S</option>
                   <option value="referral">紹介</option>
                   <option value="walk_in">来店</option>
                   <option value="repeat">リピート</option>

@@ -7,6 +7,10 @@ import { supabase } from '@/lib/supabase';
 import { Property, Customer } from '@/types/supabase';
 import PropertySummary from '@/components/admin/properties/PropertySummary';
 
+// 動的レンダリングを強制
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);

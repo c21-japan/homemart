@@ -60,7 +60,7 @@ export default function AdminLeadsPage() {
       // ローカル状態を更新
       setLeads(leads.map(lead => 
         lead.id === leadId 
-          ? { ...lead, status: newStatus, updated_at: new Date().toISOString() }
+          ? { ...lead, status: newStatus as Lead['status'], updated_at: new Date().toISOString() }
           : lead
       ))
       
@@ -114,9 +114,9 @@ export default function AdminLeadsPage() {
       const search = searchTerm.toLowerCase()
       return (
         lead.name.toLowerCase().includes(search) ||
-        lead.email.toLowerCase().includes(search) ||
-        lead.phone?.includes(search) ||
-        lead.company?.toLowerCase().includes(search)
+        (lead.email && lead.email.toLowerCase().includes(search)) ||
+        (lead.phone && lead.phone.includes(search)) ||
+        (lead.company && lead.company.toLowerCase().includes(search))
       )
     }
     return true
@@ -235,10 +235,10 @@ export default function AdminLeadsPage() {
           </div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="text-sm text-gray-600 mb-1">成約</div>
-          <div className="text-2xl font-bold text-green-600">
-            {leads.filter(l => l.status === 'closed').length}
-          </div>
+                  <div className="text-sm text-gray-600 mb-1">成約</div>
+        <div className="text-2xl font-bold text-green-600">
+          {leads.filter(l => l.status === 'converted').length}
+        </div>
         </div>
       </div>
 
@@ -291,7 +291,7 @@ export default function AdminLeadsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                        {getServiceTypeLabel(lead.service_type)}
+                        {getServiceTypeLabel(lead.source)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -348,7 +348,11 @@ export default function AdminLeadsPage() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700">メッセージ</label>
-                <p className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{selectedLead.message}</p>
+                <p className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">
+                  {selectedLead.notes && selectedLead.notes.length > 0 
+                    ? selectedLead.notes[0].content 
+                    : 'メッセージなし'}
+                </p>
               </div>
 
               <div className="mb-6">

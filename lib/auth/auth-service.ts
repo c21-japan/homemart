@@ -23,7 +23,7 @@ export interface UserProfile {
 }
 
 export class AuthService {
-  private supabase;
+  supabase;
 
   constructor() {
     const cookieStore = cookies();
@@ -290,7 +290,7 @@ export class AuthService {
   }
 
   // アクティビティログ記録
-  private async logActivity(
+  async logActivity(
     userId: string,
     action: string,
     targetType?: string,
@@ -313,7 +313,7 @@ export class AuthService {
   }
 
   // ユーザー情報フォーマット
-  private formatUser(dbUser: any): User {
+  formatUser(dbUser: any): User {
     return {
       id: dbUser.id,
       email: dbUser.email,

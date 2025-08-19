@@ -462,7 +462,7 @@ export const statsService = {
   },
 
   // 報告達成率を計算
-  private calculateReportAchievementRate(reportData: any[]): number {
+  calculateReportAchievementRate(reportData: any[]): number {
     if (!reportData || reportData.length === 0) return 0;
 
     const currentDate = new Date();

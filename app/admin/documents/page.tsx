@@ -4,7 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function DocumentsPage() {
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState<Array<{
+    id: number;
+    name: string;
+    category: string;
+    uploadDate: string;
+    size: string;
+    status: string;
+  }>>([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState('all');
 

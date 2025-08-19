@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 interface PartTimeEmployee {
   id: string
@@ -14,47 +13,26 @@ interface PartTimeEmployee {
   is_active: boolean
 }
 
-interface ShiftRequestData {
-  employee_id: string
-  request_type: 'shift_request' | 'availability' | 'time_off'
-  start_date: string
-  end_date: string
-  start_time: string
-  end_time: string
-  total_hours: number
-  notes: string
-}
-
-interface SelectedDate {
+interface StagingEntry {
   date: string
-  start_time: string
-  end_time: string
-  hours: number
+  start: string
+  end: string
 }
 
 export default function ShiftRequestPage() {
   const [employees, setEmployees] = useState<PartTimeEmployee[]>([])
   const [selectedEmployee, setSelectedEmployee] = useState<string>('')
-  const [requestType, setRequestType] = useState<'shift_request' | 'availability' | 'time_off'>('shift_request')
-  const [startDate, setStartDate] = useState<string>('')
-  const [endDate, setEndDate] = useState<string>('')
+  const [note, setNote] = useState('')
+  const [selectedDate, setSelectedDate] = useState<string>('')
   const [startTime, setStartTime] = useState<string>('09:00')
   const [endTime, setEndTime] = useState<string>('17:00')
-  const [notes, setNotes] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [selectedDates, setSelectedDates] = useState<SelectedDate[]>([])
+  const [staging, setStaging] = useState<StagingEntry[]>([])
+  const [submitting, setSubmitting] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
-
 
   useEffect(() => {
     fetchEmployees()
   }, [])
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      generateDateRange()
-    }
-  }, [startDate, endDate, startTime, endTime])
 
   const fetchEmployees = async () => {
     try {
@@ -75,121 +53,87 @@ export default function ShiftRequestPage() {
     }
   }
 
-  const generateDateRange = () => {
-    if (!startDate || !endDate) return
+  // バリデーション: 追加可能かチェック
+  const canAdd = useMemo(() => {
+    if (!selectedDate || !startTime || !endTime) return false
+    if (endTime <= startTime) return false
+    
+    // 同一日での時間帯交差チェック
+    const sameDayEntries = staging.filter(entry => entry.date === selectedDate)
+    return !sameDayEntries.some(entry => 
+      !(entry.end <= startTime || endTime <= entry.start)
+    )
+  }, [selectedDate, startTime, endTime, staging])
 
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    const dates: SelectedDate[] = []
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0]
-      const startTimeObj = new Date(`2000-01-01T${startTime}`)
-      const endTimeObj = new Date(`2000-01-01T${endTime}`)
-      const hours = (endTimeObj.getTime() - startTimeObj.getTime()) / (1000 * 60 * 60)
-
-      dates.push({
-        date: dateStr,
-        start_time: startTime,
-        end_time: endTime,
-        hours: hours
-      })
+  // エントリー追加
+  const addEntry = () => {
+    if (!canAdd) return
+    
+    const newEntry: StagingEntry = {
+      date: selectedDate,
+      start: startTime,
+      end: endTime
     }
-
-    setSelectedDates(dates)
+    
+    setStaging(prev => [...prev, newEntry])
+    
+    // 入力欄を初期化（日付は保持して連続入力しやすく）
+    setStartTime('09:00')
+    setEndTime('17:00')
   }
 
-  const handleDateSelection = (date: string) => {
-    setSelectedDates(prev => {
-      const exists = prev.find(d => d.date === date)
-      if (exists) {
-        return prev.filter(d => d.date !== date)
-      } else {
-        const startTimeObj = new Date(`2000-01-01T${startTime}`)
-        const endTimeObj = new Date(`2000-01-01T${endTime}`)
-        const hours = (endTimeObj.getTime() - startTimeObj.getTime()) / (1000 * 60 * 60)
-
-        return [...prev, {
-          date,
-          start_time: startTime,
-          end_time: endTime,
-          hours: hours
-        }]
-      }
-    })
+  // エントリー削除
+  const removeEntry = (index: number) => {
+    setStaging(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!selectedEmployee) {
-      alert('従業員を選択してください')
+  // 一括申請
+  const submitAll = async () => {
+    if (!selectedEmployee || staging.length === 0) {
+      alert('従業員を選択し、勤務可能日を追加してください')
       return
     }
 
-    if (selectedDates.length === 0) {
-      alert('日付を選択してください')
-      return
-    }
-
-    setLoading(true)
+    setSubmitting(true)
 
     try {
-      // シフト申請の作成
-      const shiftRequest = {
-        employee_id: selectedEmployee,
-        request_type: requestType,
-        start_date: selectedDates[0].date,
-        end_date: selectedDates[selectedDates.length - 1].date,
-        start_time: startTime,
-        end_time: endTime,
-        total_hours: selectedDates.reduce((sum, date) => sum + date.hours, 0),
-        notes: notes
+      const response = await fetch('/api/shift-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          employeeId: selectedEmployee,
+          note: note,
+          entries: staging
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || '申請の送信に失敗しました')
       }
 
-      const { data: requestData, error: requestError } = await supabase
-        .from('shift_requests')
-        .insert([shiftRequest])
-        .select()
-        .single()
-
-      if (requestError) throw requestError
-
-      // シフト詳細の作成
-      const shiftDetails = selectedDates.map(date => ({
-        shift_request_id: requestData.id,
-        date: date.date,
-        start_time: date.start_time,
-        end_time: date.end_time,
-        hours: date.hours
-      }))
-
-      const { error: detailsError } = await supabase
-        .from('shift_request_details')
-        .insert(shiftDetails)
-
-      if (detailsError) throw detailsError
-
-      alert('シフト申請を送信しました！')
+      alert('勤務可能日の申請を受け付けました！')
       
       // フォームをリセット
       setSelectedEmployee('')
-      setRequestType('shift_request')
-      setStartDate('')
-      setEndDate('')
+      setNote('')
+      setSelectedDate('')
       setStartTime('09:00')
       setEndTime('17:00')
-      setNotes('')
-      setSelectedDates([])
+      setStaging([])
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting shift request:', error)
-      alert('シフト申請の送信に失敗しました。もう一度お試しください。')
+      alert(error.message || '申請の送信に失敗しました。もう一度お試しください。')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
+  // カレンダー関連の関数
   const getCalendarDays = () => {
     const year = currentMonth.getFullYear()
     const month = currentMonth.getMonth()
@@ -211,22 +155,17 @@ export default function ShiftRequestPage() {
   }
 
   const isDateSelected = (date: Date) => {
-    return selectedDates.some(d => d.date === date.toISOString().split('T')[0])
+    return selectedDate === date.toISOString().split('T')[0]
   }
 
-  const isDateInRange = (date: Date) => {
-    if (!startDate || !endDate) return false
+  const hasStagingEntry = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
-    return dateStr >= startDate && dateStr <= endDate
+    return staging.some(entry => entry.date === dateStr)
   }
 
-  const getEmployeeNameForDate = (date: Date) => {
+  const getStagingEntriesForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
-    const selectedDate = selectedDates.find(d => d.date === dateStr)
-    if (selectedDate) {
-      return employees.find(e => e.id === selectedEmployee)?.name
-    }
-    return null
+    return staging.filter(entry => entry.date === dateStr)
   }
 
   const changeMonth = (direction: 'prev' | 'next') => {
@@ -248,7 +187,7 @@ export default function ShiftRequestPage() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">シフト申請フォーム</h1>
+              <h1 className="text-3xl font-bold text-gray-800">勤務可能日申請フォーム</h1>
               <p className="text-gray-600 mt-2">センチュリー21 ホームマート</p>
             </div>
             <div className="flex gap-4">
@@ -269,11 +208,11 @@ export default function ShiftRequestPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* シフト申請フォーム */}
+          {/* 左カラム：申請フォーム */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-6">シフト申請</h2>
+            <h2 className="text-xl font-bold mb-6">勤務可能日申請</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               {/* 従業員選択 */}
               <div>
                 <label className="block text-sm font-medium mb-2">
@@ -294,125 +233,136 @@ export default function ShiftRequestPage() {
                 </select>
               </div>
 
-              {/* 申請タイプ */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  申請タイプ <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="shift_request"
-                      checked={requestType === 'shift_request'}
-                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm">シフト申請</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="availability"
-                      checked={requestType === 'availability'}
-                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm">勤務可能日</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="time_off"
-                      checked={requestType === 'time_off'}
-                      onChange={(e) => setRequestType(e.target.value as 'shift_request' | 'availability' | 'time_off')}
-                      className="mr-2 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm">休暇申請</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* 日付範囲 */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    開始日 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    終了日 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* 時間 */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    開始時間
-                  </label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    終了時間
-                  </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
               {/* 備考 */}
               <div>
                 <label className="block text-sm font-medium mb-2">
                   備考
                 </label>
                 <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
                   rows={3}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="特記事項があれば入力してください"
                 />
               </div>
 
-              {/* 送信ボタン */}
+              {/* 入力エリア：日程・開始・終了 */}
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h3 className="font-medium mb-3">勤務可能日を追加</h3>
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">日程</label>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">開始時間</label>
+                    <input
+                      type="time"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">終了時間</label>
+                    <input
+                      type="time"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={addEntry}
+                  disabled={!canAdd}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  追加
+                </button>
+                
+                {!canAdd && selectedDate && startTime && endTime && (
+                  <p className="text-sm text-red-600 mt-2">
+                    {endTime <= startTime 
+                      ? '終了時間は開始時間より後である必要があります'
+                      : '同一日の時間帯が重複しています'
+                    }
+                  </p>
+                )}
+              </div>
+
+              {/* ステージング一覧 */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold">申請予定（未送信）</h3>
+                  <span className="text-sm text-gray-500">{staging.length} 件</span>
+                </div>
+                
+                {staging.length === 0 ? (
+                  <div className="p-4 text-sm text-gray-500 text-center border-2 border-dashed border-gray-200 rounded-lg">
+                    まだ勤務可能日が追加されていません
+                  </div>
+                ) : (
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="text-left p-3">日程</th>
+                          <th className="text-left p-3">開始</th>
+                          <th className="text-left p-3">終了</th>
+                          <th className="p-3 w-20"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {staging
+                          .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
+                          .map((entry, index) => (
+                          <tr key={index} className="border-t hover:bg-gray-50">
+                            <td className="p-3">
+                              {new Date(entry.date).toLocaleDateString('ja-JP', { 
+                                month: 'long', 
+                                day: 'numeric', 
+                                weekday: 'long' 
+                              })}
+                            </td>
+                            <td className="p-3">{entry.start}</td>
+                            <td className="p-3">{entry.end}</td>
+                            <td className="p-3 text-right">
+                              <button
+                                onClick={() => removeEntry(index)}
+                                className="text-red-600 hover:text-red-800 text-sm"
+                              >
+                                削除
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* 一括申請ボタン */}
               <button
-                type="submit"
-                disabled={loading || !selectedEmployee || selectedDates.length === 0}
+                onClick={submitAll}
+                disabled={submitting || !selectedEmployee || staging.length === 0}
                 className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-bold"
               >
-                {loading ? '送信中...' : `シフト申請を送信 (${selectedDates.length}日)`}
+                {submitting ? '送信中...' : `一括申請 (${staging.length}件)`}
               </button>
-            </form>
+            </div>
           </div>
 
-          {/* カレンダー表示 */}
+          {/* 右カラム：カレンダー表示 */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-6">カレンダー選択</h2>
             
@@ -454,20 +404,23 @@ export default function ShiftRequestPage() {
                 <div key={index} className="min-h-[60px] p-1">
                   {date ? (
                     <button
-                      onClick={() => handleDateSelection(date.toISOString().split('T')[0])}
+                      onClick={() => setSelectedDate(date.toISOString().split('T')[0])}
                       className={`w-full h-full p-2 text-sm rounded-lg transition-all ${
                         isDateSelected(date)
                           ? 'bg-blue-500 text-white'
-                          : isDateInRange(date)
-                          ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                          : hasStagingEntry(date)
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
                           : 'hover:bg-gray-100'
                       }`}
-                      disabled={!startDate || !endDate}
                     >
                       <div className="text-center">{date.getDate()}</div>
-                      {getEmployeeNameForDate(date) && (
-                        <div className="text-xs mt-1 truncate">
-                          {getEmployeeNameForDate(date)}
+                      {hasStagingEntry(date) && (
+                        <div className="text-xs mt-1">
+                          {getStagingEntriesForDate(date).map((entry, i) => (
+                            <div key={i} className="truncate">
+                              {entry.start}-{entry.end}
+                            </div>
+                          ))}
                         </div>
                       )}
                     </button>
@@ -478,19 +431,17 @@ export default function ShiftRequestPage() {
               ))}
             </div>
 
-            {/* 選択された日付一覧 */}
-            {selectedDates.length > 0 && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <h4 className="font-medium text-blue-800 mb-2">選択された日付 ({selectedDates.length}日)</h4>
-                <div className="space-y-1">
-                  {selectedDates.map((date, index) => (
-                    <div key={index} className="text-sm text-blue-700">
-                      {new Date(date.date).toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'long' })}: {date.start_time} - {date.end_time} ({date.hours}時間)
-                    </div>
-                  ))}
-                </div>
+            {/* カレンダー凡例 */}
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                <span>選択中</span>
               </div>
-            )}
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-100 rounded"></div>
+                <span>申請予定</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

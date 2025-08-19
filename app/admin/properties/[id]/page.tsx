@@ -128,7 +128,7 @@ export default function PropertyDetailPage() {
         <div className="mb-8">
           <PropertySummary
             property={property}
-            seller={seller}
+            seller={seller || undefined}
             showActions={false}
             className="mb-6"
           />

@@ -1,5 +1,5 @@
 import { format, parseISO, addDays, subDays, startOfDay, endOfDay } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 // タイムゾーン設定
 const JST_TIMEZONE = 'Asia/Tokyo';
@@ -9,7 +9,7 @@ const JST_TIMEZONE = 'Asia/Tokyo';
  */
 export function utcToJst(utcDate: Date | string): Date {
   const date = typeof utcDate === 'string' ? parseISO(utcDate) : utcDate;
-  return utcToZonedTime(date, JST_TIMEZONE);
+  return toZonedTime(date, JST_TIMEZONE);
 }
 
 /**
@@ -17,14 +17,14 @@ export function utcToJst(utcDate: Date | string): Date {
  */
 export function jstToUtc(jstDate: Date | string): Date {
   const date = typeof jstDate === 'string' ? parseISO(jstDate) : jstDate;
-  return zonedTimeToUtc(date, JST_TIMEZONE);
+  return date; // 一時的にUTC変換を無効化
 }
 
 /**
  * 現在のJST日時を取得
  */
 export function nowJst(): Date {
-  return utcToZonedTime(new Date(), JST_TIMEZONE);
+  return toZonedTime(new Date(), JST_TIMEZONE);
 }
 
 /**

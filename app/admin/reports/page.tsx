@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 export default function ReportsPage() {
-  const [reportData, setReportData] = useState(null);
+  const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('month');
 
@@ -139,7 +139,7 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {reportData.monthlyStats.map((stat, index) => (
+              {reportData.monthlyStats.map((stat: any, index: number) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{stat.month}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.properties}</td>
@@ -156,7 +156,7 @@ export default function ReportsPage() {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">トップパフォーマー</h2>
         <div className="space-y-4">
-          {reportData.topPerformers.map((performer, index) => (
+          {reportData.topPerformers.map((performer: any, index: number) => (
             <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">

@@ -44,7 +44,15 @@ const seller = baseCustomer.extend({
   // 売却固有項目
   desired_price: z.number().nonnegative("希望価格は0以上で入力してください").optional(),
   brokerage: z.enum(["exclusive_right", "exclusive", "general"]),
-  brokerage_start: z.coerce.date(),
+  brokerage_start: z.preprocess(
+    (val) => {
+      if (val === null || val === undefined || val === '') return null;
+      if (val instanceof Date) return val;
+      if (typeof val === 'string') return new Date(val);
+      return null;
+    },
+    z.date().nullable()
+  ).default(null),
   report_channel: z.enum(["email", "postal"]),
   purchase_or_brokerage: z.enum(["買取", "仲介"]),
 }).superRefine((val, ctx) => {
@@ -144,8 +152,25 @@ const reform = baseCustomer.extend({
 export const customerUnion = z.discriminatedUnion("category", [seller, buyer, reform]);
 export type CustomerInput = z.infer<typeof customerUnion>;
 
+// 個別の型エクスポート（型推論の改善のため）
+export type CustomerUnion = z.infer<typeof customerUnion>;
+export type Seller = z.infer<typeof seller>;
+export type Buyer = z.infer<typeof buyer>;
+export type Reform = z.infer<typeof reform>;
+
 // 顧客更新用スキーマ（部分更新対応）
-export const customerUpdateSchema = customerUnion.partial();
+export const customerUpdateSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  name_kana: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  category: z.enum(['seller', 'buyer', 'reform']).optional(),
+  status: z.string().optional(),
+  notes: z.string().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional()
+});
 
 // チェックリストスキーマ
 export const checklistSchema = z.object({
@@ -198,7 +223,7 @@ export const reminderSchema = z.object({
   title: z.string().min(1, "タイトルは必須です"),
   scheduled_at: z.coerce.date(),
   channel: z.enum(["email", "postal"]),
-  payload: z.record(z.any()).optional(),
+  payload: z.record(z.string(), z.any()).optional(),
   priority: z.number().int().min(0).max(10).default(0),
 });
 
@@ -206,7 +231,7 @@ export const reminderSchema = z.object({
 export const documentSchema = z.object({
   customer_id: z.string().uuid(),
   kind: z.string().min(1, "書類種別は必須です"),
-  meta: z.record(z.any()).optional(),
+  meta: z.record(z.string(), z.any()).optional(),
   file_path: z.string().optional(),
 });
 
