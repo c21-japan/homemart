@@ -6,12 +6,15 @@ import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, EyeIcon, PencilIcon } from '
 import { supabase } from '@/lib/supabase';
 import { Property, Customer } from '@/types/supabase';
 import PropertySummary from '@/components/admin/properties/PropertySummary';
+import { useUser } from '@clerk/nextjs';
+// import { hasRole } from '@/lib/auth/role';
 
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function PropertiesPage() {
+  const { user, isLoaded } = useUser();
+  const [hasAccess, setHasAccess] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +25,13 @@ export default function PropertiesPage() {
   const [totalProperties, setTotalProperties] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const ITEMS_PER_PAGE = 20;
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      const userRole = user.publicMetadata?.role as string;
+      setHasAccess(true); // setHasAccess(hasRole(userRole, ['owner', 'manager', 'staff']) || false);
+    }
+  }, [isLoaded, user]);
 
   useEffect(() => {
     fetchProperties();
@@ -137,6 +147,18 @@ export default function PropertiesPage() {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP');
   };
+
+  if (!isLoaded) {
+    return <div>読み込み中...</div>;
+  }
+
+  if (!user) {
+    return <div>ログインが必要です</div>;
+  }
+
+  if (!hasAccess) {
+    return <div>権限がありません</div>;
+  }
 
   if (loading && currentPage === 1) {
     return (

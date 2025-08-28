@@ -11,6 +11,13 @@ const config: Config = {
       colors: {
         'homemart-blue': '#0066CC',
         'homemart-gold': '#FFD700',
+        primary: "#22C55E", // メイン緑
+        navy: "#1E293B",    // 濃紺
+        gold: "#A19276",    // 既存デザインとの調和用
+        cream: "#F8F6F3",
+      },
+      fontFamily: {
+        jp: ['"Noto Sans JP"', "ui-sans-serif", "system-ui"],
       },
     },
   },

@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #A19276;
+}
+
+html, body, #root { height: 100%; }
+body { @apply font-jp text-[#383635] bg-white; }
+
+.hero-grad { background: linear-gradient(135deg, #F8F6F3 0%, #ffffff 50%, #F8F6F3 100%); }
+.card-hover { @apply transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-xl; }
+.btn { @apply inline-flex items-center justify-center rounded-lg font-bold disabled:opacity-60 disabled:pointer-events-none; }
+.btn-primary { @apply btn text-white px-6 py-3; background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%); }
+.btn-outline { @apply btn border px-6 py-3 text-primary border-primary bg-white; }
+.badge { @apply inline-flex items-center rounded-full border px-2.5 py-1 text-sm; border-color: var(--gold); color: var(--gold); }
+.frame { @apply relative w-full overflow-hidden rounded-xl bg-gray-100; image-orientation: from-image; }
+.frame.portrait { aspect-ratio: 4 / 5; }
+.frame.landscape { aspect-ratio: 16 / 9; }
+.frame img { @apply absolute inset-0 w-full h-full object-cover; image-orientation: from-image; }
+
+/* Before/After slider */
+.ba { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background:#000; }
+.ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; pointer-events: none; }
+.ba .after { clip-path: inset(0 50% 0 0); }
+.ba .handle { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; opacity: .95; left: 50%; transform: translateX(-1px); }
+.ba .knob { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; border-radius: 9999px; background: rgba(30,41,59,.85); color: #fff; border: 2px solid #fff; display: grid; place-items: center; }
+.ba .tag { position: absolute; top: .5rem; font-size: .75rem; color: #fff; background: rgba(0,0,0,.55); padding: .2rem .5rem; border-radius: .35rem; }
+.ba .tag.left { left: .5rem; } .ba .tag.right { right: .5rem; }
+
+.ig-wrap { max-width: 540px; width: 100%; }
