@@ -17,7 +17,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // シンプルなレイアウト（Clerk無し）
   return (
     <html lang="ja">
       <body className={inter.className}>

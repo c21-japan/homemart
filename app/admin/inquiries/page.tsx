@@ -5,6 +5,10 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
+// 動的レンダリングを強制
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface Inquiry {
   id: string
   name: string
