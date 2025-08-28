@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase";

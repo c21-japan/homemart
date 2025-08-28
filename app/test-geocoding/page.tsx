@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useCurrentAddress } from '@/hooks/useCurrentAddress'
 import { AddressDisplay } from '@/components/AddressDisplay'
 

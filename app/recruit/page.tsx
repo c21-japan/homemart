@@ -1,35 +1,18 @@
-import React from "react";
 import "./recruit.css";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import Hero from "./components/Hero";
-import Values from "./components/Values";
-import Events from "./components/Events";
-import About from "./components/About";
-import Voices from "./components/Voices";
-import Works from "./components/Works";
-import Office from "./components/Office";
-import InstagramSection from "./components/InstagramSection";
-import CTA from "./components/CTA";
-import Footer from "./components/Footer";
 
 export default function RecruitPage() {
   return (
     <div>
-      <Header />
-      <Sidebar />
-      <main>
-        <Hero />
-        <Values />
-        <Events />
-        <About />
-        <Voices />
-        <Works />
-        <Office />
-        <InstagramSection />
-        <CTA />
-      </main>
-      <Footer />
+      <h1>採用情報</h1>
+      <p>株式会社ホームマート 採用ページ</p>
+      <div>
+        <h2>募集職種</h2>
+        <ul>
+          <li>不動産営業</li>
+          <li>リフォーム施工管理</li>
+          <li>事務・経理</li>
+        </ul>
+      </div>
     </div>
-  );
+  )
 }

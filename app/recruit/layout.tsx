@@ -11,11 +11,5 @@ export default function RecruitLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html lang="ja">
-      <body className="font-jp">
-        {children}
-      </body>
-    </html>
-  )
+  return children
 }

@@ -1,56 +1,16 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-// 認証が必要なルートを定義
-const isProtectedRoute = createRouteMatcher([
-  '/admin(.*)',
-  '/member(.*)',
-  '/attendance(.*)',
-  '/part-time-attendance(.*)',
-  '/api/leads(.*)',
-  '/api/attachments(.*)',
-  '/api/photos(.*)',
-  '/api/upload(.*)',
-  '/api/send-email(.*)',
-  '/api/cron(.*)',
-  '/api/reporting(.*)',
-  '/api/integrations(.*)',
-  '/api/webpush(.*)',
-  '/api/favorites(.*)',
-  '/api/github(.*)',
-  '/api/google(.*)',
-  '/api/properties(.*)',
-  '/api/send-application-status-email(.*)',
-  '/api/test-email(.*)'
-  // /api/customers/search は除外（認証不要）
-]);
-
-export default clerkMiddleware(async (auth, req) => {
-  // 保護されたルートの場合、認証を要求
-  if (isProtectedRoute(req)) {
-    await auth.protect(); // auth()ではなく、authを直接使用
+export function middleware(request: NextRequest) {
+  // 採用ページは常に通過
+  if (request.nextUrl.pathname.startsWith('/recruit')) {
+    return NextResponse.next()
   }
-});
+
+  // その他のページも一旦全て通過（Clerk無効時）
+  return NextResponse.next()
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // API routes (customers/searchを除外)
-    "/api/leads(.*)",
-    "/api/attachments(.*)",
-    "/api/photos(.*)",
-    "/api/upload(.*)",
-    "/api/send-email(.*)",
-    "/api/cron(.*)",
-    "/api/reporting(.*)",
-    "/api/integrations(.*)",
-    "/api/webpush(.*)",
-    "/api/favorites(.*)",
-    "/api/github(.*)",
-    "/api/google(.*)",
-    "/api/properties(.*)",
-    "/api/send-application-status-email(.*)",
-    "/api/test-email(.*)",
-    // /api/customers/search は除外（認証不要）
-  ],
-};
+  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
+}

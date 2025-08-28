@@ -30,3 +30,4 @@ body { @apply font-jp text-[#383635] bg-white; }
 .ba .tag.left { left: .5rem; } .ba .tag.right { right: .5rem; }
 
 .ig-wrap { max-width: 540px; width: 100%; }
+
