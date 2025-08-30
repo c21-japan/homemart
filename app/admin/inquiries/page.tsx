@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-// 動的レンダリングを強制
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// ここで useUser/useSession を使う実装ならこのままOK
+// もしサーバーコンポーネントでユーザー判定している場合は
+// フックをやめてクライアントに寄せる or auth() に置換してください。
 
 interface Inquiry {
   id: string

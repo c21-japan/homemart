@@ -9,12 +9,23 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
 CLERK_SECRET_KEY=your_clerk_secret_key_here
 
+# ログイン/サインアップURLをカスタムしていれば
+# CLERK_SIGN_IN_URL=/member/login
+# CLERK_SIGN_UP_URL=/member/register
+
+# 開発・検証でClerkを無効にする場合に使用
+# サーバ側：middleware用
+DISABLE_CLERK=0
+# クライアント側：Provider分岐用
+NEXT_PUBLIC_DISABLE_CLERK=0
+
 # Sentry監視（本番運用推奨）
 NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 SENTRY_DSN=your_sentry_dsn_here
 
 # モック切替（任意）
-DISABLE_CLERK=0
+# DISABLE_CLERK=1
+# NEXT_PUBLIC_DISABLE_CLERK=1
 
 # その他（必要に応じて）
 JWT_SECRET=your_jwt_secret_here

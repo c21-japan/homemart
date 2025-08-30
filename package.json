@@ -9,6 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "prebuild": "npm run lint && npm run typecheck",
+    "check-deps": "npm ls @clerk/nextjs @clerk/shared || true",
+    "build:ci": "npm run lint && npm run typecheck && npm run check-deps && next build",
     "health": "node -e \"fetch('http://localhost:3000/api/health').then(r=>r.json()).then(j=>console.log(j)).catch(e=>{console.error(e);process.exit(1)})\"",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

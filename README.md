@@ -1,42 +1,102 @@
-# ホームマート顧客管理システム
+# ホームマート
 
-## 🚀 **セットアップ手順**
+センチュリー21 ホームマートの不動産・リフォーム総合サービスサイト
 
-### **1. データベーステーブルの作成**
+## 環境変数セットアップ
 
-Supabaseダッシュボードで以下のSQLを実行してください：
-
-```sql
--- チェックリストテンプレートと関連テーブルの作成
--- scripts/create-checklist-templates.sql の内容をコピーして実行
-```
-
-### **2. 環境変数の設定**
-
-`.env.local` ファイルに以下を設定：
+### 必須環境変数
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
+# Supabase設定
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# Clerk認証（本番/プレビュー必須）
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
+CLERK_SECRET_KEY=your_clerk_secret_key_here
 
-# Mailjet (オプション)
-MAILJET_API_KEY=your_mailjet_api_key
-MAILJET_API_SECRET=your_mailjet_api_secret
-MAILJET_FROM_EMAIL=noreply@yourdomain.com
+# Sentry監視（本番運用推奨）
+NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
+SENTRY_DSN=your_sentry_dsn_here
 ```
 
-### **3. アプリケーションの起動**
+### Vercel環境変数設定
+
+1. **Production環境**
+   - Vercelダッシュボード → プロジェクト → Settings → Environment Variables
+   - 上記の必須環境変数を全て設定
+
+2. **Preview環境**
+   - 同じ環境変数をPreview環境にも設定
+   - 特にClerkキーは本番と異なる値を使用
+
+3. **ローカル開発**
+   - `.env.local`ファイルを作成
+   - `env-example.txt`を参考に設定
+
+### Clerk認証の有効化
 
 ```bash
-npm install
+# Clerkを有効にする場合
+DISABLE_CLERK=0
+
+# Clerkを無効にする場合（モック運用）
+DISABLE_CLERK=1
+```
+
+## 開発・ビルド
+
+```bash
+# 依存関係チェック
+npm run check-deps
+
+# 開発サーバー起動
 npm run dev
+
+# 本番ビルド
+npm run build
+
+# CI用ビルド（依存関係チェック付き）
+npm run build:ci
 ```
+
+## デプロイ
+
+### Vercel自動デプロイ
+
+- `main`ブランチへのプッシュで自動デプロイ
+- 環境変数が正しく設定されていることを確認
+
+### 手動デプロイ
+
+```bash
+# Vercel CLIを使用
+vercel --prod
+```
+
+## トラブルシューティング
+
+### ビルド失敗時の確認事項
+
+1. **環境変数の設定確認**
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+
+2. **依存関係の確認**
+   ```bash
+   npm run check-deps
+   ```
+
+3. **ローカルビルドテスト**
+   ```bash
+   npm run build:ci
+   ```
+
+### よくある問題
+
+- **Clerk認証エラー**: 環境変数の設定漏れ
+- **ビルド時のフック評価エラー**: `dynamic = 'force-dynamic'`の設定確認
+- **Edge Runtimeエラー**: `runtime = 'nodejs'`の設定確認
 
 ## 📋 **実装済み機能**
 
