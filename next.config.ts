@@ -9,7 +9,11 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   experimental: { 
     serverActions: { bodySizeLimit: '10mb' as any },
-    optimizePackageImports: ["@clerk/nextjs"]
+    optimizePackageImports: [
+      "@supabase/ssr",
+      "@supabase/supabase-js",
+      // '@clerk/nextjs'を一時的に削除
+    ]
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -19,6 +23,14 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     config.resolve = config.resolve || {};
     config.resolve.alias = config.resolve.alias || {};
+    
+    // Edge Runtime用のfallback設定
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      process: false,
+    };
 
     if (isClerkDisabled) {
       // Clerkシム
