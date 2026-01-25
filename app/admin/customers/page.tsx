@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from "react";
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase";
 import { format, differenceInDays } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -59,7 +58,6 @@ interface KPIData {
 export default function CustomersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useUser();
   
   // State
   const [customers, setCustomers] = useState<Customer[]>([]);

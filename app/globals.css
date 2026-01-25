@@ -2,9 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==== センチュリー21ブランドカラー ==== */
+:root {
+  --c21-gold: #B8A265;
+  --c21-gold-dark: #9B8A57;
+  --c21-gold-light: #D4C299;
+  --c21-black: #1A1A1A;
+  --c21-gray: #4A4A4A;
+  --c21-gray-light: #F5F5F5;
+  --c21-white: #FFFFFF;
+  --c21-red: #DC143C;
+  --c21-green: #22C55E;
+  --c21-blue: #0066CC;
+  --c21-success: #10B981;
+  --c21-pink: #FFB6C1;
+
+  --max-width: 1280px;
+  --header-height: 80px;
+  --mobile-header: 60px;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.20);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* スムーズスクロールを有効化 */
 html {
   scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--c21-gray);
+  background: var(--c21-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* スクロールバーのスタイリング */
@@ -25,12 +60,6 @@ html {
   background: #a8a8a8;
 }
 
-/* ヘッダーの高さ分のマージンを追加 */
-body {
-  padding-top: var(--header-height, 0px);
-  /* スクロールの動作を改善 */
-  overflow-x: hidden;
-}
 
 /* 既存のCSSの最後に追加 */
 

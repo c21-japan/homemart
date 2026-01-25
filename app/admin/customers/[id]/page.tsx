@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
 import { useParams, useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase-direct";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -41,7 +40,6 @@ interface Customer {
 export default function CustomerDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useUser();
   
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);

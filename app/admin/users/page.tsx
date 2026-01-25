@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useUser } from '@clerk/nextjs'
 import { 
   UserRole, 
   PERMISSIONS, 
@@ -30,14 +29,17 @@ interface User {
 }
 
 export default function UsersPage() {
-  const { user: currentUser } = useUser()
   const router = useRouter()
+
+  // TODO: 認証システムが実装されたら置き換える
+  const currentUser = undefined as { id?: string; emailAddresses?: Array<{ emailAddress: string }> } | undefined;
+
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   // メールアドレスベースの権限チェック
-  const currentUserEmail = currentUser?.emailAddresses[0]?.emailAddress
+  const currentUserEmail = currentUser?.emailAddresses?.[0]?.emailAddress
   let currentUserRole: UserRole = UserRole.STAFF
   
   if (currentUserEmail) {

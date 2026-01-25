@@ -32,7 +32,7 @@ export default function RootLayout({
             </div>
           </QueryProvider>
         </Providers>
-      </body>
+              </body>
     </html>
   )
 }

@@ -2,12 +2,12 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import SellerSelect from '@/components/admin/properties/SellerSelect';
 
-export default function NewPropertyPage() {
+function PropertyForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -805,5 +805,13 @@ export default function NewPropertyPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function NewPropertyPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PropertyForm />
+    </Suspense>
   );
 }

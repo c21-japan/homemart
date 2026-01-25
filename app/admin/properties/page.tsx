@@ -6,14 +6,16 @@ import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, EyeIcon, PencilIcon } from '
 import { supabase } from '@/lib/supabase';
 import { Property, Customer } from '@/types/supabase';
 import PropertySummary from '@/components/admin/properties/PropertySummary';
-import { useUser } from '@clerk/nextjs';
 // import { hasRole } from '@/lib/auth/role';
 
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
 
 export default function PropertiesPage() {
-  const { user, isLoaded } = useUser();
+  // TODO: 認証システムが実装されたら置き換える
+  const isLoaded = true;
+  const user = undefined as { publicMetadata?: { role?: string } } | undefined;
+
   const [hasAccess, setHasAccess] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);

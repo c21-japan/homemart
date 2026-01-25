@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic'
+
 export default function NewAttendancePage() {
   const router = useRouter();
   const [formData, setFormData] = useState({

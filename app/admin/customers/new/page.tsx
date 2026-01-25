@@ -5,7 +5,6 @@ import { useState } from "react";
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase";
 
 // 型定義
@@ -103,8 +102,10 @@ interface CustomerFormData {
 
 export default function NewCustomerPage() {
   const router = useRouter();
-  const { user } = useUser();
-  
+
+  // TODO: 認証システムが実装されたら置き換える
+  const user = undefined as { id?: string; fullName?: string; username?: string } | undefined;
+
   // State
   const [formData, setFormData] = useState<CustomerFormData>({
     category: 'seller',
