@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
@@ -55,7 +55,7 @@ interface KPIData {
   conversionRate: number;
 }
 
-export default function CustomersPage() {
+function CustomersPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -560,5 +560,20 @@ export default function CustomersPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CustomersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    }>
+      <CustomersPageContent />
+    </Suspense>
   );
 }

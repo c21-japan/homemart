@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 // 動的レンダリングを強制
 export const dynamic = 'force-dynamic';
 
-import { useUser } from '@clerk/nextjs'
+// import { useUser } from '@clerk/nextjs'
 import { attendanceAPI, AttendanceRecord, Employee } from '@/lib/supabase/attendance'
 
 interface AttendanceRecordWithEmployee extends AttendanceRecord {
@@ -15,7 +15,9 @@ interface AttendanceRecordWithEmployee extends AttendanceRecord {
 }
 
 export default function AdminAttendancePage() {
-    const { user, isLoaded } = useUser()
+  // TODO: 認証システムが実装されたら置き換える
+  const user = undefined;
+  const isLoaded = true;
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecordWithEmployee[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(true)
