@@ -68,6 +68,8 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "DISABLE_CLERK": "1",
+    "NEXT_PUBLIC_DISABLE_CLERK": "1"
   }
 }
