@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": "inui",
+      "email": "y-inui@century21.group",
+      "password_hash": "$2b$10$WOka77cj0Sn.cfbNcn7qb.LaAe7GaKWamVtKsbAM.4Coyr70xhz0i",
+      "role": "OWNER",
+      "name": "乾 佑企",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "PROPERTIES": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "LEADS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "INQUIRIES": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "DOCUMENTS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE", "EDIT", "DELETE", "APPROVE"],
+        "ATTENDANCE": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "FLYERS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "REFORM_PROJECTS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "REFORM_WORKERS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "TEAM_PERFORMANCE": ["VIEW", "EXPORT"],
+        "CAREER_PATH": ["VIEW", "EDIT"],
+        "MEDIA": ["VIEW", "CREATE", "DELETE"],
+        "USERS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "SETTINGS": ["VIEW", "EDIT"],
+        "REPORTS": ["VIEW", "EXPORT"]
+      }
+    },
+    {
+      "id": "yasuda",
+      "email": "m-yasuda@century21.group",
+      "password_hash": "$2b$10$QqTRVmbYhX02rBP8ADHh6.jYFmHhsoyC/QlY8L4HWZdrkL3OxiXNq",
+      "role": "ADMIN",
+      "name": "安田 実加",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "PROPERTIES": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "LEADS": ["VIEW", "CREATE", "EDIT"],
+        "INQUIRIES": ["VIEW", "CREATE", "EDIT"],
+        "DOCUMENTS": ["VIEW", "CREATE", "EDIT"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE", "APPROVE"],
+        "ATTENDANCE": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "FLYERS": ["VIEW", "CREATE", "EDIT"],
+        "REFORM_PROJECTS": ["VIEW", "CREATE", "EDIT"],
+        "REFORM_WORKERS": ["VIEW", "EDIT"],
+        "TEAM_PERFORMANCE": ["VIEW"],
+        "CAREER_PATH": ["VIEW"],
+        "MEDIA": ["VIEW", "CREATE"],
+        "USERS": ["VIEW", "EDIT"],
+        "SETTINGS": ["VIEW"],
+        "REPORTS": ["VIEW", "EXPORT"]
+      }
+    },
+    {
+      "id": "yamao",
+      "email": "info@century21.group",
+      "password_hash": "$2b$10$W201FQ2z/HeH1cySNKhtQe4egtJUiDta0PZuniad6hgaLZPeNvAzm",
+      "role": "STAFF",
+      "name": "山尾 妃奈",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW"],
+        "PROPERTIES": ["VIEW"],
+        "LEADS": ["VIEW"],
+        "INQUIRIES": ["VIEW"],
+        "DOCUMENTS": ["VIEW"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE"],
+        "ATTENDANCE": ["VIEW"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE"],
+        "FLYERS": ["VIEW"],
+        "REFORM_PROJECTS": ["VIEW"],
+        "REFORM_WORKERS": [],
+        "TEAM_PERFORMANCE": [],
+        "CAREER_PATH": [],
+        "MEDIA": ["VIEW"],
+        "USERS": [],
+        "SETTINGS": [],
+        "REPORTS": []
+      }
+    }
+  ]
+}
