@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
-import Head from 'next/head'
 
 interface ReformProject {
   id: string
@@ -134,13 +133,6 @@ export default function ReformPage() {
   }
 
   return (
-    <>
-      <Head>
-        <title>リフォーム | CENTURY 21 ホームマート - 自社職人による確かな施工</title>
-        <meta name="description" content="CENTURY 21ホームマートのリフォームサービス。自社職人による水回り4点セット（風呂・キッチン・トイレ・洗面台）から全面改装まで、中間マージンカットで適正価格を実現。確かな技術と充実の保証でお客様をサポート。" />
-        <meta name="keywords" content="リフォーム,水回り,キッチン,風呂,トイレ,洗面台,自社職人,奈良,大阪,CENTURY21,ホームマート" />
-      </Head>
-
       <div className="min-h-screen bg-gray-50">
         {/* ヒーローセクション */}
         <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
@@ -855,6 +847,5 @@ export default function ReformPage() {
           </div>
         )}
       </div>
-    </>
   )
 }

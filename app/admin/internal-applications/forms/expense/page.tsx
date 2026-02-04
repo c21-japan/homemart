@@ -12,10 +12,18 @@ export default function ExpenseForm() {
     expense_date: '',
     amount: '',
     category: '',
+    expense_item: '',
     description: '',
     receipt_file: null as File | null,
     payment_method: 'reimbursement',
-    urgency: 'normal'
+    urgency: 'normal',
+    parking_related: false,
+    expense_salesperson: '',
+    expense_site_type: '',
+    expense_site_name: '',
+    expense_site_address: '',
+    expense_customer_name: '',
+    expense_work_type: ''
   })
   const [loading, setLoading] = useState(false)
 
@@ -39,12 +47,31 @@ export default function ExpenseForm() {
     }
   }
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: checked
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!formData.receipt_file) {
       alert('レシート・領収書を添付してください')
       return
+    }
+
+    if (formData.parking_related) {
+      if (!formData.expense_site_name && !formData.expense_site_address) {
+        alert('駐車場関連の経費は現場名または住所を入力してください')
+        return
+      }
+      if (!formData.expense_work_type) {
+        alert('駐車場関連の経費は作業種別を入力してください')
+        return
+      }
     }
 
     setLoading(true)
@@ -66,10 +93,18 @@ export default function ExpenseForm() {
           expense_date: formData.expense_date,
           amount: formData.amount,
           category: formData.category,
+          expense_item: formData.expense_item,
           description: formData.description,
           receipt_file: fileName,
           payment_method: formData.payment_method,
           urgency: formData.urgency,
+          parking_related: formData.parking_related,
+          expense_salesperson: formData.expense_salesperson || null,
+          expense_site_type: formData.expense_site_type || null,
+          expense_site_name: formData.expense_site_name || null,
+          expense_site_address: formData.expense_site_address || null,
+          expense_customer_name: formData.expense_customer_name || null,
+          expense_work_type: formData.expense_work_type || null,
           application_type: 'expense',
           status: 'pending',
           created_at: new Date().toISOString()
@@ -180,6 +215,8 @@ export default function ExpenseForm() {
                 >
                   <option value="">カテゴリを選択</option>
                   <option value="office_supplies">事務用品</option>
+                  <option value="gasoline">ガソリン</option>
+                  <option value="parking">駐車場</option>
                   <option value="travel">出張費</option>
                   <option value="meals">会議・接待費</option>
                   <option value="equipment">備品・機器</option>
@@ -209,6 +246,20 @@ export default function ExpenseForm() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                経費の品目
+              </label>
+              <input
+                type="text"
+                name="expense_item"
+                value={formData.expense_item}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="例: ガソリン代、駐車料金"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 経費の詳細 <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -220,6 +271,105 @@ export default function ExpenseForm() {
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="購入した物品の詳細、用途、必要性などを具体的に記載してください。"
               />
+            </div>
+
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  id="parking_related"
+                  name="parking_related"
+                  type="checkbox"
+                  checked={formData.parking_related}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="parking_related" className="text-sm font-medium text-gray-700">
+                  駐車場関連の経費（該当する場合は現場情報を必須入力）
+                </label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    担当営業
+                  </label>
+                  <input
+                    type="text"
+                    name="expense_salesperson"
+                    value={formData.expense_salesperson}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="例: 今津"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    作業種別
+                  </label>
+                  <input
+                    type="text"
+                    name="expense_work_type"
+                    value={formData.expense_work_type}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="例: 査定、案内、現地調査"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    現場種別
+                  </label>
+                  <select
+                    name="expense_site_type"
+                    value={formData.expense_site_type}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">選択</option>
+                    <option value="apartment">マンション</option>
+                    <option value="house">戸建</option>
+                    <option value="other">その他</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    現場名（マンション名など）
+                  </label>
+                  <input
+                    type="text"
+                    name="expense_site_name"
+                    value={formData.expense_site_name}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="例: 〇〇マンション"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    現場住所（戸建の場合は住所）
+                  </label>
+                  <input
+                    type="text"
+                    name="expense_site_address"
+                    value={formData.expense_site_address}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="例: 奈良県〇〇市〇〇町1-2-3"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    お客様名
+                  </label>
+                  <input
+                    type="text"
+                    name="expense_customer_name"
+                    value={formData.expense_customer_name}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="例: 山田様"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

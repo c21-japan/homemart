@@ -9,8 +9,8 @@ function GoogleAuthCallbackContent() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const code = searchParams.get('code')
-    const error = searchParams.get('error')
+    const code = searchParams?.get('code')
+    const error = searchParams?.get('error')
 
     if (error) {
       // エラーが発生した場合

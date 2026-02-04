@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import QueryProvider from '@/lib/providers/QueryProvider'
 import { Header } from '@/components/Header'
 import Footer from '@/components/Footer'
 import Providers from './providers'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'センチュリー21 ホームマート',
@@ -20,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body className="font-sans">
         <Providers>
           <QueryProvider>
             <div className="min-h-screen flex flex-col">
@@ -32,7 +29,7 @@ export default function RootLayout({
             </div>
           </QueryProvider>
         </Providers>
-              </body>
+      </body>
     </html>
   )
 }

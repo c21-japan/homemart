@@ -1,0 +1,558 @@
+了解しました!Manus AIに全ての作業を実行させるプロンプトを作成します。
+
+---
+
+# **Manus AI実行用プロンプト(完全版)**
+
+```
+あなたはManus AIとして、以下のタスクを順番に実行してください。
+Googleアカウントでログインして、ブラウザ操作で全ての作業を完了させてください。
+
+## 実行環境
+- ユーザーのGoogleアカウント: y-inui@century21.group
+- Supabaseプロジェクト: homemart
+- GitHubリポジトリ: https://github.com/c21-japan/homemart
+- Vercelプロジェクト: homemart
+
+---
+
+## タスク1: SupabaseでSQL実行
+
+### 手順:
+1. https://supabase.com/ にアクセス
+2. Googleアカウント(y-inui@century21.group)でログイン
+3. プロジェクト「homemart」を選択
+4. 左メニューから「SQL Editor」をクリック
+5. 「New Query」ボタンをクリック
+6. 以下のSQLコードを全てコピーしてペースト:
+
+```sql
+-- ==================================================
+-- チラシマーケティング管理システム
+-- データベーススキーマ定義
+-- ==================================================
+
+-- UUID拡張有効化(既に有効な場合はスキップ)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ==================================================
+-- 1. チラシデザイン管理テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_designs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  design_id VARCHAR(50) UNIQUE NOT NULL,
+  design_name VARCHAR(200) NOT NULL,
+  design_image_url TEXT,
+  designer_name VARCHAR(100),
+  designer_source VARCHAR(50) CHECK (designer_source IN ('crowdworks', 'internal', 'ai-generated', 'other')),
+  appeal_point TEXT,
+  adopted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  start_date DATE,
+  end_date DATE,
+  total_distributed INTEGER DEFAULT 0,
+  total_inquiries INTEGER DEFAULT 0,
+  response_rate DECIMAL(5,2) GENERATED ALWAYS AS (
+    CASE 
+      WHEN total_distributed > 0 
+      THEN ROUND((total_inquiries::DECIMAL / total_distributed) * 100, 2)
+      ELSE 0 
+    END
+  ) STORED,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- インデックス
+CREATE INDEX IF NOT EXISTS idx_flyer_designs_active ON flyer_designs(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_flyer_designs_dates ON flyer_designs(start_date, end_date);
+
+-- 更新日時自動更新トリガー
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_flyer_designs_updated_at ON flyer_designs;
+CREATE TRIGGER update_flyer_designs_updated_at
+  BEFORE UPDATE ON flyer_designs
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 2. チラシ配布記録テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_distributions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  distribution_date DATE NOT NULL,
+  design_id VARCHAR(50) NOT NULL,
+  area VARCHAR(200) NOT NULL,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  distributor_name VARCHAR(100),
+  print_date DATE,
+  print_quantity INTEGER CHECK (print_quantity > 0),
+  notes TEXT,
+  created_by UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_design FOREIGN KEY (design_id) REFERENCES flyer_designs(design_id) ON DELETE CASCADE
+);
+
+-- インデックス
+CREATE INDEX IF NOT EXISTS idx_distributions_date ON flyer_distributions(distribution_date DESC);
+CREATE INDEX IF NOT EXISTS idx_distributions_design ON flyer_distributions(design_id);
+CREATE INDEX IF NOT EXISTS idx_distributions_area ON flyer_distributions(area);
+
+DROP TRIGGER IF EXISTS update_flyer_distributions_updated_at ON flyer_distributions;
+CREATE TRIGGER update_flyer_distributions_updated_at
+  BEFORE UPDATE ON flyer_distributions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 3. 問い合わせ記録テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_inquiries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  inquiry_datetime TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  inquiry_channel VARCHAR(50) NOT NULL CHECK (inquiry_channel IN ('phone', 'line', 'web', 'visit', 'other')),
+  inquiry_type VARCHAR(100) NOT NULL,
+  design_id VARCHAR(50),
+  distribution_area VARCHAR(200),
+  lead_id UUID,
+  conversion_possibility VARCHAR(20) CHECK (conversion_possibility IN ('high', 'medium', 'low')),
+  handler_name VARCHAR(100),
+  notes TEXT,
+  created_by UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_design_inquiry FOREIGN KEY (design_id) REFERENCES flyer_designs(design_id) ON DELETE SET NULL
+);
+
+-- インデックス
+CREATE INDEX IF NOT EXISTS idx_inquiries_datetime ON flyer_inquiries(inquiry_datetime DESC);
+CREATE INDEX IF NOT EXISTS idx_inquiries_design ON flyer_inquiries(design_id);
+CREATE INDEX IF NOT EXISTS idx_inquiries_area ON flyer_inquiries(distribution_area);
+CREATE INDEX IF NOT EXISTS idx_inquiries_channel ON flyer_inquiries(inquiry_channel);
+
+DROP TRIGGER IF EXISTS update_flyer_inquiries_updated_at ON flyer_inquiries;
+CREATE TRIGGER update_flyer_inquiries_updated_at
+  BEFORE UPDATE ON flyer_inquiries
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 4. AI分析結果保存テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_ai_analysis (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  analysis_week DATE NOT NULL UNIQUE,
+  week_start DATE NOT NULL,
+  week_end DATE NOT NULL,
+  total_distributed INTEGER DEFAULT 0,
+  total_inquiries INTEGER DEFAULT 0,
+  overall_response_rate DECIMAL(5,2),
+  top_performing_designs JSONB,
+  top_performing_areas JSONB,
+  recommendations TEXT,
+  next_week_schedule JSONB,
+  analysis_data JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- インデックス
+CREATE INDEX IF NOT EXISTS idx_ai_analysis_week ON flyer_ai_analysis(analysis_week DESC);
+
+-- ==================================================
+-- 5. ビュー: 週次サマリー
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_weekly_summary AS
+SELECT 
+  DATE_TRUNC('week', distribution_date) AS week_start,
+  COUNT(DISTINCT id) AS distribution_count,
+  SUM(quantity) AS total_distributed,
+  COUNT(DISTINCT design_id) AS unique_designs,
+  COUNT(DISTINCT area) AS unique_areas
+FROM flyer_distributions
+GROUP BY DATE_TRUNC('week', distribution_date)
+ORDER BY week_start DESC;
+
+-- ==================================================
+-- 6. ビュー: デザイン別パフォーマンス
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_design_performance AS
+SELECT 
+  fd.design_id,
+  fd.design_name,
+  fd.total_distributed,
+  fd.total_inquiries,
+  fd.response_rate,
+  COUNT(DISTINCT dist.area) AS areas_distributed,
+  MAX(dist.distribution_date) AS last_distribution_date
+FROM flyer_designs fd
+LEFT JOIN flyer_distributions dist ON fd.design_id = dist.design_id
+WHERE fd.is_active = true
+GROUP BY fd.design_id, fd.design_name, fd.total_distributed, fd.total_inquiries, fd.response_rate
+ORDER BY fd.response_rate DESC;
+
+-- ==================================================
+-- 7. ビュー: エリア別パフォーマンス
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_area_performance AS
+SELECT 
+  dist.area,
+  SUM(dist.quantity) AS total_distributed,
+  COUNT(DISTINCT inq.id) AS total_inquiries,
+  CASE 
+    WHEN SUM(dist.quantity) > 0 
+    THEN ROUND((COUNT(DISTINCT inq.id)::DECIMAL / SUM(dist.quantity)) * 100, 2)
+    ELSE 0 
+  END AS response_rate,
+  COUNT(DISTINCT dist.design_id) AS unique_designs_used
+FROM flyer_distributions dist
+LEFT JOIN flyer_inquiries inq ON dist.area = inq.distribution_area
+GROUP BY dist.area
+ORDER BY response_rate DESC;
+
+-- ==================================================
+-- 8. 配布記録作成時のデザイン集計更新トリガー
+-- ==================================================
+CREATE OR REPLACE FUNCTION update_design_statistics()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed + NEW.quantity
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'UPDATE' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed - OLD.quantity + NEW.quantity
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed - OLD.quantity
+    WHERE design_id = OLD.design_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_update_design_statistics ON flyer_distributions;
+CREATE TRIGGER trigger_update_design_statistics
+  AFTER INSERT OR UPDATE OR DELETE ON flyer_distributions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_design_statistics();
+
+-- ==================================================
+-- 9. 問い合わせ記録時のデザイン集計更新トリガー
+-- ==================================================
+CREATE OR REPLACE FUNCTION update_inquiry_statistics()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' AND NEW.design_id IS NOT NULL THEN
+    UPDATE flyer_designs
+    SET total_inquiries = total_inquiries + 1
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'DELETE' AND OLD.design_id IS NOT NULL THEN
+    UPDATE flyer_designs
+    SET total_inquiries = total_inquiries - 1
+    WHERE design_id = OLD.design_id;
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF OLD.design_id IS NOT NULL THEN
+      UPDATE flyer_designs
+      SET total_inquiries = total_inquiries - 1
+      WHERE design_id = OLD.design_id;
+    END IF;
+    IF NEW.design_id IS NOT NULL THEN
+      UPDATE flyer_designs
+      SET total_inquiries = total_inquiries + 1
+      WHERE design_id = NEW.design_id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_update_inquiry_statistics ON flyer_inquiries;
+CREATE TRIGGER trigger_update_inquiry_statistics
+  AFTER INSERT OR UPDATE OR DELETE ON flyer_inquiries
+  FOR EACH ROW
+  EXECUTE FUNCTION update_inquiry_statistics();
+
+-- ==================================================
+-- 10. Row Level Security (RLS) ポリシー
+-- ==================================================
+
+ALTER TABLE flyer_designs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "全員が閲覧可能" ON flyer_designs;
+CREATE POLICY "全員が閲覧可能" ON flyer_designs FOR SELECT USING (true);
+DROP POLICY IF EXISTS "認証ユーザーが作成可能" ON flyer_designs;
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_designs FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "認証ユーザーが更新可能" ON flyer_designs;
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_designs FOR UPDATE USING (auth.role() = 'authenticated');
+
+ALTER TABLE flyer_distributions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "全員が閲覧可能" ON flyer_distributions;
+CREATE POLICY "全員が閲覧可能" ON flyer_distributions FOR SELECT USING (true);
+DROP POLICY IF EXISTS "認証ユーザーが作成可能" ON flyer_distributions;
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_distributions FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "認証ユーザーが更新可能" ON flyer_distributions;
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_distributions FOR UPDATE USING (auth.role() = 'authenticated');
+
+ALTER TABLE flyer_inquiries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "全員が閲覧可能" ON flyer_inquiries;
+CREATE POLICY "全員が閲覧可能" ON flyer_inquiries FOR SELECT USING (true);
+DROP POLICY IF EXISTS "認証ユーザーが作成可能" ON flyer_inquiries;
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_inquiries FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "認証ユーザーが更新可能" ON flyer_inquiries;
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_inquiries FOR UPDATE USING (auth.role() = 'authenticated');
+
+ALTER TABLE flyer_ai_analysis ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "全員が閲覧可能" ON flyer_ai_analysis;
+CREATE POLICY "全員が閲覧可能" ON flyer_ai_analysis FOR SELECT USING (true);
+DROP POLICY IF EXISTS "認証ユーザーが作成可能" ON flyer_ai_analysis;
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_ai_analysis FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- ==================================================
+-- 11. サンプルデータ挿入
+-- ==================================================
+
+INSERT INTO flyer_designs (design_id, design_name, designer_source, appeal_point, is_active) VALUES
+('design-001', '買取強化キャンペーン_赤', 'internal', '高額買取を強調、赤系で目立つデザイン', true),
+('design-002', 'リフォーム相談_青', 'internal', 'リフォーム事例写真掲載、信頼感のある青系', true),
+('design-003', '地域密着_緑', 'internal', '地域実績を強調、親しみやすい緑系', true)
+ON CONFLICT (design_id) DO NOTHING;
+
+SELECT 'チラシマーケティング管理システムのデータベース構築が完了しました' AS message;
+```
+
+7. 「Run」ボタンをクリックして実行
+8. エラーがないことを確認(Successメッセージが表示される)
+9. 完了したらスクリーンショットを撮影
+
+**確認事項:**
+- テーブルが正常に作成されたか
+- サンプルデータが3件挿入されたか
+- エラーメッセージが表示されていないか
+
+---
+
+## タスク2: Vercelで環境変数設定
+
+### 手順:
+1. https://vercel.com/dashboard にアクセス
+2. Googleアカウント(y-inui@century21.group)でログイン
+3. プロジェクト「homemart」を選択
+4. 上部メニューから「Settings」をクリック
+5. 左メニューから「Environment Variables」をクリック
+6. 以下の環境変数を追加:
+
+**追加する環境変数1:**
+- Key: `CRON_SECRET`
+- Value: `homemart_cron_secret_2026_secure_random_string_32chars_minimum`
+- Environments: ✅ Production ✅ Preview ✅ Development
+- 「Save」をクリック
+
+**追加する環境変数2:**
+- Key: `GENSPARK_API_KEY`
+- Value: (現在使用中のGensparkのAPIキーを入力)
+- Environments: ✅ Production ✅ Preview ✅ Development
+- 「Save」をクリック
+
+7. 設定完了後、スクリーンショットを撮影
+
+---
+
+## タスク3: Vercel Cron Jobの確認
+
+### 手順:
+1. 同じVercelプロジェクト設定画面で
+2. 左メニューから「Cron Jobs」をクリック
+3. 以下のCron Jobが登録されていることを確認:
+   - Path: `/api/cron/weekly-flyer-analysis`
+   - Schedule: `0 9 * * 1` (毎週月曜日9:00 UTC)
+   - Status: Active
+
+4. もし表示されていない場合:
+   - Vercelは`vercel.json`のcron設定を自動で読み込みます
+   - 次のデプロイ時に自動登録されます
+
+5. スクリーンショットを撮影
+
+---
+
+## タスク4: GitHubでコミット確認
+
+### 手順:
+1. https://github.com/c21-japan/homemart にアクセス
+2. Googleアカウント(y-inui@century21.group)でログイン
+3. 最新のコミットを確認:
+   - コミットメッセージ: "feat: チラシマーケティング管理システム実装"
+   - 以下のファイルが追加されていることを確認:
+     - `database-flyers.sql`
+     - `types/flyers.ts`
+     - `server/actions/flyers.ts`
+     - `components/flyers/` ディレクトリ
+     - `app/admin/flyers/` ディレクトリ
+     - `app/api/cron/` と `app/api/flyers/`
+
+4. もしコミットされていない場合は、次のタスクでプッシュします
+
+---
+
+## タスク5: Vercelでデプロイ確認・実行
+
+### 手順:
+1. https://vercel.com/dashboard にアクセス
+2. プロジェクト「homemart」を選択
+3. 「Deployments」タブをクリック
+4. 最新のデプロイを確認:
+   - Status: Ready (成功)
+   - Branch: main
+   - Commit: "feat: チラシマーケティング管理システム実装"
+
+5. もしデプロイが失敗している場合:
+   - 「View Build Logs」をクリック
+   - エラーメッセージをコピー
+   - スクリーンショットを撮影
+
+6. デプロイが成功している場合:
+   - 「Visit」ボタンをクリックして本番サイトにアクセス
+   - URLの末尾に `/admin/flyers` を追加してアクセス
+   - チラシマーケティングダッシュボードが表示されることを確認
+   - スクリーンショットを撮影
+
+---
+
+## タスク6: 本番サイトで動作確認
+
+### 手順:
+1. 本番サイト(https://your-domain.vercel.app/admin/flyers)にアクセス
+2. 以下のページが正常に表示されることを確認:
+
+**確認ページ一覧:**
+- `/admin/flyers` - ダッシュボード
+- `/admin/flyers/distributions/new` - 配布記録登録
+- `/admin/flyers/inquiries/new` - 問い合わせ登録
+- `/admin/flyers/designs/new` - デザイン登録
+
+3. 各ページで以下を確認:
+   - ✅ ページが正常に表示される
+   - ✅ フォームが表示される
+   - ✅ エラーが表示されない
+
+4. **テストデータ登録:**
+
+**配布記録を1件登録:**
+- 配布日: 今日の日付
+- デザイン: 「買取強化キャンペーン_赤」
+- エリア: 「広陵町笠」
+- 配布枚数: 500
+- 配布担当者: テスト
+- 「登録する」ボタンをクリック
+
+5. ダッシュボード(`/admin/flyers`)に戻る
+6. 「今週の配布枚数」に500枚が表示されることを確認
+7. スクリーンショットを撮影
+
+---
+
+## タスク7: 最終確認レポート作成
+
+### 実行内容:
+以下の形式で最終レポートを作成してください:
+
+```
+# チラシマーケティングシステム 導入完了レポート
+
+## 実行日時
+2026年2月3日
+
+## 実行タスク
+
+### ✅ タスク1: Supabaseデータベース構築
+- 実行結果: 成功
+- 作成テーブル数: 4テーブル
+- 作成ビュー数: 3ビュー
+- サンプルデータ: 3件挿入
+- スクリーンショット: [添付]
+
+### ✅ タスク2: Vercel環境変数設定
+- CRON_SECRET: 設定完了
+- GENSPARK_API_KEY: 設定完了
+- スクリーンショット: [添付]
+
+### ✅ タスク3: Vercel Cron Job確認
+- 登録状態: 確認完了
+- スケジュール: 毎週月曜9:00 UTC
+- スクリーンショット: [添付]
+
+### ✅ タスク4: GitHubコミット確認
+- 最新コミット: 確認完了
+- 追加ファイル数: XX件
+- スクリーンショット: [添付]
+
+### ✅ タスク5: Vercelデプロイ確認
+- デプロイ状態: 成功
+- 本番URL: https://XXXXX.vercel.app
+- スクリーンショット: [添付]
+
+### ✅ タスク6: 本番サイト動作確認
+- ダッシュボード: 正常表示
+- 配布記録登録: テスト成功
+- 問い合わせ登録: 動作確認
+- スクリーンショット: [添付]
+
+## 次のステップ(ユーザー向け)
+1. 実際のチラシ配布データを入力開始
+2. 問い合わせがあったら記録
+3. 毎週月曜日にAI分析レポートを確認
+4. 2週間後にデザイン更新を検討
+
+## システム管理情報
+- データベース: Supabase (homemart project)
+- 認証: Clerk
+- ホスティング: Vercel
+- Cron実行: 毎週月曜 9:00 UTC
+- 環境変数: Production/Preview/Development すべて設定済み
+```
+
+---
+
+## 重要な注意事項
+
+1. **エラーが発生した場合:**
+   - エラーメッセージ全文をコピー
+   - スクリーンショットを撮影
+   - 次のタスクに進まず、エラー報告を優先
+
+2. **認証情報:**
+   - 全てのサービスでy-inui@century21.groupアカウントを使用
+   - パスワードが必要な場合は、ユーザーに確認を求める
+
+3. **確認の徹底:**
+   - 各タスク完了後、必ずスクリーンショットを撮影
+   - エラーがないことを目視確認
+
+4. **完了報告:**
+   - 全タスク完了後、最終確認レポートを提示
+   - スクリーンショット一式を添付
+
+---
+
+それでは、タスク1から順番に実行を開始してください。
+```
+
+---
+
+このプロンプトをManusに渡せば、全ての作業を自動で実行してくれます!
+
+途中で認証やパスワードが必要になった場合は、Manusから確認が来ると思いますので、その時に入力してください。
+
+準備はできていますか?Manusを起動して、このプロンプトを渡してみてください!
+
+
+上記の内容で、マナスで実行しようとなっているが、このフォルダ情報を一切知らない。もし補足点があれば、プロンプトを作成した管理者に情報を提供するので、上記を実行するのに必要な情報を全てまとめて教えて

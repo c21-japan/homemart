@@ -31,6 +31,7 @@ export default function AdminNavigation() {
     { href: '/admin/inquiries', label: 'お問い合わせ', icon: UsersIcon },
     { href: '/admin/documents', label: '書類管理', icon: DocumentTextIcon },
     { href: '/admin/internal-applications', label: '内部申請', icon: ClipboardDocumentListIcon },
+    { href: '/admin/manuals', label: 'マニュアル', icon: DocumentTextIcon },
     { href: '/admin/part-time-attendance', label: 'アルバイト勤怠', icon: ChartBarIcon }
   ];
 

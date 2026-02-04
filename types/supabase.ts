@@ -131,8 +131,16 @@ export interface InternalApplication {
   expense_date?: string;
   amount?: string;
   category?: string;
+  expense_item?: string;
   receipt_file?: string;
   payment_method?: string;
+  parking_related?: boolean;
+  expense_salesperson?: string;
+  expense_site_type?: string;
+  expense_site_name?: string;
+  expense_site_address?: string;
+  expense_customer_name?: string;
+  expense_work_type?: string;
   urgency?: 'low' | 'normal' | 'high' | 'urgent';
   created_at: string;
   updated_at: string;

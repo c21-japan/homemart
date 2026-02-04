@@ -1,0 +1,1710 @@
+了解しました!Cursor/Codexに渡す完全なプロンプトを作成します。
+
+---
+
+## **📋 Cursor/Codex用プロンプト(完成版)**
+
+```markdown
+# チラシマーケティング管理システム実装指示書
+
+## 概要
+Next.js + Supabase + TypeScriptで構築された既存の不動産管理システムに、チラシ配布・問い合わせ追跡・AI分析機能を追加してください。
+
+## 技術スタック
+- Next.js 15.4.6
+- React + TypeScript
+- Supabase (PostgreSQL)
+- Clerk認証
+- Tailwind CSS
+- Vercel デプロイ
+
+## 実装内容
+
+### 1. データベース設計 (database-flyers.sql)
+
+以下のSQLファイルを作成してください:
+
+```sql
+-- ==================================================
+-- チラシマーケティング管理システム
+-- データベーススキーマ定義
+-- ==================================================
+
+-- UUID拡張有効化(既に有効な場合はスキップ)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ==================================================
+-- 1. チラシデザイン管理テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_designs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  design_id VARCHAR(50) UNIQUE NOT NULL,
+  design_name VARCHAR(200) NOT NULL,
+  design_image_url TEXT,
+  designer_name VARCHAR(100),
+  designer_source VARCHAR(50) CHECK (designer_source IN ('crowdworks', 'internal', 'ai-generated', 'other')),
+  appeal_point TEXT,
+  adopted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  start_date DATE,
+  end_date DATE,
+  total_distributed INTEGER DEFAULT 0,
+  total_inquiries INTEGER DEFAULT 0,
+  response_rate DECIMAL(5,2) GENERATED ALWAYS AS (
+    CASE 
+      WHEN total_distributed > 0 
+      THEN ROUND((total_inquiries::DECIMAL / total_distributed) * 100, 2)
+      ELSE 0 
+    END
+  ) STORED,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- インデックス
+CREATE INDEX idx_flyer_designs_active ON flyer_designs(is_active) WHERE is_active = true;
+CREATE INDEX idx_flyer_designs_dates ON flyer_designs(start_date, end_date);
+
+-- 更新日時自動更新トリガー
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_flyer_designs_updated_at
+  BEFORE UPDATE ON flyer_designs
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 2. チラシ配布記録テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_distributions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  distribution_date DATE NOT NULL,
+  design_id VARCHAR(50) NOT NULL,
+  area VARCHAR(200) NOT NULL,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  distributor_name VARCHAR(100),
+  print_date DATE,
+  print_quantity INTEGER CHECK (print_quantity > 0),
+  notes TEXT,
+  created_by UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_design FOREIGN KEY (design_id) REFERENCES flyer_designs(design_id) ON DELETE CASCADE
+);
+
+-- インデックス
+CREATE INDEX idx_distributions_date ON flyer_distributions(distribution_date DESC);
+CREATE INDEX idx_distributions_design ON flyer_distributions(design_id);
+CREATE INDEX idx_distributions_area ON flyer_distributions(area);
+
+CREATE TRIGGER update_flyer_distributions_updated_at
+  BEFORE UPDATE ON flyer_distributions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 3. 問い合わせ記録テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_inquiries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  inquiry_datetime TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  inquiry_channel VARCHAR(50) NOT NULL CHECK (inquiry_channel IN ('phone', 'line', 'web', 'visit', 'other')),
+  inquiry_type VARCHAR(100) NOT NULL,
+  design_id VARCHAR(50),
+  distribution_area VARCHAR(200),
+  lead_id UUID,
+  conversion_possibility VARCHAR(20) CHECK (conversion_possibility IN ('high', 'medium', 'low')),
+  handler_name VARCHAR(100),
+  notes TEXT,
+  created_by UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_design_inquiry FOREIGN KEY (design_id) REFERENCES flyer_designs(design_id) ON DELETE SET NULL
+);
+
+-- インデックス
+CREATE INDEX idx_inquiries_datetime ON flyer_inquiries(inquiry_datetime DESC);
+CREATE INDEX idx_inquiries_design ON flyer_inquiries(design_id);
+CREATE INDEX idx_inquiries_area ON flyer_inquiries(distribution_area);
+CREATE INDEX idx_inquiries_channel ON flyer_inquiries(inquiry_channel);
+
+CREATE TRIGGER update_flyer_inquiries_updated_at
+  BEFORE UPDATE ON flyer_inquiries
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ==================================================
+-- 4. AI分析結果保存テーブル
+-- ==================================================
+CREATE TABLE IF NOT EXISTS flyer_ai_analysis (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  analysis_week DATE NOT NULL UNIQUE,
+  week_start DATE NOT NULL,
+  week_end DATE NOT NULL,
+  total_distributed INTEGER DEFAULT 0,
+  total_inquiries INTEGER DEFAULT 0,
+  overall_response_rate DECIMAL(5,2),
+  top_performing_designs JSONB,
+  top_performing_areas JSONB,
+  recommendations TEXT,
+  next_week_schedule JSONB,
+  analysis_data JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- インデックス
+CREATE INDEX idx_ai_analysis_week ON flyer_ai_analysis(analysis_week DESC);
+
+-- ==================================================
+-- 5. ビュー: 週次サマリー
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_weekly_summary AS
+SELECT 
+  DATE_TRUNC('week', distribution_date) AS week_start,
+  COUNT(DISTINCT id) AS distribution_count,
+  SUM(quantity) AS total_distributed,
+  COUNT(DISTINCT design_id) AS unique_designs,
+  COUNT(DISTINCT area) AS unique_areas
+FROM flyer_distributions
+GROUP BY DATE_TRUNC('week', distribution_date)
+ORDER BY week_start DESC;
+
+-- ==================================================
+-- 6. ビュー: デザイン別パフォーマンス
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_design_performance AS
+SELECT 
+  fd.design_id,
+  fd.design_name,
+  fd.total_distributed,
+  fd.total_inquiries,
+  fd.response_rate,
+  COUNT(DISTINCT dist.area) AS areas_distributed,
+  MAX(dist.distribution_date) AS last_distribution_date
+FROM flyer_designs fd
+LEFT JOIN flyer_distributions dist ON fd.design_id = dist.design_id
+WHERE fd.is_active = true
+GROUP BY fd.design_id, fd.design_name, fd.total_distributed, fd.total_inquiries, fd.response_rate
+ORDER BY fd.response_rate DESC;
+
+-- ==================================================
+-- 7. ビュー: エリア別パフォーマンス
+-- ==================================================
+CREATE OR REPLACE VIEW flyer_area_performance AS
+SELECT 
+  dist.area,
+  SUM(dist.quantity) AS total_distributed,
+  COUNT(DISTINCT inq.id) AS total_inquiries,
+  CASE 
+    WHEN SUM(dist.quantity) > 0 
+    THEN ROUND((COUNT(DISTINCT inq.id)::DECIMAL / SUM(dist.quantity)) * 100, 2)
+    ELSE 0 
+  END AS response_rate,
+  COUNT(DISTINCT dist.design_id) AS unique_designs_used
+FROM flyer_distributions dist
+LEFT JOIN flyer_inquiries inq ON dist.area = inq.distribution_area
+GROUP BY dist.area
+ORDER BY response_rate DESC;
+
+-- ==================================================
+-- 8. 配布記録作成時のデザイン集計更新トリガー
+-- ==================================================
+CREATE OR REPLACE FUNCTION update_design_statistics()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- 配布枚数を更新
+  IF TG_OP = 'INSERT' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed + NEW.quantity
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'UPDATE' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed - OLD.quantity + NEW.quantity
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE flyer_designs
+    SET total_distributed = total_distributed - OLD.quantity
+    WHERE design_id = OLD.design_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_design_statistics
+  AFTER INSERT OR UPDATE OR DELETE ON flyer_distributions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_design_statistics();
+
+-- ==================================================
+-- 9. 問い合わせ記録時のデザイン集計更新トリガー
+-- ==================================================
+CREATE OR REPLACE FUNCTION update_inquiry_statistics()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' AND NEW.design_id IS NOT NULL THEN
+    UPDATE flyer_designs
+    SET total_inquiries = total_inquiries + 1
+    WHERE design_id = NEW.design_id;
+  ELSIF TG_OP = 'DELETE' AND OLD.design_id IS NOT NULL THEN
+    UPDATE flyer_designs
+    SET total_inquiries = total_inquiries - 1
+    WHERE design_id = OLD.design_id;
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF OLD.design_id IS NOT NULL THEN
+      UPDATE flyer_designs
+      SET total_inquiries = total_inquiries - 1
+      WHERE design_id = OLD.design_id;
+    END IF;
+    IF NEW.design_id IS NOT NULL THEN
+      UPDATE flyer_designs
+      SET total_inquiries = total_inquiries + 1
+      WHERE design_id = NEW.design_id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_inquiry_statistics
+  AFTER INSERT OR UPDATE OR DELETE ON flyer_inquiries
+  FOR EACH ROW
+  EXECUTE FUNCTION update_inquiry_statistics();
+
+-- ==================================================
+-- 10. Row Level Security (RLS) ポリシー
+-- ==================================================
+
+-- flyer_designs
+ALTER TABLE flyer_designs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "全員が閲覧可能" ON flyer_designs
+  FOR SELECT USING (true);
+
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_designs
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_designs
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- flyer_distributions
+ALTER TABLE flyer_distributions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "全員が閲覧可能" ON flyer_distributions
+  FOR SELECT USING (true);
+
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_distributions
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_distributions
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- flyer_inquiries
+ALTER TABLE flyer_inquiries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "全員が閲覧可能" ON flyer_inquiries
+  FOR SELECT USING (true);
+
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_inquiries
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "認証ユーザーが更新可能" ON flyer_inquiries
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- flyer_ai_analysis
+ALTER TABLE flyer_ai_analysis ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "全員が閲覧可能" ON flyer_ai_analysis
+  FOR SELECT USING (true);
+
+CREATE POLICY "認証ユーザーが作成可能" ON flyer_ai_analysis
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- ==================================================
+-- 11. サンプルデータ挿入
+-- ==================================================
+
+-- サンプルデザイン
+INSERT INTO flyer_designs (design_id, design_name, designer_source, appeal_point, is_active) VALUES
+('design-001', '買取強化キャンペーン_赤', 'internal', '高額買取を強調、赤系で目立つデザイン', true),
+('design-002', 'リフォーム相談_青', 'internal', 'リフォーム事例写真掲載、信頼感のある青系', true),
+('design-003', '地域密着_緑', 'internal', '地域実績を強調、親しみやすい緑系', true)
+ON CONFLICT (design_id) DO NOTHING;
+
+-- 完了メッセージ
+DO $$
+BEGIN
+  RAISE NOTICE 'チラシマーケティング管理システムのデータベース構築が完了しました';
+END $$;
+```
+
+### 2. TypeScript型定義 (types/flyers.ts)
+
+```typescript
+// types/flyers.ts
+export interface FlyerDesign {
+  id: string;
+  design_id: string;
+  design_name: string;
+  design_image_url?: string;
+  designer_name?: string;
+  designer_source?: 'crowdworks' | 'internal' | 'ai-generated' | 'other';
+  appeal_point?: string;
+  adopted_at?: string;
+  start_date?: string;
+  end_date?: string;
+  total_distributed: number;
+  total_inquiries: number;
+  response_rate?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FlyerDistribution {
+  id: string;
+  distribution_date: string;
+  design_id: string;
+  area: string;
+  quantity: number;
+  distributor_name?: string;
+  print_date?: string;
+  print_quantity?: number;
+  notes?: string;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FlyerInquiry {
+  id: string;
+  inquiry_datetime: string;
+  inquiry_channel: 'phone' | 'line' | 'web' | 'visit' | 'other';
+  inquiry_type: string;
+  design_id?: string;
+  distribution_area?: string;
+  lead_id?: string;
+  conversion_possibility?: 'high' | 'medium' | 'low';
+  handler_name?: string;
+  notes?: string;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FlyerAIAnalysis {
+  id: string;
+  analysis_week: string;
+  week_start: string;
+  week_end: string;
+  total_distributed: number;
+  total_inquiries: number;
+  overall_response_rate?: number;
+  top_performing_designs?: any;
+  top_performing_areas?: any;
+  recommendations?: string;
+  next_week_schedule?: any;
+  analysis_data?: any;
+  created_at: string;
+}
+
+export interface WeeklySummary {
+  week_start: string;
+  distribution_count: number;
+  total_distributed: number;
+  unique_designs: number;
+  unique_areas: number;
+}
+
+export interface DesignPerformance {
+  design_id: string;
+  design_name: string;
+  total_distributed: number;
+  total_inquiries: number;
+  response_rate: number;
+  areas_distributed: number;
+  last_distribution_date: string;
+}
+
+export interface AreaPerformance {
+  area: string;
+  total_distributed: number;
+  total_inquiries: number;
+  response_rate: number;
+  unique_designs_used: number;
+}
+```
+
+### 3. Server Actions (server/actions/flyers.ts)
+
+既存の`server/actions/`パターンに従って、以下のファイルを作成してください:
+
+```typescript
+// server/actions/flyers.ts
+'use server';
+
+import { createClient } from '@/lib/supabase-server';
+import { revalidatePath } from 'next/cache';
+import type { 
+  FlyerDesign, 
+  FlyerDistribution, 
+  FlyerInquiry,
+  DesignPerformance,
+  AreaPerformance 
+} from '@/types/flyers';
+
+// ==================================================
+// デザイン管理
+// ==================================================
+
+export async function createFlyerDesign(data: Partial<FlyerDesign>) {
+  const supabase = createClient();
+  
+  const { data: design, error } = await supabase
+    .from('flyer_designs')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  
+  revalidatePath('/admin/flyers/designs');
+  return design;
+}
+
+export async function getFlyerDesigns(activeOnly: boolean = true) {
+  const supabase = createClient();
+  
+  let query = supabase
+    .from('flyer_designs')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (activeOnly) {
+    query = query.eq('is_active', true);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as FlyerDesign[];
+}
+
+export async function updateFlyerDesign(id: string, data: Partial<FlyerDesign>) {
+  const supabase = createClient();
+  
+  const { data: design, error } = await supabase
+    .from('flyer_designs')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  
+  revalidatePath('/admin/flyers/designs');
+  return design;
+}
+
+// ==================================================
+// 配布記録
+// ==================================================
+
+export async function createDistribution(data: Partial<FlyerDistribution>) {
+  const supabase = createClient();
+  
+  const { data: distribution, error } = await supabase
+    .from('flyer_distributions')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  
+  revalidatePath('/admin/flyers/distributions');
+  return distribution;
+}
+
+export async function getDistributions(filters?: {
+  startDate?: string;
+  endDate?: string;
+  designId?: string;
+  area?: string;
+}) {
+  const supabase = createClient();
+  
+  let query = supabase
+    .from('flyer_distributions')
+    .select('*, flyer_designs(*)')
+    .order('distribution_date', { ascending: false });
+
+  if (filters?.startDate) {
+    query = query.gte('distribution_date', filters.startDate);
+  }
+  if (filters?.endDate) {
+    query = query.lte('distribution_date', filters.endDate);
+  }
+  if (filters?.designId) {
+    query = query.eq('design_id', filters.designId);
+  }
+  if (filters?.area) {
+    query = query.eq('area', filters.area);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+// ==================================================
+// 問い合わせ記録
+// ==================================================
+
+export async function createInquiry(data: Partial<FlyerInquiry>) {
+  const supabase = createClient();
+  
+  const { data: inquiry, error } = await supabase
+    .from('flyer_inquiries')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  
+  revalidatePath('/admin/flyers/inquiries');
+  return inquiry;
+}
+
+export async function getInquiries(filters?: {
+  startDate?: string;
+  endDate?: string;
+  designId?: string;
+  area?: string;
+  channel?: string;
+}) {
+  const supabase = createClient();
+  
+  let query = supabase
+    .from('flyer_inquiries')
+    .select('*, flyer_designs(*)')
+    .order('inquiry_datetime', { ascending: false });
+
+  if (filters?.startDate) {
+    query = query.gte('inquiry_datetime', filters.startDate);
+  }
+  if (filters?.endDate) {
+    query = query.lte('inquiry_datetime', filters.endDate);
+  }
+  if (filters?.designId) {
+    query = query.eq('design_id', filters.designId);
+  }
+  if (filters?.area) {
+    query = query.eq('distribution_area', filters.area);
+  }
+  if (filters?.channel) {
+    query = query.eq('inquiry_channel', filters.channel);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+// ==================================================
+// パフォーマンス分析
+// ==================================================
+
+export async function getDesignPerformance() {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('flyer_design_performance')
+    .select('*');
+
+  if (error) throw error;
+  return data as DesignPerformance[];
+}
+
+export async function getAreaPerformance() {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('flyer_area_performance')
+    .select('*');
+
+  if (error) throw error;
+  return data as AreaPerformance[];
+}
+
+export async function getWeeklySummary(weekStart?: string) {
+  const supabase = createClient();
+  
+  let query = supabase
+    .from('flyer_weekly_summary')
+    .select('*');
+
+  if (weekStart) {
+    query = query.eq('week_start', weekStart);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+// ==================================================
+// AI分析結果
+// ==================================================
+
+export async function getAIAnalysis(weekStart?: string) {
+  const supabase = createClient();
+  
+  let query = supabase
+    .from('flyer_ai_analysis')
+    .select('*')
+    .order('analysis_week', { ascending: false });
+
+  if (weekStart) {
+    query = query.eq('analysis_week', weekStart).single();
+  } else {
+    query = query.limit(1);
+  }
+
+  const { data, error } = await query;
+  if (error && error.code !== 'PGRST116') throw error;
+  return weekStart ? data : (data as any[])?.[0];
+}
+
+export async function saveAIAnalysis(analysisData: Partial<FlyerAIAnalysis>) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('flyer_ai_analysis')
+    .upsert(analysisData, {
+      onConflict: 'analysis_week'
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  
+  revalidatePath('/admin/flyers/analysis');
+  return data;
+}
+
+// ==================================================
+// エリア一覧取得(ユニーク)
+// ==================================================
+
+export async function getUniqueAreas() {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('flyer_distributions')
+    .select('area')
+    .order('area');
+
+  if (error) throw error;
+  
+  const uniqueAreas = [...new Set(data.map(d => d.area))];
+  return uniqueAreas;
+}
+```
+
+### 4. 管理画面ページ
+
+#### 4-1. ダッシュボード (app/admin/flyers/page.tsx)
+
+```typescript
+// app/admin/flyers/page.tsx
+import { Suspense } from 'react';
+import Link from 'next/link';
+import { 
+  getDesignPerformance, 
+  getAreaPerformance,
+  getWeeklySummary,
+  getAIAnalysis 
+} from '@/server/actions/flyers';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { 
+  TrendingUp, 
+  MapPin, 
+  Calendar, 
+  BarChart3,
+  FileText,
+  MessageSquare,
+  Palette
+} from 'lucide-react';
+
+export default async function FlyersDashboardPage() {
+  const [designPerf, areaPerf, weeklySummary, aiAnalysis] = await Promise.all([
+    getDesignPerformance(),
+    getAreaPerformance(),
+    getWeeklySummary(),
+    getAIAnalysis()
+  ]);
+
+  const currentWeek = weeklySummary?.[0];
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">チラシマーケティング分析</h1>
+        <div className="flex gap-2">
+          <Link href="/admin/flyers/distributions/new">
+            <Button>
+              <FileText className="mr-2 h-4 w-4" />
+              配布記録登録
+            </Button>
+          </Link>
+          <Link href="/admin/flyers/inquiries/new">
+            <Button variant="outline">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              問い合わせ登録
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* 今週のサマリー */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">今週の配布枚数</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {currentWeek?.total_distributed.toLocaleString()}枚
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">配布回数</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {currentWeek?.distribution_count}回
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">使用デザイン数</CardTitle>
+            <Palette className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {currentWeek?.unique_designs}種類
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">配布エリア数</CardTitle>
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {currentWeek?.unique_areas}地域
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* デザイン別パフォーマンス */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            デザイン別反応率ランキング
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {designPerf.slice(0, 5).map((design, index) => (
+              <div key={design.design_id} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="font-medium">{design.design_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {design.total_distributed.toLocaleString()}枚 → {design.total_inquiries}件
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-600">
+                    {design.response_rate.toFixed(2)}%
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {design.areas_distributed}エリアで配布
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* エリア別パフォーマンス */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            エリア別反応率
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {areaPerf.slice(0, 5).map((area, index) => (
+              <div key={area.area} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-muted-foreground">
+                    {index + 1}.
+                  </span>
+                  <div>
+                    <p className="font-medium">{area.area}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {area.total_distributed.toLocaleString()}枚 / {area.unique_designs_used}デザイン使用
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold">
+                    {area.response_rate.toFixed(2)}%
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {area.total_inquiries}件の問い合わせ
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AI分析結果 */}
+      {aiAnalysis && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              AI分析による提案
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose max-w-none">
+              <p className="whitespace-pre-wrap">{aiAnalysis.recommendations}</p>
+            </div>
+            <div className="mt-4">
+              <Link href="/admin/flyers/analysis">
+                <Button variant="outline">
+                  詳細な分析レポートを見る
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* クイックアクセス */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Link href="/admin/flyers/distributions">
+          <Card className="hover:bg-accent cursor-pointer transition-colors">
+            <CardContent className="flex items-center gap-3 p-6">
+              <FileText className="h-8 w-8 text-primary" />
+              <div>
+                <p className="font-semibold">配布記録一覧</p>
+                <p className="text-sm text-muted-foreground">過去の配布履歴を確認</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/flyers/inquiries">
+          <Card className="hover:bg-accent cursor-pointer transition-colors">
+            <CardContent className="flex items-center gap-3 p-6">
+              <MessageSquare className="h-8 w-8 text-primary" />
+              <div>
+                <p className="font-semibold">問い合わせ一覧</p>
+                <p className="text-sm text-muted-foreground">反応データを確認</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/flyers/designs">
+          <Card className="hover:bg-accent cursor-pointer transition-colors">
+            <CardContent className="flex items-center gap-3 p-6">
+              <Palette className="h-8 w-8 text-primary" />
+              <div>
+                <p className="font-semibold">デザイン管理</p>
+                <p className="text-sm text-muted-foreground">チラシデザインを管理</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+
+#### 4-2. 配布記録登録フォーム (app/admin/flyers/distributions/new/page.tsx)
+
+```typescript
+// app/admin/flyers/distributions/new/page.tsx
+import { DistributionForm } from '@/components/flyers/DistributionForm';
+import { getFlyerDesigns, getUniqueAreas } from '@/server/actions/flyers';
+
+export default async function NewDistributionPage() {
+  const [designs, areas] = await Promise.all([
+    getFlyerDesigns(true),
+    getUniqueAreas()
+  ]);
+
+  return (
+    <div className="container mx-auto p-6 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">チラシ配布記録登録</h1>
+      <DistributionForm designs={designs} existingAreas={areas} />
+    </div>
+  );
+}
+```
+
+#### 4-3. 配布記録登録フォームコンポーネント (components/flyers/DistributionForm.tsx)
+
+```typescript
+// components/flyers/DistributionForm.tsx
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createDistribution } from '@/server/actions/flyers';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toast } from 'sonner';
+import type { FlyerDesign } from '@/types/flyers';
+
+interface DistributionFormProps {
+  designs: FlyerDesign[];
+  existingAreas: string[];
+}
+
+export function DistributionForm({ designs, existingAreas }: DistributionFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    distribution_date: new Date().toISOString().split('T')[0],
+    design_id: '',
+    area: '',
+    quantity: '',
+    distributor_name: '',
+    print_date: '',
+    print_quantity: '',
+    notes: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await createDistribution({
+        distribution_date: formData.distribution_date,
+        design_id: formData.design_id,
+        area: formData.area,
+        quantity: parseInt(formData.quantity),
+        distributor_name: formData.distributor_name || undefined,
+        print_date: formData.print_date || undefined,
+        print_quantity: formData.print_quantity ? parseInt(formData.print_quantity) : undefined,
+        notes: formData.notes || undefined
+      });
+
+      toast.success('配布記録を登録しました');
+      router.push('/admin/flyers/distributions');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error('登録に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="distribution_date">配布日 *</Label>
+        <Input
+          id="distribution_date"
+          type="date"
+          value={formData.distribution_date}
+          onChange={(e) => handleChange('distribution_date', e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="design_id">チラシデザイン *</Label>
+        <Select
+          value={formData.design_id}
+          onValueChange={(value) => handleChange('design_id', value)}
+          required
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="デザインを選択" />
+          </SelectTrigger>
+          <SelectContent>
+            {designs.map((design) => (
+              <SelectItem key={design.design_id} value={design.design_id}>
+                {design.design_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="area">配布エリア *</Label>
+        <Select
+          value={formData.area}
+          onValueChange={(value) => handleChange('area', value)}
+          required
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="エリアを選択または新規入力" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="広陵町笠">広陵町笠</SelectItem>
+            <SelectItem value="広陵町百済">広陵町百済</SelectItem>
+            <SelectItem value="広陵町古寺">広陵町古寺</SelectItem>
+            <SelectItem value="広陵町南郷">広陵町南郷</SelectItem>
+            {existingAreas.filter(a => !['広陵町笠', '広陵町百済', '広陵町古寺', '広陵町南郷'].includes(a)).map(area => (
+              <SelectItem key={area} value={area}>{area}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          placeholder="または新しいエリア名を入力"
+          value={formData.area}
+          onChange={(e) => handleChange('area', e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="quantity">配布枚数 *</Label>
+        <Input
+          id="quantity"
+          type="number"
+          min="1"
+          value={formData.quantity}
+          onChange={(e) => handleChange('quantity', e.target.value)}
+          placeholder="例: 500"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="distributor_name">配布担当者</Label>
+        <Input
+          id="distributor_name"
+          value={formData.distributor_name}
+          onChange={(e) => handleChange('distributor_name', e.target.value)}
+          placeholder="例: 今津"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="print_date">印刷日</Label>
+          <Input
+            id="print_date"
+            type="date"
+            value={formData.print_date}
+            onChange={(e) => handleChange('print_date', e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="print_quantity">印刷枚数</Label>
+          <Input
+            id="print_quantity"
+            type="number"
+            min="1"
+            value={formData.print_quantity}
+            onChange={(e) => handleChange('print_quantity', e.target.value)}
+            placeholder="例: 1000"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="notes">備考</Label>
+        <Textarea
+          id="notes"
+          value={formData.notes}
+          onChange={(e) => handleChange('notes', e.target.value)}
+          placeholder="特記事項があれば入力してください"
+          rows={3}
+        />
+      </div>
+
+      <div className="flex gap-3">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? '登録中...' : '登録する'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+        >
+          キャンセル
+        </Button>
+      </div>
+    </form>
+  );
+}
+```
+
+#### 4-4. 問い合わせ登録フォームコンポーネント (components/flyers/InquiryForm.tsx)
+
+```typescript
+// components/flyers/InquiryForm.tsx
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createInquiry } from '@/server/actions/flyers';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toast } from 'sonner';
+import type { FlyerDesign } from '@/types/flyers';
+
+interface InquiryFormProps {
+  designs: FlyerDesign[];
+  existingAreas: string[];
+}
+
+export function InquiryForm({ designs, existingAreas }: InquiryFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    inquiry_datetime: new Date().toISOString().slice(0, 16),
+    inquiry_channel: '',
+    inquiry_type: '',
+    design_id: '',
+    distribution_area: '',
+    conversion_possibility: '',
+    handler_name: '',
+    notes: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await createInquiry({
+        inquiry_datetime: formData.inquiry_datetime,
+        inquiry_channel: formData.inquiry_channel as any,
+        inquiry_type: formData.inquiry_type,
+        design_id: formData.design_id || undefined,
+        distribution_area: formData.distribution_area || undefined,
+        conversion_possibility: (formData.conversion_possibility as any) || undefined,
+        handler_name: formData.handler_name || undefined,
+        notes: formData.notes || undefined
+      });
+
+      toast.success('問い合わせを登録しました');
+      router.push('/admin/flyers/inquiries');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error('登録に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="inquiry_datetime">問い合わせ日時 *</Label>
+        <Input
+          id="inquiry_datetime"
+          type="datetime-local"
+          value={formData.inquiry_datetime}
+          onChange={(e) => handleChange('inquiry_datetime', e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="inquiry_channel">問い合わせ経路 *</Label>
+        <Select
+          value={formData.inquiry_channel}
+          onValueChange={(value) => handleChange('inquiry_channel', value)}
+          required
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="経路を選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="phone">電話</SelectItem>
+            <SelectItem value="line">LINE</SelectItem>
+            <SelectItem value="web">Webフォーム</SelectItem>
+            <SelectItem value="visit">来店</SelectItem>
+            <SelectItem value="other">その他</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="inquiry_type">問い合わせ内容 *</Label>
+        <Select
+          value={formData.inquiry_type}
+          onValueChange={(value) => handleChange('inquiry_type', value)}
+          required
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="内容を選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="売買相談">売買相談</SelectItem>
+            <SelectItem value="買取相談">買取相談</SelectItem>
+            <SelectItem value="リフォーム見積もり">リフォーム見積もり</SelectItem>
+            <SelectItem value="査定依頼">査定依頼</SelectItem>
+            <SelectItem value="物件問い合わせ">物件問い合わせ</SelectItem>
+            <SelectItem value="その他">その他</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="design_id">どのチラシを見たか</Label>
+        <Select
+          value={formData.design_id}
+          onValueChange={(value) => handleChange('design_id', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="デザインを選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">不明</SelectItem>
+            {designs.map((design) => (
+              <SelectItem key={design.design_id} value={design.design_id}>
+                {design.design_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="distribution_area">配布エリア</Label>
+        <Select
+          value={formData.distribution_area}
+          onValueChange={(value) => handleChange('distribution_area', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="エリアを選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">不明</SelectItem>
+            <SelectItem value="広陵町笠">広陵町笠</SelectItem>
+            <SelectItem value="広陵町百済">広陵町百済</SelectItem>
+            {existingAreas.map(area => (
+              <SelectItem key={area} value={area}>{area}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="conversion_possibility">成約可能性</Label>
+        <Select
+          value={formData.conversion_possibility}
+          onValueChange={(value) => handleChange('conversion_possibility', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="可能性を選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="high">高</SelectItem>
+            <SelectItem value="medium">中</SelectItem>
+            <SelectItem value="low">低</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="handler_name">対応担当者</Label>
+        <Input
+          id="handler_name"
+          value={formData.handler_name}
+          onChange={(e) => handleChange('handler_name', e.target.value)}
+          placeholder="例: 乾"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="notes">備考</Label>
+        <Textarea
+          id="notes"
+          value={formData.notes}
+          onChange={(e) => handleChange('notes', e.target.value)}
+          placeholder="詳細な内容や特記事項を入力してください"
+          rows={4}
+        />
+      </div>
+
+      <div className="flex gap-3">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? '登録中...' : '登録する'}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+        >
+          キャンセル
+        </Button>
+      </div>
+    </form>
+  );
+}
+```
+
+### 5. API Routes
+
+#### 5-1. 週次AI分析Cron Job (app/api/cron/weekly-flyer-analysis/route.ts)
+
+```typescript
+// app/api/cron/weekly-flyer-analysis/route.ts
+import { NextResponse } from 'next/server';
+import { 
+  getDistributions,
+  getInquiries,
+  saveAIAnalysis 
+} from '@/server/actions/flyers';
+
+// Vercel Cron Job用エンドポイント
+export async function GET(request: Request) {
+  // Vercel Cron Secretによる認証
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    // 先週の日付範囲を計算
+    const today = new Date();
+    const lastWeekEnd = new Date(today);
+    lastWeekEnd.setDate(today.getDate() - today.getDay()); // 直近の日曜日
+    const lastWeekStart = new Date(lastWeekEnd);
+    lastWeekStart.setDate(lastWeekEnd.getDate() - 6); // 月曜日
+
+    const startDate = lastWeekStart.toISOString().split('T')[0];
+    const endDate = lastWeekEnd.toISOString().split('T')[0];
+
+    // 先週のデータ取得
+    const [distributions, inquiries] = await Promise.all([
+      getDistributions({ startDate, endDate }),
+      getInquiries({ startDate, endDate })
+    ]);
+
+    // 集計データ作成
+    const totalDistributed = distributions.reduce((sum, d) => sum + d.quantity, 0);
+    const totalInquiries = inquiries.length;
+    const overallResponseRate = totalDistributed > 0 
+      ? (totalInquiries / totalDistributed) * 100 
+      : 0;
+
+    // デザイン別集計
+    const designStats = distributions.reduce((acc, dist) => {
+      if (!acc[dist.design_id]) {
+        acc[dist.design_id] = {
+          design_id: dist.design_id,
+          design_name: (dist as any).flyer_designs?.design_name || dist.design_id,
+          distributed: 0,
+          inquiries: 0
+        };
+      }
+      acc[dist.design_id].distributed += dist.quantity;
+      return acc;
+    }, {} as Record<string, any>);
+
+    inquiries.forEach(inq => {
+      if (inq.design_id && designStats[inq.design_id]) {
+        designStats[inq.design_id].inquiries += 1;
+      }
+    });
+
+    const topDesigns = Object.values(designStats)
+      .map(d => ({
+        ...d,
+        response_rate: d.distributed > 0 ? (d.inquiries / d.distributed) * 100 : 0
+      }))
+      .sort((a, b) => b.response_rate - a.response_rate)
+      .slice(0, 5);
+
+    // エリア別集計
+    const areaStats = distributions.reduce((acc, dist) => {
+      if (!acc[dist.area]) {
+        acc[dist.area] = { area: dist.area, distributed: 0, inquiries: 0 };
+      }
+      acc[dist.area].distributed += dist.quantity;
+      return acc;
+    }, {} as Record<string, any>);
+
+    inquiries.forEach(inq => {
+      if (inq.distribution_area && areaStats[inq.distribution_area]) {
+        areaStats[inq.distribution_area].inquiries += 1;
+      }
+    });
+
+    const topAreas = Object.values(areaStats)
+      .map(a => ({
+        ...a,
+        response_rate: a.distributed > 0 ? (a.inquiries / a.distributed) * 100 : 0
+      }))
+      .sort((a, b) => b.response_rate - a.response_rate)
+      .slice(0, 5);
+
+    // AI分析プロンプト作成
+    const analysisPrompt = `
+以下のチラシマーケティングデータを分析してください:
+
+【期間】${startDate} 〜 ${endDate}
+
+【全体サマリー】
+- 総配布枚数: ${totalDistributed.toLocaleString()}枚
+- 総問い合わせ数: ${totalInquiries}件
+- 全体反応率: ${overallResponseRate.toFixed(2)}%
+
+【デザイン別TOP5】
+${topDesigns.map((d, i) => `${i + 1}. ${d.design_name}: ${d.distributed}枚 → ${d.inquiries}件 (${d.response_rate.toFixed(2)}%)`).join('\n')}
+
+【エリア別TOP5】
+${topAreas.map((a, i) => `${i + 1}. ${a.area}: ${a.distributed}枚 → ${a.inquiries}件 (${a.response_rate.toFixed(2)}%)`).join('\n')}
+
+以下の項目について分析してください:
+1. 最も効果的だったデザインとその理由
+2. 最も反応率が高いエリアの特徴
+3. 改善が必要なデザインやエリア
+4. 来週の配布戦略の提案
+5. デザインの改善ポイント
+`;
+
+    // Genspark AIで分析実行(実際のAPI呼び出しはプロジェクトの実装に合わせて調整)
+    const recommendations = `
+【分析結果】
+
+◆ 最も効果的なデザイン
+${topDesigns[0]?.design_name}が反応率${topDesigns[0]?.response_rate.toFixed(2)}%で最高のパフォーマンスを示しています。
+
+◆ 推奨エリア
+${topAreas[0]?.area}エリアでの反応率が${topAreas[0]?.response_rate.toFixed(2)}%と高く、重点配布を推奨します。
+
+◆ 来週の戦略提案
+1. ${topDesigns[0]?.design_name}を${topAreas[0]?.area}エリアに集中投下
+2. 反応率の低いデザインは訴求ポイントの見直しを検討
+3. 新規エリアでのテスト配布を実施
+`;
+
+    // 分析結果を保存
+    await saveAIAnalysis({
+      analysis_week: startDate,
+      week_start: startDate,
+      week_end: endDate,
+      total_distributed: totalDistributed,
+      total_inquiries: totalInquiries,
+      overall_response_rate: parseFloat(overallResponseRate.toFixed(2)),
+      top_performing_designs: topDesigns,
+      top_performing_areas: topAreas,
+      recommendations,
+      analysis_data: {
+        distributions,
+        inquiries,
+        designStats,
+        areaStats
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: '週次分析が完了しました',
+      data: {
+        period: `${startDate} - ${endDate}`,
+        totalDistributed,
+        totalInquiries,
+        overallResponseRate: overallResponseRate.toFixed(2)
+      }
+    });
+
+  } catch (error) {
+    console.error('週次分析エラー:', error);
+    return NextResponse.json(
+      { error: 'Analysis failed', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+#### 5-2. AIデザイン生成API (app/api/flyers/ai-generate-design/route.ts)
+
+```typescript
+// app/api/flyers/ai-generate-design/route.ts
+import { NextResponse } from 'next/server';
+import { getDesignPerformance } from '@/server/actions/flyers';
+
+export async function POST(request: Request) {
+  try {
+    const { appeal_point, count = 3 } = await request.json();
+
+    // 過去のパフォーマンスデータ取得
+    const pastPerformance = await getDesignPerformance();
+
+    // AI画像生成プロンプト作成
+    const prompt = `
+不動産・リフォーム会社のチラシデザイン
+
+【訴求ポイント】
+${appeal_point}
+
+【デザイン要件】
+- A4サイズ、縦向き
+- 会社名: センチュリー21 HOMEMART
+- 信頼感のあるプロフェッショナルなデザイン
+- 連絡先情報: 0120-43-8639
+- カラー: 企業カラーを意識した配色
+- 写真: 不動産・リフォーム関連の高品質イメージ
+- 読みやすいレイアウト
+
+【参考情報】
+過去の高反応率デザインの特徴:
+${pastPerformance.slice(0, 3).map(d => `- ${d.design_name}: ${d.response_rate}%`).join('\n')}
+`;
+
+    // Genspark AI(ナノバナナプロ)での画像生成
+    // 実際のAPI呼び出しはプロジェクトの環境に合わせて実装してください
+    const designConcepts = [];
+    for (let i = 0; i < count; i++) {
+      designConcepts.push({
+        url: `https://example.com/generated-design-${i + 1}.png`,
+        prompt: `${prompt} - バリエーション${i + 1}`
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      designs: designConcepts,
+      prompt
+    });
+
+  } catch (error) {
+    console.error('デザイン生成エラー:', error);
+    return NextResponse.json(
+      { error: 'Design generation failed' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### 6. Vercel Cron設定 (vercel.json)
+
+既存の`vercel.json`に以下を追加してください:
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/weekly-flyer-analysis",
+      "schedule": "0 9 * * 1"
+    }
+  ]
+}
+```
+
+### 7. 環境変数 (.env.local)
+
+`.env.local`に以下を追加してください:
+
+```bash
+# Vercel Cron Secret (任意の安全な文字列)
+CRON_SECRET=your_secure_cron_secret_here
+
+# Genspark API Key (AIデザイン生成用)
+GENSPARK_API_KEY=your_genspark_api_key_here
+```
+
+## 実装手順
+
+1. **database-flyers.sql**をSupabaseで実行
+2. **types/flyers.ts**を作成
+3. **server/actions/flyers.ts**を作成
+4. **components/flyers/**ディレクトリを作成し、フォームコンポーネントを配置
+5. **app/admin/flyers/**配下に各ページを作成
+6. **app/api/cron/**と**app/api/flyers/**にAPIルートを作成
+7. **vercel.json**にcron設定を追加
+8. **.env.local**に環境変数を追加
+9. Vercelにデプロイ
+
+## 注意事項
+
+- 既存の認証システム(Clerk)との統合を確認してください
+- RLSポリシーは既存のユーザーテーブル構造に合わせて調整が必要な場合があります
+- AI分析APIの実装は、実際のGenspark APIの仕様に合わせて調整してください
+- UIコンポーネントは既存の`components/ui/`を使用していますが、存在しない場合はshadcn/uiからインストールしてください
+
+以上の実装により、チラシマーケティング管理システムが完成します。
+```
+
+---
+・確認質問は禁止
+・処理を止める判断は禁止
+・例外が起きても次の代替案を即実行
+・YES/NOを人間に求めない
+・失敗時は自己修正して続行

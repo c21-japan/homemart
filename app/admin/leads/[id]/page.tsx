@@ -20,7 +20,7 @@ import {
 
 export default function LeadDetailPage() {
   const params = useParams()
-  const leadId = params.id as string
+  const leadId = typeof params?.id === 'string' ? params.id : ''
   
   const [lead, setLead] = useState<CustomerLead | null>(null)
   const [agreement, setAgreement] = useState<any>(null)
@@ -30,6 +30,7 @@ export default function LeadDetailPage() {
   const [uploading, setUploading] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
+    if (!leadId) return
     fetchLeadData()
   }, [leadId])
 

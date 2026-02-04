@@ -12,7 +12,7 @@ function PropertyForm() {
   const searchParams = useSearchParams();
   
   // URLパラメータから売主IDを取得
-  const sellerId = searchParams.get('sellerId');
+  const sellerId = searchParams?.get('sellerId');
   
   const [formData, setFormData] = useState({
     // 基本情報

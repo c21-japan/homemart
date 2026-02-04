@@ -51,8 +51,8 @@ function PropertiesContent() {
 
   // URLパラメータから初期値を設定
   useEffect(() => {
-    const area = searchParams.get('area') || ''
-    const types = searchParams.get('types') || ''
+    const area = searchParams?.get('area') || ''
+    const types = searchParams?.get('types') || ''
     
     // 日本語パラメータのデコード処理
     const decodedArea = decodeURIComponent(area)

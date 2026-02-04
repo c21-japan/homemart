@@ -47,3 +47,15 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 other_backup/
+
+# auth config
+/config/users.json
+/config/freee-reports.json
+/config/freee-token.json
+
+# freee CSV downloads
+/tmp/
+/scripts/freee/venv/
+*.csv
+__pycache__/
+*.pyc

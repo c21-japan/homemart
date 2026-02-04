@@ -22,7 +22,7 @@ interface Inquiry {
 
 function InquiriesContent() {
   const searchParams = useSearchParams()
-  const statusFilter = searchParams.get('status')
+  const statusFilter = searchParams?.get('status')
   
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [loading, setLoading] = useState(true)

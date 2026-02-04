@@ -54,7 +54,7 @@ interface SalaryCalculation {
 
 export default function EmployeeProfilePage() {
   const params = useParams()
-  const employeeId = params.id as string
+  const employeeId = typeof params?.id === 'string' ? params.id : ''
   
   const [employee, setEmployee] = useState<PartTimeEmployee | null>(null)
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])

@@ -64,7 +64,7 @@ function CustomersPageContent() {
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "all");
+  const [activeTab, setActiveTab] = useState(searchParams?.get("tab") || "all");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [kpiData, setKpiData] = useState<KPIData>({
     totalCustomers: 0,

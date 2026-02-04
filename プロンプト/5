@@ -1,0 +1,37 @@
+目的は「freeeの OAuth クライアント情報が正しいか検証し、必要なら再発行
+  →refresh_token取得→Codexへ返す」ことです。
+
+  あなたはClaudeCLIです。freee APIのOAuthクライアント認証エラー
+  （invalid_client）を解決してください。
+  目的は、正しい client_id / client_secret / refresh_token を取得し、Codexに
+  渡すことです。
+
+  状況:
+  - API呼び出しで `invalid_client` が出ています。
+  - 既存の client_id / client_secret が正しくない可能性が高いです。
+  - 事業所IDは 12416633。
+
+  タスク:
+  1) freee Developers / OAuth2.0APIクライアント画面を開き、現在有効な
+  client_id / client_secret を確認。
+  2) そのクライアントで OAuth 認可コードを取得（prompt=select_company 必
+  須）。
+  3) token エンドポイントで refresh_token を取得。
+  4) Companies API等で company_id（=12416633）に一致することを確認。
+  5) 正しい値をCodexへ返す。
+
+  Codexへの返却フォーマット（厳守）:
+
+  FREEE_CLIENT_ID=xxxx
+  FREEE_CLIENT_SECRET=xxxx
+  FREEE_REFRESH_TOKEN=xxxx
+  FREEE_COMPANY_ID=12416633
+
+
+  注意:
+  - 旧クライアントの refresh_token は使わない。
+  - client_id/client_secret と refresh_token は **同じクライアント** で発行
+  されたもののみ有効。
+  - 必ずこのフォーマットだけで返すこと。余計な説明は不要。
+
+  必要なら、認可URLやtoken取得の具体例も用意します。

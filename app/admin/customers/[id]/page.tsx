@@ -46,10 +46,11 @@ export default function CustomerDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<any>({});
   
-  const customerId = params.id as string;
+  const customerId = typeof params?.id === 'string' ? params.id : '';
 
   // データ取得
   useEffect(() => {
+    if (!customerId) return;
     fetchCustomer();
   }, [customerId]);
 

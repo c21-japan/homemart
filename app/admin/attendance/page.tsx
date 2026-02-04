@@ -15,9 +15,6 @@ interface AttendanceRecordWithEmployee extends AttendanceRecord {
 }
 
 export default function AdminAttendancePage() {
-  // TODO: 認証システムが実装されたら置き換える
-  const user = undefined;
-  const isLoaded = true;
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecordWithEmployee[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,10 +23,8 @@ export default function AdminAttendancePage() {
   const [dateRange, setDateRange] = useState(30)
 
   useEffect(() => {
-    if (isLoaded && user) {
-      fetchData()
-    }
-  }, [isLoaded, user, selectedDate, dateRange, selectedEmployee])
+    fetchData()
+  }, [selectedDate, dateRange, selectedEmployee])
 
   const fetchData = async () => {
     try {
@@ -115,23 +110,12 @@ export default function AdminAttendancePage() {
     }, 0)
   }
 
-  if (!isLoaded) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="min-h-screen bg-[#FFF6DE]/70 flex justify-center items-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">ログインが必要です</h1>
-          <p className="text-gray-600">管理者画面にアクセスするにはログインしてください</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F4C84B] mx-auto mb-4"></div>
+          <p className="text-[#6E5B2E]">読み込み中...</p>
         </div>
       </div>
     )

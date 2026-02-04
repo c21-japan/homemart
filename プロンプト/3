@@ -1,0 +1,599 @@
+よっしゃ、完璧なプロンプト作ったるわ！これをそのままCodexにコピペして投げろ！
+
+---
+
+```
+# 管理画面ログイン認証システムの実装
+
+## 概要
+既存のNext.js管理画面（/app/admin）に、JSONファイルベースのログイン認証システムを追加実装してください。
+
+## 技術スタック
+- Next.js（App Router）
+- TypeScript
+- bcrypt（パスワードハッシュ化）
+- jose（JWT生成・検証）※Next.jsのEdge Runtimeと互換性があるため
+- HttpOnly Cookie（セッション管理）
+
+---
+
+## 実装タスク
+
+### 1. 必要なパッケージのインストール
+```bash
+npm install bcrypt jose
+npm install -D @types/bcrypt
+```
+
+### 2. ファイル構成
+以下のファイルを新規作成または編集してください：
+
+```
+/config
+  └── users.json          # ユーザー認証情報（本番用）
+  └── users.example.json  # サンプル（Git管理用）
+/lib
+  └── auth/
+      └── authenticate.ts  # 認証ロジック（新規作成）
+      └── session.ts       # セッション管理（新規作成）
+      └── permissions.ts   # 権限定義（既存）
+/app
+  └── admin/
+      └── login/
+          └── page.tsx     # ログイン画面（新規作成）
+      └── logout/
+          └── route.ts     # ログアウトAPI（新規作成）
+/middleware.ts             # 認証ミドルウェア（新規作成または編集）
+.gitignore                 # users.jsonを追加
+```
+
+---
+
+### 3. /config/users.json の作成
+
+以下の3ユーザーを登録。パスワードはbcrypt（ソルトラウンド10）でハッシュ化すること。
+
+| 名前 | id | email | password（平文）| role |
+|------|-----|-------|-----------------|------|
+| 乾 佑企 | inui | y-inui@century21.group | inuiyuki2453 | OWNER |
+| 安田 実加 | yasuda | m-yasuda@century21.group | yasudamika5313 | ADMIN |
+| 山尾 妃奈 | yamao | info@century21.group | yamaohina5023 | STAFF |
+
+**ファイル形式：**
+```json
+{
+  "users": [
+    {
+      "id": "inui",
+      "email": "y-inui@century21.group",
+      "password_hash": "【bcryptでハッシュ化した値】",
+      "role": "OWNER",
+      "name": "乾 佑企",
+      "created_at": "2024-05-07"
+    },
+    {
+      "id": "yasuda",
+      "email": "m-yasuda@century21.group",
+      "password_hash": "【bcryptでハッシュ化した値】",
+      "role": "ADMIN",
+      "name": "安田 実加",
+      "created_at": "2024-05-07"
+    },
+    {
+      "id": "yamao",
+      "email": "info@century21.group",
+      "password_hash": "【bcryptでハッシュ化した値】",
+      "role": "STAFF",
+      "name": "山尾 妃奈",
+      "created_at": "2024-05-07"
+    }
+  ]
+}
+```
+
+**重要：ハッシュ化スクリプトを作成して実際にハッシュ値を生成し、JSONに埋め込むこと。平文パスワードをコードやコメントに残さないこと。**
+
+---
+
+### 4. /config/users.example.json の作成
+
+Git管理用のサンプルファイル。実際のハッシュ値ではなくプレースホルダーを入れる：
+
+```json
+{
+  "users": [
+    {
+      "id": "sample_user",
+      "email": "sample@example.com",
+      "password_hash": "$2b$10$EXAMPLE_HASH_REPLACE_THIS",
+      "role": "STAFF",
+      "name": "サンプルユーザー",
+      "created_at": "2024-01-01"
+    }
+  ]
+}
+```
+
+---
+
+### 5. /lib/auth/authenticate.ts の実装
+
+```typescript
+import bcrypt from 'bcrypt';
+import fs from 'fs';
+import path from 'path';
+
+export interface User {
+  id: string;
+  email: string;
+  password_hash: string;
+  role: 'OWNER' | 'ADMIN' | 'STAFF';
+  name: string;
+  created_at: string;
+}
+
+interface UsersData {
+  users: User[];
+}
+
+// ユーザー情報を取得
+function getUsers(): User[] {
+  const filePath = path.join(process.cwd(), 'config', 'users.json');
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const data: UsersData = JSON.parse(fileContent);
+  return data.users;
+}
+
+// メールまたはIDで認証
+export async function authenticate(
+  emailOrId: string,
+  password: string
+): Promise<User | null> {
+  const users = getUsers();
+  
+  // メールまたはIDでユーザーを検索
+  const user = users.find(
+    (u) => u.email === emailOrId || u.id === emailOrId
+  );
+  
+  if (!user) {
+    return null;
+  }
+  
+  // パスワード照合
+  const isValid = await bcrypt.compare(password, user.password_hash);
+  
+  if (!isValid) {
+    return null;
+  }
+  
+  return user;
+}
+
+// ユーザーIDからユーザー情報を取得
+export function getUserById(id: string): User | null {
+  const users = getUsers();
+  return users.find((u) => u.id === id) || null;
+}
+```
+
+---
+
+### 6. /lib/auth/session.ts の実装
+
+```typescript
+import { SignJWT, jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+import { User } from './authenticate';
+
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+);
+const COOKIE_NAME = 'admin_session';
+const EXPIRATION_TIME = '24h';
+
+export interface SessionPayload {
+  userId: string;
+  email: string;
+  role: 'OWNER' | 'ADMIN' | 'STAFF';
+  name: string;
+}
+
+// セッション作成（JWTトークン生成してCookieに保存）
+export async function createSession(user: User): Promise<void> {
+  const token = await new SignJWT({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(EXPIRATION_TIME)
+    .sign(SECRET_KEY);
+
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24, // 24時間
+    path: '/',
+  });
+}
+
+// セッション検証
+export async function verifySession(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const { payload } = await jwtVerify(token, SECRET_KEY);
+    return payload as unknown as SessionPayload;
+  } catch (error) {
+    return null;
+  }
+}
+
+// セッション削除（ログアウト）
+export async function deleteSession(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
+}
+
+// 現在のユーザー取得（各ページで使用）
+export async function getCurrentUser(): Promise<SessionPayload | null> {
+  return await verifySession();
+}
+```
+
+---
+
+### 7. /app/admin/login/page.tsx の実装
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function LoginPage() {
+  const [emailOrId, setEmailOrId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ emailOrId, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'ログインに失敗しました');
+        return;
+      }
+
+      router.push('/admin');
+      router.refresh();
+    } catch (err) {
+      setError('エラーが発生しました。もう一度お試しください。');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">管理画面ログイン</h1>
+          <p className="text-gray-600 mt-2">センチュリー21 HOMEMART</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="emailOrId" className="block text-sm font-medium text-gray-700 mb-1">
+              メールアドレス または ID
+            </label>
+            <input
+              id="emailOrId"
+              type="text"
+              value={emailOrId}
+              onChange={(e) => setEmailOrId(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="y-inui@century21.group"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              パスワード
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="パスワードを入力"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'ログイン中...' : 'ログイン'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### 8. /app/api/auth/login/route.ts の実装
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { authenticate } from '@/lib/auth/authenticate';
+import { createSession } from '@/lib/auth/session';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { emailOrId, password } = await request.json();
+
+    if (!emailOrId || !password) {
+      return NextResponse.json(
+        { message: 'メールアドレス/IDとパスワードを入力してください' },
+        { status: 400 }
+      );
+    }
+
+    const user = await authenticate(emailOrId, password);
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'メールアドレス/IDまたはパスワードが間違っています' },
+        { status: 401 }
+      );
+    }
+
+    await createSession(user);
+
+    return NextResponse.json({
+      message: 'ログイン成功',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return NextResponse.json(
+      { message: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+### 9. /app/admin/logout/route.ts の実装
+
+```typescript
+import { NextResponse } from 'next/server';
+import { deleteSession } from '@/lib/auth/session';
+
+export async function GET() {
+  await deleteSession();
+  return NextResponse.redirect(new URL('/admin/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'));
+}
+
+export async function POST() {
+  await deleteSession();
+  return NextResponse.json({ message: 'ログアウトしました' });
+}
+```
+
+---
+
+### 10. /middleware.ts の実装
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+);
+const COOKIE_NAME = 'admin_session';
+
+// 認証不要のパス
+const PUBLIC_PATHS = [
+  '/admin/login',
+  '/api/auth/login',
+];
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // /admin 以外はスルー
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
+  // 認証不要パスはスルー
+  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
+  // トークン検証
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+
+  if (!token) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+
+  try {
+    await jwtVerify(token, SECRET_KEY);
+    return NextResponse.next();
+  } catch (error) {
+    // トークン無効 → ログインページへ
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+}
+
+export const config = {
+  matcher: ['/admin/:path*'],
+};
+```
+
+---
+
+### 11. .gitignore に追加
+
+```
+# 認証ファイル（本番用）
+/config/users.json
+```
+
+---
+
+### 12. .env.local に追加
+
+```
+JWT_SECRET=your-very-long-and-secure-secret-key-change-this-in-production
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
+
+---
+
+### 13. パスワードハッシュ化スクリプトの作成
+
+`/scripts/generate-password-hash.ts` を作成：
+
+```typescript
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
+
+async function generateHash(password: string): Promise<string> {
+  return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+async function main() {
+  const users = [
+    { name: '乾 佑企', password: 'inuiyuki2453' },
+    { name: '安田 実加', password: 'yasudamika5313' },
+    { name: '山尾 妃奈', password: 'yamaohina5023' },
+  ];
+
+  console.log('=== パスワードハッシュ生成 ===\n');
+  
+  for (const user of users) {
+    const hash = await generateHash(user.password);
+    console.log(`${user.name}: ${hash}`);
+  }
+}
+
+main();
+```
+
+実行方法：
+```bash
+npx ts-node scripts/generate-password-hash.ts
+```
+
+生成されたハッシュ値を `/config/users.json` に埋め込むこと。
+
+---
+
+### 14. 既存の管理画面との統合
+
+`/lib/auth/permissions.ts` の `currentUser` を実装に接続：
+
+各管理画面ページで以下のように使用できるようにする：
+
+```typescript
+import { getCurrentUser } from '@/lib/auth/session';
+
+export default async function AdminPage() {
+  const currentUser = await getCurrentUser();
+  
+  if (!currentUser) {
+    redirect('/admin/login');
+  }
+  
+  // currentUser.role で権限チェック
+  // ...
+}
+```
+
+---
+
+## チェックリスト
+
+実装完了後、以下を確認すること：
+
+- [ ] `npm install bcrypt jose @types/bcrypt` が完了
+- [ ] `/config/users.json` にハッシュ化されたパスワードで3ユーザー登録
+- [ ] `/config/users.example.json` がサンプルとして作成
+- [ ] `.gitignore` に `/config/users.json` が追加
+- [ ] `/admin/login` でログイン画面が表示される
+- [ ] 正しいID/パスワードでログインできる
+- [ ] 間違ったID/パスワードでエラーが表示される
+- [ ] ログイン後 `/admin` にリダイレクトされる
+- [ ] 未ログイン状態で `/admin` にアクセスすると `/admin/login` にリダイレクトされる
+- [ ] `/admin/logout` でログアウトできる
+- [ ] `getCurrentUser()` で現在のユーザー情報が取得できる
+
+---
+
+## 注意事項
+
+1. **平文パスワードをコード内に残さないこと**
+2. **本番環境では必ず `JWT_SECRET` を強力なランダム文字列に変更すること**
+3. **`/config/users.json` は絶対にGitにコミットしないこと**
+4. **ハッシュ化スクリプトは実行後、出力をコピーしたら削除するか、パスワード部分をコメントアウトすること**
+```
+
+---
+
+これで完璧や！このままCodexにコピペして投げてくれ！
+
+・確認質問は禁止
+・処理を止める判断は禁止
+・例外が起きても次の代替案を即実行
+・YES/NOを人間に求めない
+・失敗時は自己修正して続行

@@ -11,7 +11,7 @@ import PropertySummary from '@/components/admin/properties/PropertySummary';
 export default function PropertyDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const propertyId = params.id as string;
+  const propertyId = typeof params?.id === 'string' ? params.id : '';
   
   const [property, setProperty] = useState<Property | null>(null);
   const [seller, setSeller] = useState<Customer | null>(null);

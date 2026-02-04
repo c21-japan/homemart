@@ -8,8 +8,8 @@ import Link from 'next/link'
 function ContactForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const propertyName = searchParams.get('property') || ''
-  const propertyId = searchParams.get('id') || ''
+  const propertyName = searchParams?.get('property') || ''
+  const propertyId = searchParams?.get('id') || ''
   
   const [formData, setFormData] = useState({
     name: '',

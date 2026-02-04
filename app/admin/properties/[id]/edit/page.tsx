@@ -19,6 +19,7 @@ export default function EditProperty() {
   const params = useParams()
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
+  const propertyId = typeof params?.id === 'string' ? params.id : ''
   
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -28,15 +29,16 @@ export default function EditProperty() {
 
   // 物件データを取得
   useEffect(() => {
+    if (!propertyId) return
     fetchProperty()
-  }, [params.id])
+  }, [propertyId])
 
   async function fetchProperty() {
     try {
       const { data, error } = await supabase
         .from('properties')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', propertyId)
         .single()
 
       if (error) throw error
@@ -70,7 +72,7 @@ export default function EditProperty() {
           image_url: imageUrl || null,
           featured: formData.get('featured') === 'on'
         })
-        .eq('id', params.id)
+        .eq('id', propertyId)
 
       if (error) throw error
       

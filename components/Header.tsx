@@ -1,89 +1,34 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu } from 'lucide-react'
-import { useState } from 'react'
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              株式会社ホームマート
-            </Link>
-          </div>
-
-          {/* デスクトップメニュー */}
-          <nav className="hidden md:flex space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-gray-900">
-              ホーム
-            </Link>
-            <Link href="/services" className="text-gray-700 hover:text-gray-900">
-              サービス
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-gray-900">
-              会社概要
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-gray-900">
+    <header className="relative z-20">
+      <div className="bg-[#15130D] text-[#FFF6DE]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 text-xs tracking-[0.3em] uppercase">
+          <span>Century 21 HomeMart</span>
+          <span className="text-[#F4C84B]">Nara • Osaka</span>
+        </div>
+      </div>
+      <div className="border-b border-[#EAD8A6]/70 bg-white/70 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          <Link href="/" className="flex items-baseline gap-3">
+            <span className="text-2xl font-display font-semibold text-[#15130D]">ホームマート</span>
+            <span className="text-xs tracking-[0.35em] text-[#7C6A3F]">REAL ESTATE</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <div className="hidden text-sm text-[#514737] md:block">
+              TEL <span className="font-semibold text-[#15130D]">0120-43-8639</span>
+            </div>
+            <Link
+              href="/contact"
+              className="rounded-full bg-[#F4C84B] px-5 py-2 text-sm font-semibold text-[#15130D] shadow-[0_10px_24px_rgba(244,200,75,0.45)] transition hover:-translate-y-0.5 hover:bg-[#E6B62F]"
+            >
               お問い合わせ
             </Link>
-            <Link href="/recruit" className="text-gray-700 hover:text-gray-900">
-              採用情報
-            </Link>
-          </nav>
-
-          {/* モバイルメニューボタン */}
-          <div className="md:hidden">
-            <button
-              className="p-2 text-gray-700 hover:text-gray-900"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
           </div>
         </div>
-
-        {/* モバイルメニュー */}
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                href="/"
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900"
-              >
-                ホーム
-              </Link>
-              <Link
-                href="/services"
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900"
-              >
-                サービス
-              </Link>
-              <Link
-                href="/about"
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900"
-              >
-                会社概要
-              </Link>
-              <Link
-                href="/contact"
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900"
-              >
-                お問い合わせ
-              </Link>
-              <Link
-                href="/recruit"
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900"
-              >
-                採用情報
-              </Link>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   )

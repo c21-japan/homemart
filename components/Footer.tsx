@@ -1,128 +1,70 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { useEffect } from 'react';
+import Link from 'next/link'
 
 export default function Footer() {
-  useEffect(() => {
-    // フッターへのスムーズスクロール機能
-    const handleSmoothScroll = () => {
-      // スクロールイベントの最適化
-      let ticking = false;
-      
-      const updateScroll = () => {
-        ticking = false;
-      };
-      
-      const requestTick = () => {
-        if (!ticking) {
-          requestAnimationFrame(updateScroll);
-          ticking = true;
-        }
-      };
-      
-      window.addEventListener('scroll', requestTick, { passive: true });
-      
-      return () => {
-        window.removeEventListener('scroll', requestTick);
-      };
-    };
-    
-    handleSmoothScroll();
-  }, []);
-
-  // フッターへのスムーズスクロール関数
-  const scrollToFooter = () => {
-    const footer = document.getElementById('footer');
-    if (footer) {
-      footer.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  };
-
   return (
-    <footer className="bg-[#121212] text-white py-28" id="footer">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="md:col-span-2 pr-12">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-[#BEAF87] rounded-lg flex items-center justify-center">
-                <i className="fas fa-home text-[#121212]"></i>
+    <footer className="mt-20 bg-[#15130D] text-[#FFF6DE]">
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-12 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-[#F4C84B] text-center text-2xl font-bold leading-[3rem] text-[#15130D]">
+                HM
               </div>
               <div>
-                <div className="text-xl font-bold">ホームマート</div>
-                <div className="text-sm text-[#BEAF87]">CENTURY 21</div>
+                <p className="text-xl font-display">ホームマート</p>
+                <p className="text-xs tracking-[0.3em] text-[#F4C84B]">CENTURY 21</p>
               </div>
             </div>
-            <p className="text-white/70 mb-6 leading-relaxed">
-              奈良県で10年間、お客様の不動産に関するあらゆるニーズにお応えしてまいりました。
-              これからもCENTURY 21のネットワークを活かし、最高のサービスを提供いたします。
+            <p className="mt-6 max-w-xl text-sm text-[#F6EBD2]/80">
+              奈良・大阪を中心に、住まいの購入・売却・リフォームまでワンストップでご提案。
+              地域密着の目線で、暮らしに合う選択肢を丁寧にお届けします。
             </p>
-            <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center transition-colors duration-300 hover:bg-[#BEAF87] hover:text-[#121212]">
-                <i className="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center transition-colors duration-300 hover:bg-[#BEAF87] hover:text-[#121212]">
-                <i className="fab fa-twitter"></i>
-              </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center transition-colors duration-300 hover:bg-[#BEAF87] hover:text-[#121212]">
-                <i className="fab fa-instagram"></i>
-              </a>
+            <div className="mt-6 space-y-2 text-sm text-[#F6EBD2]/80">
+              <p>〒635-0834 奈良県北葛城郡広陵町笠287-1</p>
+              <p>TEL: 0120-43-8639</p>
+              <p>MAIL: info@homemart-nara.com</p>
             </div>
           </div>
-          
+
           <div>
-            <h4 className="text-white font-semibold mb-6 text-[#BEAF87]">サービス</h4>
-            <ul className="space-y-3">
-              <li><a href="#catalog" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">物件検索</a></li>
-              <li><a href="#comparison" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">売却査定</a></li>
-              <li><a href="#features" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">リフォーム</a></li>
-              <li><a href="#process" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">買取再販</a></li>
+            <h4 className="text-sm font-semibold text-[#F4C84B]">サイト</h4>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/properties" className="hover:text-[#F4C84B]">物件検索</Link></li>
+              <li><Link href="/buy" className="hover:text-[#F4C84B]">買う</Link></li>
+              <li><Link href="/sell" className="hover:text-[#F4C84B]">売る</Link></li>
+              <li><Link href="/reform" className="hover:text-[#F4C84B]">リフォーム</Link></li>
+              <li><Link href="/contact" className="hover:text-[#F4C84B]">お問い合わせ</Link></li>
             </ul>
           </div>
-          
+
           <div>
-            <h4 className="text-white font-semibold mb-6 text-[#BEAF87]">会社情報</h4>
-            <ul className="space-y-3">
-              <li><Link href="/about" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">会社概要</Link></li>
-              <li><a href="/access" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">アクセス</a></li>
-              <li><a href="/recruit" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">採用情報</a></li>
-              <li><a href="/news" className="text-white/70 hover:text-[#BEAF87] transition-colors duration-300">お知らせ</a></li>
+            <h4 className="text-sm font-semibold text-[#F4C84B]">会社情報</h4>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/about" className="hover:text-[#F4C84B]">会社概要</Link></li>
+              <li><Link href="/recruit" className="hover:text-[#F4C84B]">採用情報</Link></li>
+              <li><Link href="/staff" className="hover:text-[#F4C84B]">スタッフ</Link></li>
+              <li><Link href="/reasons" className="hover:text-[#F4C84B]">選ばれる理由</Link></li>
             </ul>
-          </div>
-          
-          <div>
-            <h4 className="text-white font-semibold mb-6 text-[#BEAF87]">お問い合わせ</h4>
-            <ul className="space-y-3">
-              <li className="flex items-center text-white/70">
-                <i className="fas fa-phone mr-2 text-[#BEAF87]"></i>
-                0120-43-8639
-              </li>
-              <li className="flex items-center text-white/70">
-                <i className="fas fa-envelope mr-2 text-[#BEAF87]"></i>
-                info@homemart-nara.com
-              </li>
-              <li className="flex items-start text-white/70">
-                <i className="fas fa-map-marker-alt mr-2 mt-1 text-[#BEAF87]"></i>
-                奈良県北葛城郡広陵町笠287-1
-              </li>
-            </ul>
+            <div className="mt-6 border-t border-[#F4C84B]/30 pt-4">
+              <p className="text-xs uppercase tracking-[0.25em] text-[#F4C84B]/70">Admin</p>
+              <Link href="/admin" className="mt-2 inline-flex items-center gap-2 rounded-full border border-[#F4C84B]/40 px-4 py-2 text-xs font-semibold text-[#F4C84B] transition hover:bg-[#F4C84B] hover:text-[#15130D]">
+                管理画面
+              </Link>
+            </div>
           </div>
         </div>
-        
-        <div className="pt-8 border-t border-[#BEAF87]/20 flex justify-between items-center flex-wrap gap-4">
-          <p className="text-white/50 text-sm">
-            &copy; {new Date().getFullYear()} ホームマート（CENTURY 21加盟店）. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-sm">
-            <Link href="/privacy" className="text-white/50 hover:text-[#BEAF87] transition-colors duration-300">プライバシーポリシー</Link>
-            <Link href="/terms" className="text-white/50 hover:text-[#BEAF87] transition-colors duration-300">利用規約</Link>
-            <Link href="/disclaimer" className="text-white/50 hover:text-[#BEAF87] transition-colors duration-300">免責事項</Link>
+
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-[#F4C84B]/20 pt-6 text-xs text-[#F6EBD2]/70">
+          <p>&copy; {new Date().getFullYear()} HomeMart (Century 21). All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="hover:text-[#F4C84B]">プライバシーポリシー</Link>
+            <Link href="/terms" className="hover:text-[#F4C84B]">利用規約</Link>
+            <Link href="/disclaimer" className="hover:text-[#F4C84B]">免責事項</Link>
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

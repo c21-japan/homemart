@@ -28,9 +28,18 @@ interface Application {
   expense_date?: string
   amount?: string
   category?: string
+  expense_item?: string
+  receipt_file?: string
   receipt_attached?: boolean
   payment_method?: string
   urgency?: string
+  parking_related?: boolean
+  expense_salesperson?: string
+  expense_site_type?: string
+  expense_site_name?: string
+  expense_site_address?: string
+  expense_customer_name?: string
+  expense_work_type?: string
 }
 
 export default function ApplicationDetail() {
@@ -40,10 +49,11 @@ export default function ApplicationDetail() {
   const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
-    if (params.id) {
-      fetchApplication(params.id as string)
+    const id = typeof params?.id === 'string' ? params.id : ''
+    if (id) {
+      fetchApplication(id)
     }
-  }, [params.id])
+  }, [params])
 
   const fetchApplication = async (id: string) => {
     try {
@@ -122,6 +132,8 @@ export default function ApplicationDetail() {
       case 'equipment': return '備品・機器'
       case 'software': return 'ソフトウェア・ライセンス'
       case 'training': return '研修費'
+      case 'gasoline': return 'ガソリン'
+      case 'parking': return '駐車場'
       case 'other': return 'その他'
       default: return category
     }
@@ -297,6 +309,7 @@ export default function ApplicationDetail() {
               </div>
             </div>
           ) : application.application_type === 'expense' ? (
+            <>
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium text-gray-700 mb-4">経費情報</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,16 +327,81 @@ export default function ApplicationDetail() {
                   <span className="text-sm font-medium text-gray-500">カテゴリ:</span>
                   <span className="ml-2 text-gray-900">{getCategoryText(application.category || '')}</span>
                 </div>
+                {application.expense_item && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">品目:</span>
+                    <span className="ml-2 text-gray-900">{application.expense_item}</span>
+                  </div>
+                )}
                 <div>
                   <span className="text-sm font-medium text-gray-500">支払い方法:</span>
                   <span className="ml-2 text-gray-900">{getPaymentMethodText(application.payment_method || '')}</span>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">レシート添付:</span>
-                  <span className="ml-2 text-gray-900">{application.receipt_attached ? 'あり' : 'なし'}</span>
+                  <span className="ml-2 text-gray-900">{application.receipt_file ? 'あり' : 'なし'}</span>
                 </div>
+                {application.receipt_file && (
+                  <div className="md:col-span-2">
+                    <span className="text-sm font-medium text-gray-500">レシートファイル:</span>
+                    <span className="ml-2 text-gray-900">{application.receipt_file}</span>
+                  </div>
+                )}
               </div>
             </div>
+              {(application.parking_related ||
+                application.expense_salesperson ||
+                application.expense_site_name ||
+                application.expense_site_address ||
+                application.expense_customer_name ||
+                application.expense_work_type) && (
+                <div className="mt-6 border-t pt-6">
+                  <h4 className="text-md font-medium text-gray-700 mb-3">現場情報</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">駐車場関連:</span>
+                      <span className="ml-2 text-gray-900">{application.parking_related ? 'はい' : 'いいえ'}</span>
+                    </div>
+                    {application.expense_salesperson && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">担当営業:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_salesperson}</span>
+                      </div>
+                    )}
+                    {application.expense_work_type && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">作業種別:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_work_type}</span>
+                      </div>
+                    )}
+                    {application.expense_site_type && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">現場種別:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_site_type}</span>
+                      </div>
+                    )}
+                    {application.expense_site_name && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">現場名:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_site_name}</span>
+                      </div>
+                    )}
+                    {application.expense_site_address && (
+                      <div className="md:col-span-2">
+                        <span className="text-sm font-medium text-gray-500">現場住所:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_site_address}</span>
+                      </div>
+                    )}
+                    {application.expense_customer_name && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">お客様名:</span>
+                        <span className="ml-2 text-gray-900">{application.expense_customer_name}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           ) : null}
 
           {/* 申請理由・詳細 */}

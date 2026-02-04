@@ -30,3 +30,15 @@ SENTRY_DSN=your_sentry_dsn_here
 # その他（必要に応じて）
 JWT_SECRET=your_jwt_secret_here
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# freee API（財務レポート）
+FREEE_CLIENT_ID=your_freee_client_id_here
+FREEE_CLIENT_SECRET=your_freee_client_secret_here
+FREEE_REFRESH_TOKEN=your_freee_refresh_token_here
+# 事業所番号（数字のみでも可）
+FREEE_COMPANY_ID=751-520-6912
+
+# freee CSV クローリング（Pythonスクリプト）
+FREEE_EMAIL=your_freee_email@example.com
+FREEE_PASSWORD=your_freee_password
+PYTHON_PATH=python3

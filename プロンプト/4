@@ -1,0 +1,761 @@
+よっしゃ、権限管理を追加するな！
+
+これをさっきのプロンプトに**追加で投げてくれ**：
+
+---
+
+```
+# 追加実装：権限管理システム
+
+## 概要
+OWNER/ADMINが各ユーザーの操作権限をチェックボックス形式で設定できる権限管理画面を追加実装してください。
+
+---
+
+## 権限の設計
+
+### ロール階層
+- **OWNER**：全権限 + 権限設定の変更が可能
+- **ADMIN**：STAFF以下の権限設定が可能（OWNERの権限は変更不可）
+- **STAFF**：割り当てられた権限のみ操作可能
+
+### 権限種別（Permission Types）
+```typescript
+export const PERMISSION_TYPES = {
+  VIEW: '閲覧',
+  CREATE: '新規作成',
+  EDIT: '編集',
+  DELETE: '削除',
+  APPROVE: '承認',
+  EXPORT: 'エクスポート',
+} as const;
+```
+
+### 機能別権限（Feature Permissions）
+```typescript
+export const FEATURES = {
+  DASHBOARD: 'ダッシュボード',
+  CUSTOMERS: '顧客管理',
+  PROPERTIES: '物件管理',
+  LEADS: 'リード管理',
+  INQUIRIES: '問い合わせ管理',
+  DOCUMENTS: '書類管理',
+  INTERNAL_APPLICATIONS: '社内申請',
+  ATTENDANCE: '勤怠管理',
+  PART_TIME_ATTENDANCE: 'アルバイト勤怠',
+  FLYERS: 'チラシマーケティング',
+  REFORM_PROJECTS: '施工実績',
+  REFORM_WORKERS: 'リフォーム職人管理',
+  TEAM_PERFORMANCE: 'チーム成績',
+  CAREER_PATH: 'キャリアパス',
+  MEDIA: 'メディア管理',
+  USERS: 'ユーザー管理',
+  SETTINGS: '設定',
+  REPORTS: 'レポート',
+} as const;
+```
+
+---
+
+## ファイル構成（追加分）
+
+```
+/config
+  └── users.json          # 権限情報を追加
+  └── permissions.json    # デフォルト権限テンプレート（新規）
+/lib
+  └── auth/
+      └── permissions.ts  # 権限チェックロジック（更新）
+/app
+  └── admin/
+      └── users/
+          └── page.tsx              # ユーザー一覧（更新）
+          └── [id]/
+              └── permissions/
+                  └── page.tsx      # 権限編集画面（新規）
+/components
+  └── admin/
+      └── PermissionCheckbox.tsx    # 権限チェックボックスコンポーネント（新規）
+      └── PermissionMatrix.tsx      # 権限マトリクス表示（新規）
+```
+
+---
+
+## 1. users.json の構造更新
+
+```json
+{
+  "users": [
+    {
+      "id": "inui",
+      "email": "y-inui@century21.group",
+      "password_hash": "【ハッシュ値】",
+      "role": "OWNER",
+      "name": "乾 佑企",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "PROPERTIES": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "LEADS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "INQUIRIES": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "DOCUMENTS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE", "EDIT", "DELETE", "APPROVE"],
+        "ATTENDANCE": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "FLYERS": ["VIEW", "CREATE", "EDIT", "DELETE", "EXPORT"],
+        "REFORM_PROJECTS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "REFORM_WORKERS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "TEAM_PERFORMANCE": ["VIEW", "EXPORT"],
+        "CAREER_PATH": ["VIEW", "EDIT"],
+        "MEDIA": ["VIEW", "CREATE", "DELETE"],
+        "USERS": ["VIEW", "CREATE", "EDIT", "DELETE"],
+        "SETTINGS": ["VIEW", "EDIT"],
+        "REPORTS": ["VIEW", "EXPORT"]
+      }
+    },
+    {
+      "id": "yasuda",
+      "email": "m-yasuda@century21.group",
+      "password_hash": "【ハッシュ値】",
+      "role": "ADMIN",
+      "name": "安田 実加",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "PROPERTIES": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "LEADS": ["VIEW", "CREATE", "EDIT"],
+        "INQUIRIES": ["VIEW", "CREATE", "EDIT"],
+        "DOCUMENTS": ["VIEW", "CREATE", "EDIT"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE", "APPROVE"],
+        "ATTENDANCE": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE", "EDIT", "EXPORT"],
+        "FLYERS": ["VIEW", "CREATE", "EDIT"],
+        "REFORM_PROJECTS": ["VIEW", "CREATE", "EDIT"],
+        "REFORM_WORKERS": ["VIEW", "EDIT"],
+        "TEAM_PERFORMANCE": ["VIEW"],
+        "CAREER_PATH": ["VIEW"],
+        "MEDIA": ["VIEW", "CREATE"],
+        "USERS": ["VIEW", "EDIT"],
+        "SETTINGS": ["VIEW"],
+        "REPORTS": ["VIEW", "EXPORT"]
+      }
+    },
+    {
+      "id": "yamao",
+      "email": "h-yamao@century21.group",
+      "password_hash": "【ハッシュ値】",
+      "role": "STAFF",
+      "name": "山尾 妃奈",
+      "created_at": "2024-05-07",
+      "permissions": {
+        "DASHBOARD": ["VIEW"],
+        "CUSTOMERS": ["VIEW"],
+        "PROPERTIES": ["VIEW"],
+        "LEADS": ["VIEW"],
+        "INQUIRIES": ["VIEW"],
+        "DOCUMENTS": ["VIEW"],
+        "INTERNAL_APPLICATIONS": ["VIEW", "CREATE"],
+        "ATTENDANCE": ["VIEW"],
+        "PART_TIME_ATTENDANCE": ["VIEW", "CREATE"],
+        "FLYERS": ["VIEW"],
+        "REFORM_PROJECTS": ["VIEW"],
+        "REFORM_WORKERS": [],
+        "TEAM_PERFORMANCE": [],
+        "CAREER_PATH": [],
+        "MEDIA": ["VIEW"],
+        "USERS": [],
+        "SETTINGS": [],
+        "REPORTS": []
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 2. /lib/auth/permissions.ts の更新
+
+```typescript
+import { getCurrentUser } from './session';
+import fs from 'fs';
+import path from 'path';
+
+// 権限タイプ
+export const PERMISSION_TYPES = {
+  VIEW: '閲覧',
+  CREATE: '新規作成',
+  EDIT: '編集',
+  DELETE: '削除',
+  APPROVE: '承認',
+  EXPORT: 'エクスポート',
+} as const;
+
+export type PermissionType = keyof typeof PERMISSION_TYPES;
+
+// 機能一覧
+export const FEATURES = {
+  DASHBOARD: 'ダッシュボード',
+  CUSTOMERS: '顧客管理',
+  PROPERTIES: '物件管理',
+  LEADS: 'リード管理',
+  INQUIRIES: '問い合わせ管理',
+  DOCUMENTS: '書類管理',
+  INTERNAL_APPLICATIONS: '社内申請',
+  ATTENDANCE: '勤怠管理',
+  PART_TIME_ATTENDANCE: 'アルバイト勤怠',
+  FLYERS: 'チラシマーケティング',
+  REFORM_PROJECTS: '施工実績',
+  REFORM_WORKERS: 'リフォーム職人管理',
+  TEAM_PERFORMANCE: 'チーム成績',
+  CAREER_PATH: 'キャリアパス',
+  MEDIA: 'メディア管理',
+  USERS: 'ユーザー管理',
+  SETTINGS: '設定',
+  REPORTS: 'レポート',
+} as const;
+
+export type Feature = keyof typeof FEATURES;
+
+// ユーザーの権限情報型
+export type UserPermissions = {
+  [K in Feature]?: PermissionType[];
+};
+
+// ロール
+export type Role = 'OWNER' | 'ADMIN' | 'STAFF';
+
+// ユーザー情報（権限付き）
+export interface UserWithPermissions {
+  id: string;
+  email: string;
+  password_hash: string;
+  role: Role;
+  name: string;
+  created_at: string;
+  permissions: UserPermissions;
+}
+
+// users.jsonから全ユーザー取得
+export function getAllUsers(): UserWithPermissions[] {
+  const filePath = path.join(process.cwd(), 'config', 'users.json');
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const data = JSON.parse(fileContent);
+  return data.users;
+}
+
+// 特定ユーザーの権限取得
+export function getUserPermissions(userId: string): UserPermissions | null {
+  const users = getAllUsers();
+  const user = users.find((u) => u.id === userId);
+  return user?.permissions || null;
+}
+
+// 権限チェック関数
+export function hasPermission(
+  userPermissions: UserPermissions,
+  feature: Feature,
+  permissionType: PermissionType
+): boolean {
+  const featurePermissions = userPermissions[feature];
+  if (!featurePermissions) return false;
+  return featurePermissions.includes(permissionType);
+}
+
+// 権限更新（ファイル書き込み）
+export function updateUserPermissions(
+  userId: string,
+  newPermissions: UserPermissions
+): boolean {
+  try {
+    const filePath = path.join(process.cwd(), 'config', 'users.json');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const data = JSON.parse(fileContent);
+    
+    const userIndex = data.users.findIndex((u: UserWithPermissions) => u.id === userId);
+    if (userIndex === -1) return false;
+    
+    data.users[userIndex].permissions = newPermissions;
+    
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error('Failed to update permissions:', error);
+    return false;
+  }
+}
+
+// 権限変更可能かチェック
+export function canEditPermissions(
+  currentUserRole: Role,
+  targetUserRole: Role
+): boolean {
+  if (currentUserRole === 'OWNER') return true;
+  if (currentUserRole === 'ADMIN' && targetUserRole === 'STAFF') return true;
+  return false;
+}
+```
+
+---
+
+## 3. /app/admin/users/[id]/permissions/page.tsx（権限編集画面）
+
+```typescript
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { 
+  FEATURES, 
+  PERMISSION_TYPES, 
+  Feature, 
+  PermissionType,
+  UserPermissions 
+} from '@/lib/auth/permissions';
+
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  role: 'OWNER' | 'ADMIN' | 'STAFF';
+  permissions: UserPermissions;
+}
+
+export default function PermissionsEditPage() {
+  const params = useParams();
+  const router = useRouter();
+  const userId = params.id as string;
+
+  const [user, setUser] = useState<UserData | null>(null);
+  const [permissions, setPermissions] = useState<UserPermissions>({});
+  const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetchData();
+  }, [userId]);
+
+  const fetchData = async () => {
+    try {
+      // ユーザー情報取得
+      const userRes = await fetch(`/api/admin/users/${userId}`);
+      const userData = await userRes.json();
+      setUser(userData);
+      setPermissions(userData.permissions || {});
+
+      // 現在のログインユーザー取得
+      const currentRes = await fetch('/api/auth/me');
+      const currentData = await currentRes.json();
+      setCurrentUser(currentData);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePermissionChange = (
+    feature: Feature,
+    permissionType: PermissionType,
+    checked: boolean
+  ) => {
+    setPermissions((prev) => {
+      const current = prev[feature] || [];
+      if (checked) {
+        return { ...prev, [feature]: [...current, permissionType] };
+      } else {
+        return { ...prev, [feature]: current.filter((p) => p !== permissionType) };
+      }
+    });
+  };
+
+  const handleSelectAll = (feature: Feature) => {
+    const allPermissions = Object.keys(PERMISSION_TYPES) as PermissionType[];
+    setPermissions((prev) => ({ ...prev, [feature]: allPermissions }));
+  };
+
+  const handleClearAll = (feature: Feature) => {
+    setPermissions((prev) => ({ ...prev, [feature]: [] }));
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setMessage('');
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/permissions`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ permissions }),
+      });
+
+      if (response.ok) {
+        setMessage('権限を保存しました');
+      } else {
+        const data = await response.json();
+        setMessage(data.message || '保存に失敗しました');
+      }
+    } catch (error) {
+      setMessage('エラーが発生しました');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // 権限編集可能かチェック
+  const canEdit = () => {
+    if (!currentUser || !user) return false;
+    if (currentUser.role === 'OWNER') return true;
+    if (currentUser.role === 'ADMIN' && user.role === 'STAFF') return true;
+    return false;
+  };
+
+  if (isLoading) {
+    return <div className="p-8">読み込み中...</div>;
+  }
+
+  if (!user) {
+    return <div className="p-8">ユーザーが見つかりません</div>;
+  }
+
+  if (!canEdit()) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
+          このユーザーの権限を編集する権限がありません
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8 max-w-6xl mx-auto">
+      <div className="mb-6">
+        <button
+          onClick={() => router.back()}
+          className="text-blue-600 hover:underline mb-4"
+        >
+          ← 戻る
+        </button>
+        <h1 className="text-2xl font-bold">権限設定</h1>
+        <p className="text-gray-600 mt-1">
+          {user.name}（{user.email}）- {user.role}
+        </p>
+      </div>
+
+      {message && (
+        <div className={`mb-4 p-4 rounded ${
+          message.includes('失敗') || message.includes('エラー')
+            ? 'bg-red-50 text-red-600 border border-red-200'
+            : 'bg-green-50 text-green-600 border border-green-200'
+        }`}>
+          {message}
+        </div>
+      )}
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left font-medium text-gray-700">機能</th>
+              {Object.entries(PERMISSION_TYPES).map(([key, label]) => (
+                <th key={key} className="px-3 py-3 text-center font-medium text-gray-700 text-sm">
+                  {label}
+                </th>
+              ))}
+              <th className="px-3 py-3 text-center font-medium text-gray-700 text-sm">
+                操作
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {Object.entries(FEATURES).map(([featureKey, featureLabel]) => (
+              <tr key={featureKey} className="hover:bg-gray-50">
+                <td className="px-4 py-3 font-medium">{featureLabel}</td>
+                {Object.keys(PERMISSION_TYPES).map((permKey) => (
+                  <td key={permKey} className="px-3 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={permissions[featureKey as Feature]?.includes(permKey as PermissionType) || false}
+                      onChange={(e) =>
+                        handlePermissionChange(
+                          featureKey as Feature,
+                          permKey as PermissionType,
+                          e.target.checked
+                        )
+                      }
+                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </td>
+                ))}
+                <td className="px-3 py-3 text-center">
+                  <button
+                    onClick={() => handleSelectAll(featureKey as Feature)}
+                    className="text-xs text-blue-600 hover:underline mr-2"
+                  >
+                    全選択
+                  </button>
+                  <button
+                    onClick={() => handleClearAll(featureKey as Feature)}
+                    className="text-xs text-gray-500 hover:underline"
+                  >
+                    解除
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-6 flex justify-end gap-4">
+        <button
+          onClick={() => router.back()}
+          className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+        >
+          キャンセル
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSaving ? '保存中...' : '権限を保存'}
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 4. /app/api/admin/users/[id]/route.ts（ユーザー情報取得API）
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { getAllUsers } from '@/lib/auth/permissions';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const users = getAllUsers();
+    const user = users.find((u) => u.id === params.id);
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'ユーザーが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // パスワードハッシュは返さない
+    const { password_hash, ...userWithoutPassword } = user;
+    return NextResponse.json(userWithoutPassword);
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'サーバーエラー' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## 5. /app/api/admin/users/[id]/permissions/route.ts（権限更新API）
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { 
+  updateUserPermissions, 
+  getAllUsers,
+  canEditPermissions,
+  UserPermissions 
+} from '@/lib/auth/permissions';
+import { verifySession } from '@/lib/auth/session';
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // 現在のユーザー確認
+    const session = await verifySession();
+    if (!session) {
+      return NextResponse.json(
+        { message: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    // 対象ユーザー取得
+    const users = getAllUsers();
+    const targetUser = users.find((u) => u.id === params.id);
+    if (!targetUser) {
+      return NextResponse.json(
+        { message: 'ユーザーが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // 権限チェック
+    if (!canEditPermissions(session.role, targetUser.role)) {
+      return NextResponse.json(
+        { message: 'このユーザーの権限を編集する権限がありません' },
+        { status: 403 }
+      );
+    }
+
+    // 権限更新
+    const { permissions } = await request.json() as { permissions: UserPermissions };
+    const success = updateUserPermissions(params.id, permissions);
+
+    if (success) {
+      return NextResponse.json({ message: '権限を更新しました' });
+    } else {
+      return NextResponse.json(
+        { message: '更新に失敗しました' },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Permission update error:', error);
+    return NextResponse.json(
+      { message: 'サーバーエラー' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## 6. /app/api/auth/me/route.ts（現在のユーザー取得API）
+
+```typescript
+import { NextResponse } from 'next/server';
+import { verifySession } from '@/lib/auth/session';
+import { getUserPermissions } from '@/lib/auth/permissions';
+
+export async function GET() {
+  try {
+    const session = await verifySession();
+
+    if (!session) {
+      return NextResponse.json(
+        { message: '認証されていません' },
+        { status: 401 }
+      );
+    }
+
+    const permissions = getUserPermissions(session.userId);
+
+    return NextResponse.json({
+      id: session.userId,
+      email: session.email,
+      name: session.name,
+      role: session.role,
+      permissions,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'サーバーエラー' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## 7. /app/admin/users/page.tsx の更新（ユーザー一覧に権限編集リンク追加）
+
+ユーザー一覧の各行に「権限設定」ボタンを追加：
+
+```typescript
+// 既存のユーザー一覧に追加
+<Link
+  href={`/admin/users/${user.id}/permissions`}
+  className="text-blue-600 hover:underline text-sm"
+>
+  権限設定
+</Link>
+```
+
+---
+
+## 8. 各ページでの権限チェック例
+
+```typescript
+import { getCurrentUser } from '@/lib/auth/session';
+import { getUserPermissions, hasPermission } from '@/lib/auth/permissions';
+import { redirect } from 'next/navigation';
+
+export default async function CustomersPage() {
+  const currentUser = await getCurrentUser();
+  
+  if (!currentUser) {
+    redirect('/admin/login');
+  }
+
+  const permissions = getUserPermissions(currentUser.userId);
+  
+  // 閲覧権限チェック
+  if (!permissions || !hasPermission(permissions, 'CUSTOMERS', 'VIEW')) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
+          このページを閲覧する権限がありません
+        </div>
+      </div>
+    );
+  }
+
+  // 作成権限があるかチェック（ボタン表示制御用）
+  const canCreate = hasPermission(permissions, 'CUSTOMERS', 'CREATE');
+  const canEdit = hasPermission(permissions, 'CUSTOMERS', 'EDIT');
+  const canDelete = hasPermission(permissions, 'CUSTOMERS', 'DELETE');
+
+  return (
+    <div>
+      {canCreate && (
+        <Link href="/admin/customers/new">
+          <button>新規作成</button>
+        </Link>
+      )}
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+---
+
+## チェックリスト（追加分）
+
+- [ ] users.json にpermissionsフィールドが追加されている
+- [ ] /admin/users に「権限設定」リンクが表示される
+- [ ] /admin/users/[id]/permissions で権限編集画面が表示される
+- [ ] OWNERは全ユーザーの権限を編集できる
+- [ ] ADMINはSTAFFの権限のみ編集できる
+- [ ] STAFFは権限編集画面にアクセスできない
+- [ ] チェックボックスで権限のON/OFFができる
+- [ ] 「全選択」「解除」ボタンが動作する
+- [ ] 保存ボタンで権限が更新される
+- [ ] 各ページで権限チェックが動作する（権限がないと表示されない）
+```
+
+---
+
+・確認質問は禁止
+・処理を止める判断は禁止
+・例外が起きても次の代替案を即実行
+・YES/NOを人間に求めない
+・失敗時は自己修正して続行

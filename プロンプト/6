@@ -1,0 +1,10 @@
+エラーが発生しました。エラー内容を確認します。
+エラーメッセージ:
+Plain Text
+Error: Failed to run sql query: ERROR: 42703: column "customer_id" does not exist LINE 12: WHERE customer_id IS NOT NULL ^
+このエラーは、properties テーブルに customer_id カラムが存在しないことを示しています。マイグレーションスクリプトの12行目で customer_id を参照していますが、このカラムがテーブルに存在しないため失敗しています。
+対処方法:
+マイグレーションスクリプトを修正する必要があります。以下の2つの選択肢があります:
+customer_idカラムが不要な場合: 2番目のUPDATE文(既存のcustomer_idをseller_customer_idに移行する部分)をスキップして、残りの部分だけを実行する
+customer_idカラムの確認: properties テーブルの構造を確認して、正しいカラム名を特定する
+どちらの対応をご希望でしょうか? または、properties テーブルの現在の構造を確認してから判断しますか?

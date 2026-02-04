@@ -15,9 +15,16 @@ const config: Config = {
         navy: "#1E293B",    // 濃紺
         gold: "#A19276",    // 既存デザインとの調和用
         cream: "#F8F6F3",
+        'hm-yellow': '#F4C84B',
+        'hm-yellow-deep': '#E6B62F',
+        'hm-ink': '#15130D',
+        'hm-ivory': '#FFF6DE',
+        'hm-sand': '#F8E7B8',
       },
       fontFamily: {
         jp: ['"Noto Sans JP"', "ui-sans-serif", "system-ui"],
+        sans: ['var(--font-body)', '"Noto Sans JP"', "ui-sans-serif", "system-ui"],
+        display: ['var(--font-display)', '"Shippori Mincho B1"', '"Noto Sans JP"', "serif"],
       },
     },
   },

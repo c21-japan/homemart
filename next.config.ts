@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  outputFileTracingRoot: path.join(__dirname),
   experimental: { 
     serverActions: { bodySizeLimit: '10mb' as any },
     optimizePackageImports: [

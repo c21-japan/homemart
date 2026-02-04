@@ -19,8 +19,16 @@ CREATE TABLE IF NOT EXISTS internal_applications (
   expense_date DATE,
   amount DECIMAL(10,2),
   category VARCHAR(100),
+  expense_item VARCHAR(200),
   receipt_file VARCHAR(500), -- レシート・領収書ファイルパス
   payment_method VARCHAR(50),
+  parking_related BOOLEAN DEFAULT false,
+  expense_salesperson VARCHAR(100),
+  expense_site_type VARCHAR(50),
+  expense_site_name VARCHAR(200),
+  expense_site_address VARCHAR(300),
+  expense_customer_name VARCHAR(100),
+  expense_work_type VARCHAR(100),
   
   -- その他共通フィールド
   urgency VARCHAR(20) DEFAULT 'normal'
@@ -48,8 +56,16 @@ COMMENT ON COLUMN internal_applications.doctor_note_file IS '医師の診断書�
 COMMENT ON COLUMN internal_applications.expense_date IS '経費発生日（経費申請用）';
 COMMENT ON COLUMN internal_applications.amount IS '金額（経費申請用）';
 COMMENT ON COLUMN internal_applications.category IS '経費カテゴリ（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_item IS '経費の品目・内容（経費申請用）';
 COMMENT ON COLUMN internal_applications.receipt_file IS 'レシート・領収書ファイルパス（経費申請用）';
 COMMENT ON COLUMN internal_applications.payment_method IS '支払い方法（経費申請用）';
+COMMENT ON COLUMN internal_applications.parking_related IS '駐車場関連経費かどうか（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_salesperson IS '関連営業担当（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_site_type IS '現場種別（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_site_name IS '現場名（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_site_address IS '現場住所（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_customer_name IS '顧客名（経費申請用）';
+COMMENT ON COLUMN internal_applications.expense_work_type IS '作業種別（経費申請用）';
 COMMENT ON COLUMN internal_applications.urgency IS '緊急度（low, normal, high, urgent）';
 
 -- サンプルデータの挿入（テスト用）

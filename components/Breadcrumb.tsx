@@ -14,7 +14,7 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   
   // パスからパンクズリストを自動生成
   const generateBreadcrumbs = (): BreadcrumbItem[] => {

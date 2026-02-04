@@ -173,19 +173,19 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">物件を検索</h2>
+    <div className="rounded-3xl border border-[#EAD8A6] bg-white p-6 shadow-[0_18px_40px_rgba(21,19,13,0.08)]">
+      <div className="space-y-5">
+        <h2 className="text-xl font-display text-[#15130D]">物件を検索</h2>
         
         {/* エリア選択（グループ化） */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
             エリア
           </label>
           <select
             value={filters.area}
             onChange={(e) => handleFilterChange('area', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
           >
             <option value="">すべてのエリア</option>
             {Object.entries(groupedAreas).map(([group, groupAreas]) => (
@@ -200,7 +200,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
         {/* 物件種別 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
             物件種別
           </label>
           <div className="flex flex-wrap gap-2">
@@ -209,10 +209,10 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
                 key={type}
                 type="button"
                 onClick={() => togglePropertyType(type)}
-                className={`px-4 py-2 rounded-md border transition-colors ${
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
                   filters.types.includes(type)
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-[#15130D] text-[#F4C84B]'
+                    : 'bg-[#FFF6DE] text-[#6E5B2E] hover:bg-[#F4C84B] hover:text-[#15130D]'
                 }`}
               >
                 {type}
@@ -225,7 +225,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
         <button
           type="button"
           onClick={() => setIsDetailedSearch(!isDetailedSearch)}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+          className="flex items-center gap-2 text-sm font-semibold text-[#8C7A4C] hover:text-[#15130D]"
         >
           {isDetailedSearch ? (
             <>
@@ -242,17 +242,17 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
         {/* 詳細検索 */}
         {isDetailedSearch && (
-          <div className="space-y-4 pt-4 border-t">
+          <div className="space-y-4 border-t border-[#EAD8A6] pt-4">
             {/* 価格 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
                 価格
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={filters.priceMin}
                   onChange={(e) => handleFilterChange('priceMin', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   {priceOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -263,7 +263,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
                 <select
                   value={filters.priceMax}
                   onChange={(e) => handleFilterChange('priceMax', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   <option value="">上限なし</option>
                   {priceOptions.slice(1).map(option => (
@@ -277,14 +277,14 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
             {/* 土地面積 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
                 土地面積
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={filters.landAreaMin}
                   onChange={(e) => handleFilterChange('landAreaMin', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   {areaOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -295,7 +295,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
                 <select
                   value={filters.landAreaMax}
                   onChange={(e) => handleFilterChange('landAreaMax', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   <option value="">上限なし</option>
                   {areaOptions.slice(1).map(option => (
@@ -309,14 +309,14 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
             {/* 建物面積 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
                 建物面積
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={filters.buildingAreaMin}
                   onChange={(e) => handleFilterChange('buildingAreaMin', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   {areaOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -327,7 +327,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
                 <select
                   value={filters.buildingAreaMax}
                   onChange={(e) => handleFilterChange('buildingAreaMax', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
                 >
                   <option value="">上限なし</option>
                   {areaOptions.slice(1).map(option => (
@@ -341,7 +341,7 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
 
             {/* 最寄り駅 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8C7A4C]">
                 最寄り駅
               </label>
               <input
@@ -349,25 +349,25 @@ export default function PropertySearch({ onSearch, initialFilters }: PropertySea
                 value={filters.nearStation}
                 onChange={(e) => handleFilterChange('nearStation', e.target.value)}
                 placeholder="駅名を入力"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE]/40 px-4 py-3 text-sm text-[#3B3323] focus:outline-none focus:ring-2 focus:ring-[#F4C84B]"
               />
             </div>
           </div>
         )}
 
         {/* 検索ボタン */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
             onClick={handleSearch}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-semibold"
+            className="flex-1 rounded-2xl bg-[#15130D] px-6 py-3 text-sm font-semibold text-[#F4C84B] transition hover:bg-[#2A2418]"
           >
             検索する
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-semibold"
+            className="rounded-2xl border border-[#EAD8A6] bg-[#FFF6DE] px-6 py-3 text-sm font-semibold text-[#6E5B2E] transition hover:bg-[#F4C84B] hover:text-[#15130D]"
           >
             リセット
           </button>

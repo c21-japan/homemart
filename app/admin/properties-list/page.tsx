@@ -24,7 +24,7 @@ interface Property {
 function PropertiesListContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const viewParam = searchParams.get('view') || 'all'
+  const viewParam = searchParams?.get('view') || 'all'
   
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)

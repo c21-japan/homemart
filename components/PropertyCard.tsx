@@ -109,7 +109,7 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="group overflow-hidden rounded-3xl border border-[#EAD8A6] bg-white shadow-[0_14px_30px_rgba(21,19,13,0.08)] transition hover:-translate-y-1 hover:border-[#F4C84B]">
       <div className="relative cursor-pointer" onClick={handleCardClick}>
         {property.image_url ? (
           <div className="relative w-full h-48">
@@ -131,15 +131,15 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
               }}
             />
             {/* フォールバック用のプレースホルダー */}
-            <div className="absolute inset-0 w-full h-48 bg-gray-200 flex items-center justify-center" style={{ display: 'none' }}>
-              <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="absolute inset-0 flex h-48 w-full items-center justify-center bg-[#FFF6DE]" style={{ display: 'none' }}>
+              <svg className="h-16 w-16 text-[#B9A26B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
           </div>
         ) : (
-          <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-            <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex h-48 w-full items-center justify-center bg-[#FFF6DE]">
+            <svg className="h-16 w-16 text-[#B9A26B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
@@ -149,53 +149,45 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
           <button
             onClick={toggleFavorite}
             disabled={isLoading}
-            className={`absolute top-3 right-3 p-2 rounded-full shadow-md transition-all z-10 ${
+            className={`absolute right-3 top-3 z-10 rounded-full border border-white/70 bg-white/90 p-2 text-sm shadow-md transition-all ${
               isFavorite
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
-            } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                ? 'text-[#15130D]'
+                : 'text-[#8C7A4C]'
+            } ${isLoading ? 'cursor-not-allowed opacity-50' : 'hover:bg-[#F4C84B]'}`}
             title={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
           >
-            {isFavorite ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            )}
+            {isFavorite ? '★' : '☆'}
           </button>
         )}
 
         <div className="absolute top-3 left-3 z-10">
-          <span className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+          <span className="rounded-full bg-[#15130D]/90 px-3 py-1 text-xs font-semibold text-[#F4C84B]">
             {property.property_type}
           </span>
         </div>
       </div>
 
-      <div className="p-4 cursor-pointer" onClick={handleCardClick}>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+      <div className="cursor-pointer p-5" onClick={handleCardClick}>
+        <h3 className="mb-2 line-clamp-2 text-lg font-display text-[#15130D]">
           {property.name}
         </h3>
         
-        <p className="text-2xl font-bold text-orange-600 mb-2">
+        <p className="mb-2 text-2xl font-semibold text-[#15130D]">
           {property.price.toLocaleString()}万円
         </p>
         
-        <p className="text-sm text-gray-600 mb-3 line-clamp-1">
+        <p className="mb-3 line-clamp-1 text-sm text-[#5B4E37]">
           {property.address}
         </p>
         
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-[#9B8856]">
             {new Date(property.created_at).toLocaleDateString('ja-JP')}
           </span>
           
           <button
             onClick={handleCardClick}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors z-10"
+            className="rounded-full bg-[#F4C84B] px-4 py-2 text-xs font-semibold text-[#15130D] transition hover:bg-[#E6B62F]"
           >
             詳細を見る
           </button>
