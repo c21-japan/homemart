@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { verifySession } from '@/lib/auth/session'
 import { getUserPermissions } from '@/lib/auth/permissions-server'
 import { hasPermission } from '@/lib/auth/permissions'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,8 +18,8 @@ export async function GET() {
   }
 
   try {
-    // Supabaseから最新のfreeeレポートを取得
-    const supabase = await createClient()
+    // Supabaseから最新のfreeeレポートを取得（管理用クライアントを使用）
+    const supabase = createAdminClient()
     const { data, error } = await supabase
       .from('freee_reports')
       .select('*')

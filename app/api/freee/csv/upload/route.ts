@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifySession } from '@/lib/auth/session'
 import { getUserPermissions } from '@/lib/auth/permissions-server'
 import { hasPermission } from '@/lib/auth/permissions'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
         : `${currentYear - 1}-05-01`
     const periodEnd = now.toISOString().split('T')[0]
 
-    // Supabaseに保存
-    const supabase = await createClient()
+    // Supabaseに保存（管理用クライアントを使用してRLSをバイパス）
+    const supabase = createAdminClient()
     const { data: insertedData, error } = await supabase
       .from('freee_reports')
       .insert({
