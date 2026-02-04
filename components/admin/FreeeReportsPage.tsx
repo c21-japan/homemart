@@ -133,27 +133,49 @@ export default function FreeeReportsPage() {
     fetchCsvData()
   }, [])
 
-  const handleRefreshFromCSV = async () => {
+  const handleCSVUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files || files.length === 0) return
+
     setRefreshing(true)
     setError(null)
     try {
-      const response = await fetch('/api/freee/csv/refresh', {
-        method: 'POST'
+      const formData = new FormData()
+
+      // ファイル名から種類を判定
+      Array.from(files).forEach((file) => {
+        const fileName = file.name.toLowerCase()
+        if (fileName.includes('trial') || fileName.includes('試算表')) {
+          formData.append('trial_balance', file)
+        } else if (fileName.includes('journal') || fileName.includes('仕訳')) {
+          formData.append('journal', file)
+        } else if (fileName.includes('general') || fileName.includes('ledger') || fileName.includes('総勘定')) {
+          formData.append('general_ledger', file)
+        }
       })
+
+      const response = await fetch('/api/freee/csv/upload', {
+        method: 'POST',
+        body: formData
+      })
+
       const data = await response.json().catch(() => null)
       if (!response.ok) {
-        setError(data?.message || 'CSVダウンロードに失敗しました')
+        setError(data?.message || 'CSVアップロードに失敗しました')
         return
       }
+
       // CSVデータを再取得
       await fetchCsvData()
-      alert('CSVデータを取得しました')
+      alert('CSVファイルをアップロードしました')
       // サマリータブに切り替え
       setActiveTab('summary')
     } catch (err) {
-      setError('CSVダウンロードに失敗しました')
+      setError('CSVアップロードに失敗しました')
     } finally {
       setRefreshing(false)
+      // inputをリセット
+      event.target.value = ''
     }
   }
 
@@ -175,7 +197,7 @@ export default function FreeeReportsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">freee 財務レポート</h1>
           <p className="text-sm text-gray-500">
-            決算期: 5月1日 〜 4月30日（CSV取得ボタンを押した日までの最新分）
+            決算期: 5月1日 〜 4月30日 | freeeからCSVをダウンロードしてアップロードしてください
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -186,13 +208,25 @@ export default function FreeeReportsPage() {
             </div>
           )}
           {isOwner && (
-            <button
-              onClick={handleRefreshFromCSV}
-              disabled={refreshing}
-              className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold disabled:opacity-60 hover:bg-green-700 transition-colors"
-            >
-              {refreshing ? 'CSV取得中...' : 'CSV取得'}
-            </button>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".csv"
+                multiple
+                onChange={handleCSVUpload}
+                disabled={refreshing}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                id="csv-upload"
+              />
+              <label
+                htmlFor="csv-upload"
+                className={`px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-colors cursor-pointer inline-block ${
+                  refreshing ? 'opacity-60 cursor-not-allowed' : ''
+                }`}
+              >
+                {refreshing ? 'アップロード中...' : 'CSVアップロード'}
+              </label>
+            </div>
           )}
         </div>
       </div>
@@ -232,10 +266,27 @@ export default function FreeeReportsPage() {
           {activeTab === 'summary' && (
             <>
               {!csvData && !error && (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
-                  <p className="text-sm text-gray-600">
-                    まだfreeeデータが取得されていません。{isOwner ? 'CSV取得ボタンを押してデータを取得してください。' : 'オーナーに更新を依頼してください。'}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 space-y-4">
+                  <p className="text-sm text-gray-600 font-semibold">
+                    まだfreeeデータがアップロードされていません。
                   </p>
+                  {isOwner && (
+                    <div className="text-sm text-gray-600 space-y-2">
+                      <p className="font-medium">CSVファイルのダウンロード手順：</p>
+                      <ol className="list-decimal list-inside space-y-1 ml-2">
+                        <li>freeeにログイン: <a href="https://secure.freee.co.jp/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://secure.freee.co.jp/</a></li>
+                        <li>レポート → 試算表 → CSVダウンロード</li>
+                        <li>レポート → 仕訳帳 → CSVダウンロード</li>
+                        <li>レポート → 総勘定元帳 → CSVダウンロード</li>
+                        <li>ダウンロードした3つのCSVファイルをこのページにアップロード</li>
+                      </ol>
+                    </div>
+                  )}
+                  {!isOwner && (
+                    <p className="text-sm text-gray-600">
+                      オーナーに更新を依頼してください。
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -312,7 +363,7 @@ export default function FreeeReportsPage() {
                 />
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  仕訳帳データがありません。CSV取得ボタンを押してデータを取得してください。
+                  仕訳帳データがありません。freeeからCSVファイルをダウンロードしてアップロードしてください。
                 </div>
               )}
             </div>
@@ -329,7 +380,7 @@ export default function FreeeReportsPage() {
                 />
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  総勘定元帳データがありません。CSV取得ボタンを押してデータを取得してください。
+                  総勘定元帳データがありません。freeeからCSVファイルをダウンロードしてアップロードしてください。
                 </div>
               )}
             </div>
@@ -346,7 +397,7 @@ export default function FreeeReportsPage() {
                 />
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  試算表データがありません。CSV取得ボタンを押してデータを取得してください。
+                  試算表データがありません。freeeからCSVファイルをダウンロードしてアップロードしてください。
                 </div>
               )}
             </div>
