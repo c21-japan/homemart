@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import FreeeDataTable from './FreeeDataTable'
 import FreeeMonthlyChart from './FreeeMonthlyChart'
+import { parseTrialBalanceSummary } from '@/lib/freee/csv-parser'
 
 type SummaryLine = {
   label: string
@@ -12,12 +13,6 @@ type SummaryLine = {
 type Summary = {
   highlights: SummaryLine[]
   categories: SummaryLine[]
-}
-
-type ReportPayload = {
-  updated_at: string
-  period: { start_date: string; end_date: string }
-  summary: { pl: Summary; bs: Summary }
 }
 
 type CSVDataPayload = {
@@ -85,7 +80,6 @@ function BarChart({ items }: { items: SummaryLine[] }) {
 }
 
 export default function FreeeReportsPage() {
-  const [report, setReport] = useState<ReportPayload | null>(null)
   const [csvData, setCsvData] = useState<CSVDataPayload | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -93,32 +87,17 @@ export default function FreeeReportsPage() {
   const [isOwner, setIsOwner] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('summary')
 
-  const fetchReport = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch('/api/freee/reports', { cache: 'no-store' })
-      if (response.ok) {
-        const data = (await response.json()) as ReportPayload
-        setReport(data)
-        return
-      }
-
-      if (response.status === 404) {
-        setReport(null)
-        return
-      }
-
-      const data = await response.json().catch(() => null)
-      setError(data?.message || 'レポート取得に失敗しました')
-    } catch (err) {
-      setError('レポート取得に失敗しました')
-    } finally {
-      setLoading(false)
+  // CSVデータから試算表のサマリーを生成
+  const summary = useMemo(() => {
+    if (!csvData?.data?.trial_balance) {
+      return { pl: { highlights: [], categories: [] }, bs: { highlights: [], categories: [] } }
     }
-  }
+    return parseTrialBalanceSummary(csvData.data.trial_balance)
+  }, [csvData])
 
   const fetchCsvData = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const response = await fetch('/api/freee/csv/data', { cache: 'no-store' })
       if (response.ok) {
@@ -126,10 +105,15 @@ export default function FreeeReportsPage() {
         setCsvData(data)
       } else if (response.status === 404) {
         setCsvData(null)
+      } else {
+        const data = await response.json().catch(() => null)
+        setError(data?.message || 'CSVデータ取得に失敗しました')
       }
     } catch (err) {
       console.error('CSVデータ取得失敗:', err)
-      setCsvData(null)
+      setError('CSVデータ取得に失敗しました')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -146,29 +130,8 @@ export default function FreeeReportsPage() {
     }
 
     fetchMe()
-    fetchReport()
     fetchCsvData()
   }, [])
-
-  const handleRefresh = async () => {
-    setRefreshing(true)
-    setError(null)
-    try {
-      const response = await fetch('/api/freee/reports/refresh', {
-        method: 'POST'
-      })
-      const data = await response.json().catch(() => null)
-      if (!response.ok) {
-        setError(data?.message || '更新に失敗しました')
-        return
-      }
-      setReport(data as ReportPayload)
-    } catch (err) {
-      setError('更新に失敗しました')
-    } finally {
-      setRefreshing(false)
-    }
-  }
 
   const handleRefreshFromCSV = async () => {
     setRefreshing(true)
@@ -185,8 +148,8 @@ export default function FreeeReportsPage() {
       // CSVデータを再取得
       await fetchCsvData()
       alert('CSVデータを取得しました')
-      // 仕訳帳タブに切り替え
-      setActiveTab('journal')
+      // サマリータブに切り替え
+      setActiveTab('summary')
     } catch (err) {
       setError('CSVダウンロードに失敗しました')
     } finally {
@@ -194,10 +157,10 @@ export default function FreeeReportsPage() {
     }
   }
 
-  const plHighlights = report?.summary.pl.highlights ?? []
-  const bsHighlights = report?.summary.bs.highlights ?? []
-  const plCategories = buildTopCategories(report?.summary.pl.categories ?? [])
-  const bsCategories = buildTopCategories(report?.summary.bs.categories ?? [])
+  const plHighlights = summary.pl.highlights
+  const bsHighlights = summary.bs.highlights
+  const plCategories = buildTopCategories(summary.pl.categories)
+  const bsCategories = buildTopCategories(summary.bs.categories)
 
   const tabs = [
     { id: 'summary' as TabType, label: 'サマリー' },
@@ -212,33 +175,24 @@ export default function FreeeReportsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">freee 財務レポート</h1>
           <p className="text-sm text-gray-500">
-            決算期: 5月1日 〜 4月30日（更新ボタンを押した日までの最新分）
+            決算期: 5月1日 〜 4月30日（CSV取得ボタンを押した日までの最新分）
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {report && (
+          {csvData && (
             <div className="text-sm text-gray-500">
-              最終更新日: {report.updated_at}（対象期間: {report.period.start_date} 〜{' '}
-              {report.period.end_date}）
+              最終更新日: {csvData.updated_at}（対象期間: {csvData.period.start_date} 〜{' '}
+              {csvData.period.end_date}）
             </div>
           )}
           {isOwner && (
-            <>
-              <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold disabled:opacity-60"
-              >
-                {refreshing ? '更新中...' : 'API更新'}
-              </button>
-              <button
-                onClick={handleRefreshFromCSV}
-                disabled={refreshing}
-                className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold disabled:opacity-60"
-              >
-                {refreshing ? 'CSV取得中...' : 'CSV取得'}
-              </button>
-            </>
+            <button
+              onClick={handleRefreshFromCSV}
+              disabled={refreshing}
+              className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold disabled:opacity-60 hover:bg-green-700 transition-colors"
+            >
+              {refreshing ? 'CSV取得中...' : 'CSV取得'}
+            </button>
           )}
         </div>
       </div>
@@ -277,15 +231,15 @@ export default function FreeeReportsPage() {
           {/* サマリータブ */}
           {activeTab === 'summary' && (
             <>
-              {!report && !error && (
+              {!csvData && !error && (
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
                   <p className="text-sm text-gray-600">
-                    まだfreeeレポートが取得されていません。{isOwner ? 'API更新ボタンを押して取得してください。' : 'オーナーに更新を依頼してください。'}
+                    まだfreeeデータが取得されていません。{isOwner ? 'CSV取得ボタンを押してデータを取得してください。' : 'オーナーに更新を依頼してください。'}
                   </p>
                 </div>
               )}
 
-              {report && (
+              {csvData && csvData.data.trial_balance && (
                 <div className="space-y-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-white p-6 rounded-lg shadow-md">
