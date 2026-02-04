@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import FreeeDataTable from './FreeeDataTable'
+import FreeeMonthlyChart from './FreeeMonthlyChart'
 
 type SummaryLine = {
   label: string
@@ -334,6 +335,13 @@ export default function FreeeReportsPage() {
                       <BarChart items={bsCategories} />
                     </div>
                   </div>
+
+                  {/* 月次推移グラフ */}
+                  {csvData?.data?.journal && (
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                      <FreeeMonthlyChart journalData={csvData.data.journal} />
+                    </div>
+                  )}
                 </div>
               )}
             </>

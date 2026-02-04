@@ -10,6 +10,40 @@ type FreeeDataTableProps = {
   emptyMessage?: string
 }
 
+function exportToCSV(data: DataEntry[], filename: string) {
+  if (!data || data.length === 0) return
+
+  const columns = Object.keys(data[0])
+  const csvContent = [
+    columns.join(','),
+    ...data.map((row) =>
+      columns.map((col) => {
+        const value = row[col]
+        // カンマや改行を含む場合はダブルクォートで囲む
+        if (
+          value &&
+          (String(value).includes(',') ||
+            String(value).includes('\n') ||
+            String(value).includes('"'))
+        ) {
+          return `"${String(value).replace(/"/g, '""')}"`
+        }
+        return value ?? ''
+      }).join(',')
+    )
+  ].join('\n')
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', filename)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 export default function FreeeDataTable({
   data,
   title,
@@ -56,8 +90,19 @@ export default function FreeeDataTable({
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-        <div className="text-sm text-gray-600">
-          全 {data.length} 件のデータ
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() =>
+              exportToCSV(
+                filteredData,
+                `${title}_${new Date().toISOString().split('T')[0]}.csv`
+              )
+            }
+            className="px-4 py-2 bg-gray-600 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            CSV出力
+          </button>
+          <div className="text-sm text-gray-600">全 {data.length} 件のデータ</div>
         </div>
       </div>
 
