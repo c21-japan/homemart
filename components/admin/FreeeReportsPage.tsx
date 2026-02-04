@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import FreeeDataTable from './FreeeDataTable'
 
 type SummaryLine = {
   label: string
@@ -17,6 +18,18 @@ type ReportPayload = {
   period: { start_date: string; end_date: string }
   summary: { pl: Summary; bs: Summary }
 }
+
+type CSVDataPayload = {
+  updated_at: string
+  period: { start_date: string; end_date: string }
+  data: {
+    journal?: Record<string, string | number | null>[]
+    general_ledger?: Record<string, string | number | null>[]
+    trial_balance?: Record<string, string | number | null>[]
+  }
+}
+
+type TabType = 'summary' | 'journal' | 'general_ledger' | 'trial_balance'
 
 const currencyFormatter = new Intl.NumberFormat('ja-JP', {
   style: 'currency',
@@ -72,10 +85,12 @@ function BarChart({ items }: { items: SummaryLine[] }) {
 
 export default function FreeeReportsPage() {
   const [report, setReport] = useState<ReportPayload | null>(null)
+  const [csvData, setCsvData] = useState<CSVDataPayload | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isOwner, setIsOwner] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabType>('summary')
 
   const fetchReport = async () => {
     setLoading(true)
@@ -102,6 +117,21 @@ export default function FreeeReportsPage() {
     }
   }
 
+  const fetchCsvData = async () => {
+    try {
+      const response = await fetch('/api/freee/csv/data', { cache: 'no-store' })
+      if (response.ok) {
+        const data = (await response.json()) as CSVDataPayload
+        setCsvData(data)
+      } else if (response.status === 404) {
+        setCsvData(null)
+      }
+    } catch (err) {
+      console.error('CSVデータ取得失敗:', err)
+      setCsvData(null)
+    }
+  }
+
   useEffect(() => {
     const fetchMe = async () => {
       try {
@@ -116,6 +146,7 @@ export default function FreeeReportsPage() {
 
     fetchMe()
     fetchReport()
+    fetchCsvData()
   }, [])
 
   const handleRefresh = async () => {
@@ -150,10 +181,11 @@ export default function FreeeReportsPage() {
         setError(data?.message || 'CSVダウンロードに失敗しました')
         return
       }
-      // CSVデータを表示用に整形（必要に応じて）
-      alert('CSVデータを取得しました。データは /tmp/freee_data/freee_data.json に保存されています。')
-      // 既存のレポートを再読み込み
-      await fetchReport()
+      // CSVデータを再取得
+      await fetchCsvData()
+      alert('CSVデータを取得しました')
+      // 仕訳帳タブに切り替え
+      setActiveTab('journal')
     } catch (err) {
       setError('CSVダウンロードに失敗しました')
     } finally {
@@ -165,6 +197,13 @@ export default function FreeeReportsPage() {
   const bsHighlights = report?.summary.bs.highlights ?? []
   const plCategories = buildTopCategories(report?.summary.pl.categories ?? [])
   const bsCategories = buildTopCategories(report?.summary.bs.categories ?? [])
+
+  const tabs = [
+    { id: 'summary' as TabType, label: 'サマリー' },
+    { id: 'journal' as TabType, label: '仕訳帳' },
+    { id: 'general_ledger' as TabType, label: '総勘定元帳' },
+    { id: 'trial_balance' as TabType, label: '試算表' }
+  ]
 
   return (
     <div className="p-6 space-y-6">
@@ -203,6 +242,25 @@ export default function FreeeReportsPage() {
         </div>
       </div>
 
+      {/* タブナビゲーション */}
+      <div className="border-b border-gray-200">
+        <nav className="flex gap-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-48">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
@@ -215,64 +273,120 @@ export default function FreeeReportsPage() {
             </div>
           )}
 
-          {!report && !error && (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
-              <p className="text-sm text-gray-600">
-                まだfreeeレポートが取得されていません。{isOwner ? '更新ボタンを押して取得してください。' : 'オーナーに更新を依頼してください。'}
-              </p>
+          {/* サマリータブ */}
+          {activeTab === 'summary' && (
+            <>
+              {!report && !error && (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
+                  <p className="text-sm text-gray-600">
+                    まだfreeeレポートが取得されていません。{isOwner ? 'API更新ボタンを押して取得してください。' : 'オーナーに更新を依頼してください。'}
+                  </p>
+                </div>
+              )}
+
+              {report && (
+                <div className="space-y-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">損益計算書（PL）ハイライト</h2>
+                      <div className="space-y-3">
+                        {plHighlights.length ? (
+                          plHighlights.map((item) => (
+                            <div key={item.label} className="flex justify-between text-sm">
+                              <span className="text-gray-600">{item.label}</span>
+                              <span className="font-semibold text-gray-900">
+                                {formatCurrency(item.value)}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-gray-500">ハイライトがありません</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">貸借対照表（BS）ハイライト</h2>
+                      <div className="space-y-3">
+                        {bsHighlights.length ? (
+                          bsHighlights.map((item) => (
+                            <div key={item.label} className="flex justify-between text-sm">
+                              <span className="text-gray-600">{item.label}</span>
+                              <span className="font-semibold text-gray-900">
+                                {formatCurrency(item.value)}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-gray-500">ハイライトがありません</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">損益計算書（PL）カテゴリ別</h2>
+                      <BarChart items={plCategories} />
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">貸借対照表（BS）カテゴリ別</h2>
+                      <BarChart items={bsCategories} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* 仕訳帳タブ */}
+          {activeTab === 'journal' && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              {csvData?.data?.journal ? (
+                <FreeeDataTable
+                  data={csvData.data.journal}
+                  title="仕訳帳"
+                  emptyMessage="仕訳帳データがありません"
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  仕訳帳データがありません。CSV取得ボタンを押してデータを取得してください。
+                </div>
+              )}
             </div>
           )}
 
-          {report && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">損益計算書（PL）ハイライト</h2>
-                  <div className="space-y-3">
-                    {plHighlights.length ? (
-                      plHighlights.map((item) => (
-                        <div key={item.label} className="flex justify-between text-sm">
-                          <span className="text-gray-600">{item.label}</span>
-                          <span className="font-semibold text-gray-900">
-                            {formatCurrency(item.value)}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">ハイライトがありません</p>
-                    )}
-                  </div>
+          {/* 総勘定元帳タブ */}
+          {activeTab === 'general_ledger' && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              {csvData?.data?.general_ledger ? (
+                <FreeeDataTable
+                  data={csvData.data.general_ledger}
+                  title="総勘定元帳"
+                  emptyMessage="総勘定元帳データがありません"
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  総勘定元帳データがありません。CSV取得ボタンを押してデータを取得してください。
                 </div>
+              )}
+            </div>
+          )}
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">貸借対照表（BS）ハイライト</h2>
-                  <div className="space-y-3">
-                    {bsHighlights.length ? (
-                      bsHighlights.map((item) => (
-                        <div key={item.label} className="flex justify-between text-sm">
-                          <span className="text-gray-600">{item.label}</span>
-                          <span className="font-semibold text-gray-900">
-                            {formatCurrency(item.value)}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">ハイライトがありません</p>
-                    )}
-                  </div>
+          {/* 試算表タブ */}
+          {activeTab === 'trial_balance' && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              {csvData?.data?.trial_balance ? (
+                <FreeeDataTable
+                  data={csvData.data.trial_balance}
+                  title="試算表"
+                  emptyMessage="試算表データがありません"
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  試算表データがありません。CSV取得ボタンを押してデータを取得してください。
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">損益計算書（PL）カテゴリ別</h2>
-                  <BarChart items={plCategories} />
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">貸借対照表（BS）カテゴリ別</h2>
-                  <BarChart items={bsCategories} />
-                </div>
-              </div>
+              )}
             </div>
           )}
         </>
