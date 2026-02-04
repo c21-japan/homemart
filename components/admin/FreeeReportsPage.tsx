@@ -122,15 +122,29 @@ export default function FreeeReportsPage() {
       try {
         const response = await fetch('/api/auth/me', { cache: 'no-store' })
         if (!response.ok) {
+          console.log('Failed to fetch user info:', response.status)
           setCanUpload(false)
           return
         }
         const data = await response.json()
-        // OWNER または REPORTS権限を持つユーザーはアップロード可能
-        const hasReportsPermission = data?.permissions?.some(
-          (p: any) => p.resource === 'REPORTS' && (p.action === 'EXPORT' || p.action === 'EDIT')
-        )
-        setCanUpload(data?.role === 'OWNER' || data?.role === 'ADMIN' || hasReportsPermission)
+        console.log('User data:', data)
+
+        // permissionsはオブジェクト形式: { REPORTS: ["VIEW", "EXPORT"], ... }
+        const hasReportsExport = data?.permissions?.REPORTS?.includes('EXPORT')
+        const hasReportsEdit = data?.permissions?.REPORTS?.includes('EDIT')
+        const canUploadResult =
+          data?.role === 'OWNER' ||
+          data?.role === 'ADMIN' ||
+          hasReportsExport ||
+          hasReportsEdit
+
+        console.log('Can upload:', canUploadResult, {
+          role: data?.role,
+          hasReportsExport,
+          hasReportsEdit
+        })
+
+        setCanUpload(canUploadResult)
       } catch (err) {
         console.error('Failed to fetch user info:', err)
         setCanUpload(false)
