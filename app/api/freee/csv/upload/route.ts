@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifySession } from '@/lib/auth/session'
 import { getUserPermissions } from '@/lib/auth/permissions-server'
 import { hasPermission } from '@/lib/auth/permissions'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,48 +33,59 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ディレクトリを作成
-    const csvDir = path.join(process.cwd(), 'tmp', 'freee_csv')
-    const dataDir = path.join(process.cwd(), 'tmp', 'freee_data')
-    await mkdir(csvDir, { recursive: true })
-    await mkdir(dataDir, { recursive: true })
+    // CSVファイルをパース（メモリ上で処理）
+    const parsedData: Record<string, any[]> = {}
 
-    const uploadedFiles: Record<string, string> = {}
-
-    // CSVファイルを保存
     if (trialBalanceFile) {
-      const buffer = Buffer.from(await trialBalanceFile.arrayBuffer())
-      const filePath = path.join(csvDir, 'trial_balance.csv')
-      await writeFile(filePath, buffer)
-      uploadedFiles.trial_balance = filePath
+      parsedData.trial_balance = await parseCSVFile(trialBalanceFile)
     }
 
     if (journalFile) {
-      const buffer = Buffer.from(await journalFile.arrayBuffer())
-      const filePath = path.join(csvDir, 'journal.csv')
-      await writeFile(filePath, buffer)
-      uploadedFiles.journal = filePath
+      parsedData.journal = await parseCSVFile(journalFile)
     }
 
     if (generalLedgerFile) {
-      const buffer = Buffer.from(await generalLedgerFile.arrayBuffer())
-      const filePath = path.join(csvDir, 'general_ledger.csv')
-      await writeFile(filePath, buffer)
-      uploadedFiles.general_ledger = filePath
+      parsedData.general_ledger = await parseCSVFile(generalLedgerFile)
     }
 
-    // CSVをJSONに変換（パース処理）
-    const parsedData = await parseCSVFiles(uploadedFiles)
+    // 決算期の期間を計算（5月1日〜4月30日）
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const periodStart =
+      now.getMonth() >= 4
+        ? `${currentYear}-05-01`
+        : `${currentYear - 1}-05-01`
+    const periodEnd = now.toISOString().split('T')[0]
 
-    // JSONファイルとして保存
-    const outputPath = path.join(dataDir, 'freee_data.json')
-    await writeFile(outputPath, JSON.stringify(parsedData, null, 2))
+    // Supabaseに保存
+    const supabase = await createClient()
+    const { data: insertedData, error } = await supabase
+      .from('freee_reports')
+      .insert({
+        uploaded_by: session.userId,
+        trial_balance: parsedData.trial_balance || null,
+        journal: parsedData.journal || null,
+        general_ledger: parsedData.general_ledger || null,
+        period_start: periodStart,
+        period_end: periodEnd
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase insert error:', error)
+      return NextResponse.json(
+        { message: 'データの保存に失敗しました: ' + error.message },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
       message: 'CSVファイルをアップロードしました',
-      uploaded_files: Object.keys(uploadedFiles),
-      updated_at: parsedData.updated_at
+      uploaded_files: Object.keys(parsedData),
+      updated_at: now.toISOString(),
+      id: insertedData.id
     })
   } catch (error) {
     console.error('CSV upload failed:', error)
@@ -85,41 +95,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function parseCSVFiles(files: Record<string, string>) {
-  // 動的にcsvパーサーをインポート
-  const csvParser = await import('csv-parse/sync')
-  const { readFile } = await import('fs/promises')
+async function parseCSVFile(file: File): Promise<any[]> {
+  try {
+    const csvParser = await import('csv-parse/sync')
+    const text = await file.text()
 
-  const data: Record<string, any[]> = {}
-  const now = new Date()
+    const records = csvParser.parse(text, {
+      columns: true,
+      skip_empty_lines: true,
+      relax_quotes: true,
+      relax_column_count: true
+    })
 
-  for (const [type, filePath] of Object.entries(files)) {
-    try {
-      const fileContent = await readFile(filePath, 'utf-8')
-      // Shift-JISまたはUTF-8で読み込み
-      const records = csvParser.parse(fileContent, {
-        columns: true,
-        skip_empty_lines: true,
-        encoding: 'utf-8'
-      })
-      data[type] = records
-    } catch (err) {
-      console.error(`Failed to parse ${type}:`, err)
-      data[type] = []
-    }
-  }
-
-  // 決算期の期間を計算（5月1日〜4月30日）
-  const currentYear = now.getFullYear()
-  const startDate =
-    now.getMonth() >= 4
-      ? `${currentYear}-05-01`
-      : `${currentYear - 1}-05-01`
-  const endDate = now.toISOString().split('T')[0]
-
-  return {
-    updated_at: now.toISOString(),
-    period: { start_date: startDate, end_date: endDate },
-    data
+    return records
+  } catch (err) {
+    console.error(`Failed to parse CSV file ${file.name}:`, err)
+    return []
   }
 }

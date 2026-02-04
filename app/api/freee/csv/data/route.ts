@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { verifySession } from '@/lib/auth/session'
 import { getUserPermissions } from '@/lib/auth/permissions-server'
 import { hasPermission } from '@/lib/auth/permissions'
-import { readFile } from 'fs/promises'
-import path from 'path'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,27 +18,52 @@ export async function GET() {
   }
 
   try {
-    // CSVから生成されたJSONファイルを読み込む
-    const dataPath = path.join(process.cwd(), 'tmp', 'freee_data', 'freee_data.json')
-    const jsonData = await readFile(dataPath, 'utf-8')
-    const data = JSON.parse(jsonData)
+    // Supabaseから最新のfreeeレポートを取得
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('freee_reports')
+      .select('*')
+      .order('uploaded_at', { ascending: false })
+      .limit(1)
+      .single()
 
-    return NextResponse.json({
-      success: true,
-      updated_at: data.updated_at,
-      period: data.period,
-      data: data.data
-    })
-  } catch (error) {
-    console.error('freee CSVデータ読み込み失敗:', error)
-
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // データが見つからない
+        return NextResponse.json(
+          { message: 'CSVデータがまだアップロードされていません。' },
+          { status: 404 }
+        )
+      }
+      console.error('Supabase select error:', error)
       return NextResponse.json(
-        { message: 'CSVデータがまだ取得されていません。CSV取得ボタンを押してデータを取得してください。' },
+        { message: 'データの取得に失敗しました: ' + error.message },
+        { status: 500 }
+      )
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { message: 'CSVデータがまだアップロードされていません。' },
         { status: 404 }
       )
     }
 
+    return NextResponse.json({
+      success: true,
+      updated_at: data.uploaded_at,
+      period: {
+        start_date: data.period_start,
+        end_date: data.period_end
+      },
+      data: {
+        trial_balance: data.trial_balance,
+        journal: data.journal,
+        general_ledger: data.general_ledger
+      }
+    })
+  } catch (error) {
+    console.error('freee CSVデータ読み込み失敗:', error)
     const detail =
       error instanceof Error ? error.message : 'CSVデータの読み込みに失敗しました'
     return NextResponse.json({ message: detail }, { status: 500 })
