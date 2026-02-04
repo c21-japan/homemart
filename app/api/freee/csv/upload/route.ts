@@ -13,16 +13,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '認証が必要です' }, { status: 401 })
   }
 
-  if (session.role !== 'OWNER') {
-    return NextResponse.json(
-      { message: '更新はオーナーのみ可能です' },
-      { status: 403 }
-    )
-  }
-
-  const permissions = getUserPermissions(session.userId)
-  if (!permissions || !hasPermission(permissions, 'REPORTS', 'EXPORT')) {
-    return NextResponse.json({ message: '権限がありません' }, { status: 403 })
+  // OWNER、ADMIN、またはREPORTS権限を持つユーザーのみアップロード可能
+  if (session.role !== 'OWNER' && session.role !== 'ADMIN') {
+    const permissions = getUserPermissions(session.userId)
+    if (!permissions || !hasPermission(permissions, 'REPORTS', 'EXPORT')) {
+      return NextResponse.json({ message: '権限がありません' }, { status: 403 })
+    }
   }
 
   try {

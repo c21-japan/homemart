@@ -84,7 +84,7 @@ export default function FreeeReportsPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isOwner, setIsOwner] = useState(false)
+  const [canUpload, setCanUpload] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('summary')
 
   // CSVデータから試算表のサマリーを生成
@@ -121,11 +121,19 @@ export default function FreeeReportsPage() {
     const fetchMe = async () => {
       try {
         const response = await fetch('/api/auth/me', { cache: 'no-store' })
-        if (!response.ok) return
+        if (!response.ok) {
+          setCanUpload(false)
+          return
+        }
         const data = await response.json()
-        setIsOwner(data?.role === 'OWNER')
+        // OWNER または REPORTS権限を持つユーザーはアップロード可能
+        const hasReportsPermission = data?.permissions?.some(
+          (p: any) => p.resource === 'REPORTS' && (p.action === 'EXPORT' || p.action === 'EDIT')
+        )
+        setCanUpload(data?.role === 'OWNER' || data?.role === 'ADMIN' || hasReportsPermission)
       } catch (err) {
-        setIsOwner(false)
+        console.error('Failed to fetch user info:', err)
+        setCanUpload(false)
       }
     }
 
@@ -207,7 +215,7 @@ export default function FreeeReportsPage() {
               {csvData.period.end_date}）
             </div>
           )}
-          {isOwner && (
+          {canUpload && (
             <div className="relative">
               <input
                 type="file"
@@ -270,7 +278,7 @@ export default function FreeeReportsPage() {
                   <p className="text-sm text-gray-600 font-semibold">
                     まだfreeeデータがアップロードされていません。
                   </p>
-                  {isOwner && (
+                  {canUpload ? (
                     <div className="text-sm text-gray-600 space-y-2">
                       <p className="font-medium">CSVファイルのダウンロード手順：</p>
                       <ol className="list-decimal list-inside space-y-1 ml-2">
@@ -281,10 +289,9 @@ export default function FreeeReportsPage() {
                         <li>ダウンロードした3つのCSVファイルをこのページにアップロード</li>
                       </ol>
                     </div>
-                  )}
-                  {!isOwner && (
+                  ) : (
                     <p className="text-sm text-gray-600">
-                      オーナーに更新を依頼してください。
+                      管理者に更新を依頼してください。
                     </p>
                   )}
                 </div>
