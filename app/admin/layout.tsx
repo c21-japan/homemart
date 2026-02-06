@@ -1,20 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { hasPermission, type Feature, type PermissionType } from '@/lib/auth/permissions'
 
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
 export const runtime = 'nodejs'
 
-const navigation = [
+type NavItem = {
+  name: string
+  href: string
+  icon: string
+  requiredPermission?: { feature: Feature; type: PermissionType }
+}
+
+const navigation: NavItem[] = [
   { name: 'ダッシュボード', href: '/admin', icon: '📊' },
   { name: '顧客管理', href: '/admin/customers', icon: '👥' },
   { name: '物件管理', href: '/admin/properties', icon: '🏠' },
   { name: 'リード管理', href: '/admin/leads', icon: '🎯' },
   { name: '勤怠管理', href: '/admin/attendance', icon: '⏰' },
   { name: 'パートタイム勤怠', href: '/admin/part-time-attendance', icon: '👷' },
+  {
+    name: '工程表',
+    href: '/admin/construction-schedule',
+    icon: '🗓️',
+    requiredPermission: { feature: 'CONSTRUCTION_SCHEDULE', type: 'VIEW' }
+  },
   { name: '内部申請', href: '/admin/internal-applications', icon: '📝' },
   { name: 'マニュアル', href: '/admin/manuals', icon: '📘' },
   { name: '問い合わせ', href: '/admin/inquiries', icon: '💬' },
@@ -32,6 +46,41 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
+  const [permissions, setPermissions] = useState<Record<string, string[]> | null>(null)
+  const [permissionsLoaded, setPermissionsLoaded] = useState(false)
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (!response.ok) {
+          setPermissions(null)
+          return
+        }
+        const data = await response.json()
+        setPermissions(data?.permissions || null)
+      } catch {
+        setPermissions(null)
+      } finally {
+        setPermissionsLoaded(true)
+      }
+    }
+
+    fetchPermissions()
+  }, [])
+
+  const filteredNavigation = useMemo(() => {
+    if (!permissionsLoaded) return navigation
+    return navigation.filter((item) => {
+      if (!item.requiredPermission) return true
+      if (!permissions) return false
+      return hasPermission(
+        permissions as Record<string, string[]>,
+        item.requiredPermission.feature,
+        item.requiredPermission.type
+      )
+    })
+  }, [permissions, permissionsLoaded])
 
   if (pathname === '/admin/login') {
     return <>{children}</>
@@ -55,7 +104,7 @@ export default function AdminLayout({
             </button>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
-            {navigation.map((item) => {
+            {filteredNavigation.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link
@@ -84,7 +133,7 @@ export default function AdminLayout({
             <h1 className="text-xl font-display text-[#F4C84B]">管理画面</h1>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
-            {navigation.map((item) => {
+            {filteredNavigation.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link

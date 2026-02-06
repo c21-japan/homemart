@@ -19,6 +19,7 @@ export const FEATURES = {
   INTERNAL_APPLICATIONS: '社内申請',
   ATTENDANCE: '勤怠管理',
   PART_TIME_ATTENDANCE: 'アルバイト勤怠',
+  CONSTRUCTION_SCHEDULE: '工程表',
   FLYERS: 'チラシマーケティング',
   REFORM_PROJECTS: '施工実績',
   REFORM_WORKERS: 'リフォーム職人管理',
