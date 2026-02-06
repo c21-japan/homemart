@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   // OWNER、ADMIN、またはREPORTS権限を持つユーザーのみアップロード可能
   if (session.role !== 'OWNER' && session.role !== 'ADMIN') {
-    const permissions = getUserPermissions(session.userId)
+    const permissions = await getUserPermissions(session.userId)
     if (!permissions || !hasPermission(permissions, 'REPORTS', 'EXPORT')) {
       return NextResponse.json({ message: '権限がありません' }, { status: 403 })
     }

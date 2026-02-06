@@ -31,7 +31,7 @@ export async function PUT(
     }
 
     const { permissions } = (await request.json()) as { permissions: UserPermissions }
-    const success = updateUserPermissions(id, permissions)
+    const success = await updateUserPermissions(id, permissions)
 
     if (success) {
       return NextResponse.json({ message: '権限を更新しました' })

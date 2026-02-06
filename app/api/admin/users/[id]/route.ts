@@ -26,7 +26,7 @@ export async function GET(
       return NextResponse.json({ message: '認証が必要です' }, { status: 401 })
     }
 
-    const permissions = getUserPermissions(session.userId)
+    const permissions = await getUserPermissions(session.userId)
     if (!permissions || !hasPermission(permissions, 'USERS', 'VIEW')) {
       return NextResponse.json({ message: '権限がありません' }, { status: 403 })
     }
@@ -56,7 +56,7 @@ export async function PUT(
       return NextResponse.json({ message: '認証が必要です' }, { status: 401 })
     }
 
-    const permissions = getUserPermissions(session.userId)
+    const permissions = await getUserPermissions(session.userId)
     if (!permissions || !hasPermission(permissions, 'USERS', 'EDIT')) {
       return NextResponse.json({ message: '権限がありません' }, { status: 403 })
     }

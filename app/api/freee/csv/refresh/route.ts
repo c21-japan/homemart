@@ -25,7 +25,7 @@ export async function POST() {
     )
   }
 
-  const permissions = getUserPermissions(session.userId)
+  const permissions = await getUserPermissions(session.userId)
   if (!permissions || !hasPermission(permissions, 'REPORTS', 'EXPORT')) {
     return NextResponse.json({ message: '権限がありません' }, { status: 403 })
   }

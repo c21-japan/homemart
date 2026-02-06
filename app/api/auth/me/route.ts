@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ message: '認証されていません' }, { status: 401 })
     }
 
-    const permissions = getUserPermissions(session.userId)
+    const permissions = await getUserPermissions(session.userId)
 
     return NextResponse.json({
       id: session.userId,
