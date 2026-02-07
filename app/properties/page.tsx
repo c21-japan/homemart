@@ -101,8 +101,10 @@ function PropertiesContent() {
       const suumoData = await suumoResponse.json()
       const suumoItems = Array.isArray(suumoData?.items) ? suumoData.items : []
 
-      const normalizeType = (value: string) => {
-        if (!value) return '物件'
+      const normalizeType = (value: string, sourceUrl: string) => {
+        if (!value) {
+          return sourceUrl.includes('suumo.jp/ikkodate') ? '新築戸建' : '物件'
+        }
         if (value.includes('新築')) return '新築戸建'
         if (value.includes('中古')) return '中古戸建'
         if (value.includes('土地')) return '土地'
@@ -115,6 +117,7 @@ function PropertiesContent() {
         const priceText = typeof item.price === 'string' ? item.price.trim() : ''
         const numericMatch = priceText.replace(/,/g, '').match(/\d+(\.\d+)?/)
         const priceValue = numericMatch ? Number(numericMatch[0]) : 0
+        const sourceUrl = item.source_url || ''
 
         return {
           id: `suumo-${item.id}`,
@@ -124,10 +127,10 @@ function PropertiesContent() {
           prefecture: '',
           city: '',
           address: item.address || '',
-          property_type: normalizeType(item.property_type || ''),
+          property_type: normalizeType(item.property_type || '', sourceUrl),
           image_url: item.image_url || '',
           created_at: item.fetched_at || new Date().toISOString(),
-          source_url: item.source_url || ''
+          source_url: sourceUrl
         } as Property
       })
 
