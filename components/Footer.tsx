@@ -36,6 +36,7 @@ export default function Footer() {
               <li><Link href="/sell" className="hover:text-[#F4C84B]">売る</Link></li>
               <li><Link href="/reform" className="hover:text-[#F4C84B]">リフォーム</Link></li>
               <li><Link href="/contact" className="hover:text-[#F4C84B]">お問い合わせ</Link></li>
+              <li><Link href="/suumo" className="hover:text-[#F4C84B]">SUUMO掲載</Link></li>
             </ul>
           </div>
 
