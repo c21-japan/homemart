@@ -76,17 +76,18 @@ export default function PropertyDetail() {
 
   useEffect(() => {
     if (params?.id) {
+      const rawId = Array.isArray(params.id) ? params.id[0] : params.id
       console.log('PropertyDetail: コンポーネントがマウントされました')
-      console.log('PropertyDetail: パラメータID:', params.id)
+      console.log('PropertyDetail: パラメータID:', rawId)
       console.log('PropertyDetail: Supabase設定:', {
         url: process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
       })
-      if (typeof params.id === 'string' && params.id.startsWith('suumo-')) {
-        fetchSuumoProperty(params.id)
+      if (typeof rawId === 'string' && rawId.startsWith('suumo-')) {
+        fetchSuumoProperty(rawId)
         return
       }
-      fetchProperty(params.id as string)
+      fetchProperty(rawId as string)
     }
   }, [params?.id])
 
