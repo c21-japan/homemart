@@ -24,7 +24,6 @@ export default function Footer() {
             <div className="mt-6 space-y-2 text-sm text-[#F6EBD2]/80">
               <p>〒635-0834 奈良県北葛城郡広陵町笠287-1</p>
               <p>TEL: 0120-43-8639</p>
-              <p>MAIL: info@homemart-nara.com</p>
             </div>
           </div>
 
@@ -39,7 +38,6 @@ export default function Footer() {
               <li><Link href="/sell" className="hover:text-[#F4C84B]">売る</Link></li>
               <li><Link href="/reform" className="hover:text-[#F4C84B]">リフォーム</Link></li>
               <li><Link href="/contact" className="hover:text-[#F4C84B]">お問い合わせ</Link></li>
-              <li><Link href="/properties-new" className="hover:text-[#F4C84B]">新築戸建</Link></li>
             </ul>
           </div>
 
@@ -51,12 +49,6 @@ export default function Footer() {
               <li><Link href="/staff" className="hover:text-[#F4C84B]">スタッフ</Link></li>
               <li><Link href="/reasons" className="hover:text-[#F4C84B]">選ばれる理由</Link></li>
             </ul>
-            <div className="mt-6 border-t border-[#F4C84B]/30 pt-4">
-              <p className="text-xs uppercase tracking-[0.25em] text-[#F4C84B]/70">Admin</p>
-              <Link href="/admin" className="mt-2 inline-flex items-center gap-2 rounded-full border border-[#F4C84B]/40 px-4 py-2 text-xs font-semibold text-[#F4C84B] transition hover:bg-[#F4C84B] hover:text-[#15130D]">
-                管理画面
-              </Link>
-            </div>
           </div>
         </div>
 
