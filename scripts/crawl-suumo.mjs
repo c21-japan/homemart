@@ -79,10 +79,12 @@ const overlayLogo = async (imagePath) => {
   const left = Math.max(0, metadata.width - (logoMeta.width || targetWidth) - margin)
   const top = Math.max(0, metadata.height - (logoMeta.height || targetWidth) - margin)
 
+  const tempPath = `${imagePath}.tmp`
   await image
     .composite([{ input: logoBuffer, left, top }])
     .jpeg({ quality: 90 })
-    .toFile(imagePath)
+    .toFile(tempPath)
+  await fs.rename(tempPath, imagePath)
 }
 
 const fetchHtml = async (url) => {
