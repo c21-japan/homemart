@@ -39,18 +39,20 @@ const sanitizeText = (value = '') =>
 
 const hashId = (input) => crypto.createHash('md5').update(input).digest('hex').slice(0, 12)
 
-const ensureDirs = async () => {
+const ensureDirs = async ({ cleanImages }) => {
   await fs.mkdir(OUTPUT_DIR, { recursive: true })
   await fs.mkdir(IMAGE_DIR, { recursive: true })
-  try {
-    const files = await fs.readdir(IMAGE_DIR)
-    await Promise.all(
-      files
-        .filter((file) => file.endsWith('.jpg'))
-        .map((file) => fs.unlink(path.join(IMAGE_DIR, file)))
-    )
-  } catch {
-    // ignore cleanup errors
+  if (cleanImages) {
+    try {
+      const files = await fs.readdir(IMAGE_DIR)
+      await Promise.all(
+        files
+          .filter((file) => file.endsWith('.jpg'))
+          .map((file) => fs.unlink(path.join(IMAGE_DIR, file)))
+      )
+    } catch {
+      // ignore cleanup errors
+    }
   }
 }
 
@@ -109,17 +111,30 @@ const overlayLogo = async (imagePath) => {
   await fs.rename(tempPath, imagePath)
 }
 
-const fetchHtml = async (url) => {
-  const response = await fetchWithTimeout(url, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+const fetchHtml = async (url, attempts = 3) => {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      const response = await fetchWithTimeout(
+        url,
+        {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+          }
+        },
+        60000
+      )
+      if (!response.ok) {
+        throw new Error(`Fetch failed: ${response.status} ${url}`)
+      }
+      return response.text()
+    } catch (error) {
+      lastError = error
+      await sleep(1500 * (i + 1))
     }
-  }, 30000)
-  if (!response.ok) {
-    throw new Error(`Fetch failed: ${response.status} ${url}`)
   }
-  return response.text()
+  throw lastError
 }
 
 const extractDetailLinks = (html) => {
@@ -394,23 +409,46 @@ const extractUnits = ($) => {
   return units
 }
 
-const crawl = async ({ limit, delayMin, delayMax }) => {
-  await ensureDirs()
+const crawl = async ({ limit, offset, delayMin, delayMax, resume }) => {
+  await ensureDirs({ cleanImages: !resume })
 
   const useSystemChrome = process.env.USE_SYSTEM_CHROME === '1'
   if (useSystemChrome) {
     console.log('USE_SYSTEM_CHROME=1 is set, but this crawler uses fetch/cheerio.')
   }
 
+  let existingItems = []
+  const existingIds = new Set()
+  if (resume) {
+    try {
+      const existing = JSON.parse(await fs.readFile(OUTPUT_JSON, 'utf-8'))
+      existingItems = Array.isArray(existing?.items) ? existing.items : []
+      existingItems.forEach((item) => {
+        if (item?.id) existingIds.add(item.id)
+      })
+    } catch {
+      // ignore missing or invalid existing data
+    }
+  }
+
   const listHtml = await fetchHtml(SUUMO_URL)
   const detailLinks = extractDetailLinks(listHtml)
-  const targets = detailLinks.slice(0, limit)
+  const sliced = detailLinks.slice(offset, offset + limit)
+  const targets = resume
+    ? sliced.filter((url) => !existingIds.has(hashId(url)))
+    : sliced
 
   const results = []
 
   for (let index = 0; index < targets.length; index += 1) {
     const url = targets[index]
-    const detailHtml = await fetchHtml(url)
+    let detailHtml = ''
+    try {
+      detailHtml = await fetchHtml(url)
+    } catch (error) {
+      console.error(`Detail fetch failed for ${url}:`, error)
+      continue
+    }
     const $ = load(detailHtml)
 
     const title = sanitizeText($('h1').first().text()) || `物件 ${index + 1}`
@@ -539,25 +577,31 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
     }
   }
 
+  const merged = resume ? [...existingItems, ...results] : results
+
   await fs.writeFile(OUTPUT_JSON, JSON.stringify({
     source: 'suumo',
     url: SUUMO_URL,
     fetched_at: new Date().toISOString(),
-    items: results
+    items: merged
   }, null, 2))
 
-  console.log(`Saved ${results.length} items to ${OUTPUT_JSON}`)
+  console.log(`Saved ${results.length} items to ${OUTPUT_JSON} (total ${merged.length})`)
 }
 
 const args = process.argv.slice(2)
 const limitArg = Number(args.find((arg) => arg.startsWith('--limit='))?.split('=')[1])
+const offsetArg = Number(args.find((arg) => arg.startsWith('--offset='))?.split('=')[1])
 const delayMinArg = Number(args.find((arg) => arg.startsWith('--delay-min='))?.split('=')[1])
 const delayMaxArg = Number(args.find((arg) => arg.startsWith('--delay-max='))?.split('=')[1])
+const resumeArg = args.includes('--resume')
 
 crawl({
   limit: Number.isFinite(limitArg) && limitArg > 0 ? limitArg : DEFAULT_LIMIT,
+  offset: Number.isFinite(offsetArg) && offsetArg >= 0 ? offsetArg : 0,
   delayMin: Number.isFinite(delayMinArg) && delayMinArg > 0 ? delayMinArg : DEFAULT_DELAY_MIN,
-  delayMax: Number.isFinite(delayMaxArg) && delayMaxArg > 0 ? delayMaxArg : DEFAULT_DELAY_MAX
+  delayMax: Number.isFinite(delayMaxArg) && delayMaxArg > 0 ? delayMaxArg : DEFAULT_DELAY_MAX,
+  resume: resumeArg
 }).catch((error) => {
   console.error(error)
   process.exit(1)
