@@ -10,6 +10,7 @@ interface Property {
   id: string
   name: string
   price: number
+  price_text?: string
   prefecture: string
   city: string
   address: string
@@ -25,6 +26,7 @@ interface Property {
   is_new?: boolean
   staff_comment?: string
   created_at: string
+  source_url?: string
 }
 
 // URLパラメータを処理するコンポーネント
@@ -83,8 +85,44 @@ function PropertiesContent() {
 
       if (supabaseError) throw supabaseError
       
-      setProperties(data || [])
-      setFilteredProperties(data || [])
+      if (data && data.length > 0) {
+        setProperties(data)
+        setFilteredProperties(data)
+        return
+      }
+
+      const suumoResponse = await fetch('/suumo/properties.json', { cache: 'no-store' })
+      if (!suumoResponse.ok) {
+        setProperties([])
+        setFilteredProperties([])
+        return
+      }
+
+      const suumoData = await suumoResponse.json()
+      const suumoItems = Array.isArray(suumoData?.items) ? suumoData.items : []
+
+      const normalized = suumoItems.map((item: any) => {
+        const priceText = typeof item.price === 'string' ? item.price.trim() : ''
+        const numericMatch = priceText.replace(/,/g, '').match(/\d+(\.\d+)?/)
+        const priceValue = numericMatch ? Number(numericMatch[0]) : 0
+
+        return {
+          id: `suumo-${item.id}`,
+          name: item.title || '物件',
+          price: Number.isFinite(priceValue) ? priceValue : 0,
+          price_text: priceText || undefined,
+          prefecture: '',
+          city: '',
+          address: item.address || '',
+          property_type: item.property_type || '物件',
+          image_url: item.image_url || '',
+          created_at: item.fetched_at || new Date().toISOString(),
+          source_url: item.source_url || ''
+        } as Property
+      })
+
+      setProperties(normalized)
+      setFilteredProperties(normalized)
     } catch (err) {
       console.error('物件データの取得エラー:', err)
       setError('物件データの取得に失敗しました')
@@ -229,7 +267,12 @@ function PropertiesContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property.id}
+                property={property}
+                showFavoriteButton={!property.id.startsWith('suumo-')}
+                linkTo={property.source_url || undefined}
+              />
             ))}
           </div>
         )}

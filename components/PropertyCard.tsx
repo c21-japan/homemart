@@ -11,6 +11,7 @@ interface PropertyCardProps {
     id: string
     name: string
     price: number
+    price_text?: string
     property_type: string
     address: string
     image_url?: string
@@ -111,6 +112,10 @@ export default function PropertyCard({
 
   const handleCardClick = () => {
     if (linkTo) {
+      if (linkTo.startsWith('http')) {
+        window.open(linkTo, '_blank', 'noopener,noreferrer')
+        return
+      }
       router.push(linkTo)
       return
     }
@@ -190,7 +195,7 @@ export default function PropertyCard({
         </h3>
         
         <p className="mb-2 text-2xl font-semibold text-[#15130D]">
-          {property.price.toLocaleString()}万円
+          {property.price_text ?? `${property.price.toLocaleString()}万円`}
         </p>
         
         <p className="mb-3 line-clamp-1 text-sm text-[#5B4E37]">
