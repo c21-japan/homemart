@@ -618,7 +618,10 @@ export default function PropertyDetail() {
 
           {/* 右側：お問い合わせ */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+            <div
+              className="bg-white rounded-lg shadow-lg p-6 sticky"
+              style={{ top: 'calc(var(--public-header-height) + 1rem)' }}
+            >
               <h2 className="text-xl font-bold mb-4">お問い合わせ</h2>
               <div className="space-y-4">
                 <a

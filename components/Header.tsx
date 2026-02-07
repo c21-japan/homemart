@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export function Header() {
   return (
-    <header className="relative z-20">
+    <header className="sticky top-0 z-30">
       <div className="bg-[#15130D] text-[#FFF6DE]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 text-xs tracking-[0.3em] uppercase">
           <span>Century 21 HomeMart</span>
