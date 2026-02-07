@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface SuumoItem {
   id: string
@@ -55,11 +56,9 @@ export default async function SuumoPage() {
         ) : (
           <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
-              <a
+              <Link
                 key={item.id}
-                href={item.source_url}
-                target="_blank"
-                rel="noreferrer"
+                href={`/properties/suumo-${item.id}`}
                 className="group rounded-3xl border border-[#EAD8A6] bg-white shadow-[0_14px_30px_rgba(21,19,13,0.08)] transition hover:-translate-y-1"
               >
                 <div className="relative h-48 w-full overflow-hidden rounded-t-3xl bg-[#F8E7B8]/40">
@@ -90,7 +89,7 @@ export default async function SuumoPage() {
                     {item.company_name} / TEL: {item.company_tel}
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         )}
