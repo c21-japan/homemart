@@ -83,23 +83,15 @@ function PropertiesContent() {
         .eq('status', 'published')
         .order('created_at', { ascending: false })
 
-      if (supabaseError) throw supabaseError
-      
-      if (data && data.length > 0) {
-        setProperties(data)
-        setFilteredProperties(data)
-        return
+      const baseProperties = Array.isArray(data) ? data : []
+      if (supabaseError) {
+        console.warn('Supabase fetch failed, falling back to SUUMO only:', supabaseError)
       }
 
       const suumoResponse = await fetch('/suumo/properties.json', { cache: 'no-store' })
-      if (!suumoResponse.ok) {
-        setProperties([])
-        setFilteredProperties([])
-        return
-      }
-
-      const suumoData = await suumoResponse.json()
-      const suumoItems = Array.isArray(suumoData?.items) ? suumoData.items : []
+      const suumoItems = suumoResponse.ok
+        ? (await suumoResponse.json())?.items ?? []
+        : []
 
       const normalizeType = (value: string, sourceUrl: string) => {
         if (!value) {
@@ -134,8 +126,9 @@ function PropertiesContent() {
         } as Property
       })
 
-      setProperties(normalized)
-      setFilteredProperties(normalized)
+      const combined = [...baseProperties, ...normalized]
+      setProperties(combined)
+      setFilteredProperties(combined)
     } catch (err) {
       console.error('物件データの取得エラー:', err)
       setError('物件データの取得に失敗しました')
