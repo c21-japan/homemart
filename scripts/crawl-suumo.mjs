@@ -74,10 +74,9 @@ const overlayLogo = async (imagePath) => {
     .toBuffer()
 
   const logoMeta = await sharp(logoBuffer).metadata()
-  const margin = Math.round(Math.min(metadata.width, metadata.height) * 0.03)
 
-  const left = Math.max(0, metadata.width - (logoMeta.width || targetWidth) - margin)
-  const top = Math.max(0, metadata.height - (logoMeta.height || targetWidth) - margin)
+  const left = Math.max(0, metadata.width - (logoMeta.width || targetWidth))
+  const top = Math.max(0, metadata.height - (logoMeta.height || targetWidth))
 
   const tempPath = `${imagePath}.tmp`
   await image

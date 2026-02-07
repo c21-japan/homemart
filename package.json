@@ -19,6 +19,8 @@
     "setup:env": "cp .env.example .env.local",
     "setup:all": "npm run setup:env && npm run setup:db",
     "seed:customers": "npx tsx scripts/seed-customers.ts",
+    "crawl:suumo": "node scripts/crawl-suumo.mjs --limit=20 --delay-min=5000 --delay-max=9000",
+    "crawl:suumo:test": "node scripts/crawl-suumo.mjs --limit=1 --delay-min=1000 --delay-max=2000",
     "cron:daily": "curl -X POST http://localhost:3000/api/cron/daily",
     "cron:manager": "curl -X POST http://localhost:3000/api/cron/manager",
     "prepare": "husky install"
