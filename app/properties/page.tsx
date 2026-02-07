@@ -277,7 +277,11 @@ function PropertiesContent() {
                 key={property.id}
                 property={property}
                 showFavoriteButton={!property.id.startsWith('suumo-')}
-                linkTo={property.source_url || undefined}
+                linkTo={
+                  property.id.startsWith('suumo-')
+                    ? `/properties/suumo/${property.id.replace('suumo-', '')}`
+                    : undefined
+                }
               />
             ))}
           </div>
