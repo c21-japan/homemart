@@ -1,7 +1,7 @@
 {
   "source": "suumo",
   "url": "https://suumo.jp/ikkodate/__JJ_JJ010FJ001_arz1060z2bsz1020z2kkcz1126506001z2kkcz1126506002z2kkcz1126506005z2kkcz1126506006z2kkcz1126506007z2kkcz1126506008z2kkcz1126506009z2kkcz1126506010z2kkcz1126506011z2kkcz1126506013z2kkcz1126506014z2kkcz1126506015.html",
-  "fetched_at": "2026-02-07T11:07:00.014Z",
+  "fetched_at": "2026-02-07T13:29:52.378Z",
   "items": [
     {
       "id": "77a2a607550a",
@@ -43,6 +43,7 @@
         "/suumo/images/77a2a607550a_23.jpg",
         "/suumo/images/77a2a607550a_24.jpg",
         "/suumo/images/77a2a607550a_25.jpg",
+        "/suumo/images/77a2a607550a_26.jpg",
         "/suumo/images/77a2a607550a_27.jpg",
         "/suumo/images/77a2a607550a_28.jpg",
         "/suumo/images/77a2a607550a_29.jpg",
@@ -197,14 +198,14 @@
           "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1676.jpg",
-          "category": "２号棟",
-          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ２号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1677.jpg",
           "category": "３号棟",
           "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1676.jpg",
+          "category": "２号棟",
+          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ２号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1660.jpg",
@@ -233,7 +234,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:02:00.231Z"
+      "fetched_at": "2026-02-07T13:24:23.314Z"
     },
     {
       "id": "0ba1bf564e15",
@@ -466,7 +467,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:02:18.488Z"
+      "fetched_at": "2026-02-07T13:24:35.557Z"
     },
     {
       "id": "63511117e8d8",
@@ -651,14 +652,14 @@
           "caption": "(１号棟)、価格2390万円、4LDK+S、土地面積155.55m<sup>2</sup>、建物面積104.27m<sup>2</sup>"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1456.jpg",
-          "category": "４号棟",
-          "caption": "南丹市園部町横田 一戸建て 全４邸 ４号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1455.jpg",
           "category": "３号棟",
           "caption": "南丹市園部町横田 一戸建て 全４邸 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1456.jpg",
+          "category": "４号棟",
+          "caption": "南丹市園部町横田 一戸建て 全４邸 ４号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1431.jpg",
@@ -687,7 +688,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:02:34.495Z"
+      "fetched_at": "2026-02-07T13:24:49.612Z"
     },
     {
       "id": "5bbdbb857c1e",
@@ -847,7 +848,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:02:49.660Z"
+      "fetched_at": "2026-02-07T13:25:12.990Z"
     },
     {
       "id": "852b82bf3973",
@@ -1155,14 +1156,9 @@
           "caption": "(１号棟)、価格3280万円、4LDK+S、土地面積138.21m<sup>2</sup>、建物面積99.36m<sup>2</sup>"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1547.jpg",
-          "category": "５号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 ５号棟"
-        },
-        {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1545.jpg",
-          "category": "３号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 ３号棟"
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1550.jpg",
+          "category": "８号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ８号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1549.jpg",
@@ -1170,9 +1166,9 @@
           "caption": "大津市坂本 一戸建て 全１７邸 ７号棟"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1548.jpg",
-          "category": "６号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 ６号棟"
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1558.jpg",
+          "category": "１６号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １６号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1557.jpg",
@@ -1180,19 +1176,24 @@
           "caption": "大津市坂本 一戸建て 全１７邸 １５号棟"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1554.jpg",
-          "category": "１２号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 １２号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1555.jpg",
           "category": "１３号棟",
           "caption": "大津市坂本 一戸建て 全１７邸 １３号棟"
         },
         {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1556.jpg",
+          "category": "１４号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １４号棟"
+        },
+        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1544.jpg",
           "category": "２号棟",
           "caption": "大津市坂本 一戸建て 全１７邸 ２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1548.jpg",
+          "category": "６号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ６号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1507.jpg",
@@ -1286,7 +1287,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:03:09.899Z"
+      "fetched_at": "2026-02-07T13:25:42.452Z"
     },
     {
       "id": "705db8aa482f",
@@ -1500,7 +1501,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:03:23.866Z"
+      "fetched_at": "2026-02-07T13:26:03.355Z"
     },
     {
       "id": "ebdf49ac59c9",
@@ -1755,7 +1756,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:03:45.523Z"
+      "fetched_at": "2026-02-07T13:26:19.236Z"
     },
     {
       "id": "bf91723c98ac",
@@ -1998,7 +1999,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:03:59.627Z"
+      "fetched_at": "2026-02-07T13:26:37.008Z"
     },
     {
       "id": "33b75d0a34bc",
@@ -2241,7 +2242,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:04:22.767Z"
+      "fetched_at": "2026-02-07T13:26:56.870Z"
     },
     {
       "id": "37327f0f39cd",
@@ -2532,7 +2533,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:04:41.432Z"
+      "fetched_at": "2026-02-07T13:27:13.260Z"
     },
     {
       "id": "ffc8c9bf08dc",
@@ -2692,7 +2693,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:04:55.772Z"
+      "fetched_at": "2026-02-07T13:27:30.334Z"
     },
     {
       "id": "74f1828f6bed",
@@ -2921,14 +2922,14 @@
           "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1687.jpg",
-          "category": "4号地",
-          "caption": "東大阪市布市町 全５邸 一戸建て第１期 4号地"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1606.jpg",
           "category": "３号地",
           "caption": "東大阪市布市町 全５邸 一戸建て第１期 ３号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1687.jpg",
+          "category": "4号地",
+          "caption": "東大阪市布市町 全５邸 一戸建て第１期 4号地"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1580.jpg",
@@ -2967,7 +2968,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:05:12.383Z"
+      "fetched_at": "2026-02-07T13:27:46.645Z"
     },
     {
       "id": "50e0a46c6f0a",
@@ -3160,7 +3161,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:05:23.122Z"
+      "fetched_at": "2026-02-07T13:28:00.272Z"
     },
     {
       "id": "277c3b0f6908",
@@ -3377,7 +3378,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:05:36.809Z"
+      "fetched_at": "2026-02-07T13:28:17.053Z"
     },
     {
       "id": "93071092a755",
@@ -3620,7 +3621,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:05:49.375Z"
+      "fetched_at": "2026-02-07T13:28:31.401Z"
     },
     {
       "id": "225ac7ce867d",
@@ -3841,7 +3842,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:06:04.627Z"
+      "fetched_at": "2026-02-07T13:28:49.579Z"
     },
     {
       "id": "9bcaec97b898",
@@ -4001,7 +4002,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:06:18.757Z"
+      "fetched_at": "2026-02-07T13:29:12.057Z"
     },
     {
       "id": "3073552b4236",
@@ -4161,7 +4162,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:06:31.323Z"
+      "fetched_at": "2026-02-07T13:29:23.202Z"
     },
     {
       "id": "d2e302551c29",
@@ -4390,7 +4391,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:06:45.623Z"
+      "fetched_at": "2026-02-07T13:29:37.016Z"
     },
     {
       "id": "4c90e283aa69",
@@ -4603,7 +4604,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T11:07:00.014Z"
+      "fetched_at": "2026-02-07T13:29:52.378Z"
     }
   ]
 }

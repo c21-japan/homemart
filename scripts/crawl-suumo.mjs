@@ -52,13 +52,33 @@ const ensureDirs = async () => {
   }
 }
 
-const downloadImage = async (url, destPath) => {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Image download failed: ${response.status} ${url}`)
+const fetchWithTimeout = async (url, options = {}, timeoutMs = 20000) => {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
   }
-  const buffer = Buffer.from(await response.arrayBuffer())
-  await fs.writeFile(destPath, buffer)
+}
+
+const downloadImage = async (url, destPath, attempts = 3) => {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      const response = await fetchWithTimeout(url, {}, 30000)
+      if (!response.ok) {
+        throw new Error(`Image download failed: ${response.status} ${url}`)
+      }
+      const buffer = Buffer.from(await response.arrayBuffer())
+      await fs.writeFile(destPath, buffer)
+      return
+    } catch (error) {
+      lastError = error
+      await sleep(1000 * (i + 1))
+    }
+  }
+  throw lastError
 }
 
 const overlayLogo = async (imagePath) => {
@@ -67,7 +87,8 @@ const overlayLogo = async (imagePath) => {
 
   if (!metadata.width || !metadata.height) return
 
-  const targetWidth = Math.max(160, Math.min(240, Math.round(metadata.width * 0.25)))
+  const baseWidth = Math.max(160, Math.min(240, Math.round(metadata.width * 0.25)))
+  const targetWidth = Math.min(metadata.width, Math.round(baseWidth * 1.5))
   const logoBuffer = await sharp(LOGO_PATH)
     .resize({ width: targetWidth })
     .png()
@@ -87,12 +108,12 @@ const overlayLogo = async (imagePath) => {
 }
 
 const fetchHtml = async (url) => {
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
     }
-  })
+  }, 30000)
   if (!response.ok) {
     throw new Error(`Fetch failed: ${response.status} ${url}`)
   }
