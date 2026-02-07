@@ -30,8 +30,10 @@ const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) 
 const sanitizeText = (value = '') =>
   value
     .replace(/住まいるプラス\s*1|住まいるプラス１|近畿住宅流通本店|近畿住宅流通/gi, COMPANY_NAME)
+    .replace(/センチュリー21ホームマートセンチュリー21ホームマート/g, COMPANY_NAME)
     .replace(/\b0?\d{2,4}-\d{2,4}-\d{3,4}\b/g, COMPANY_TEL)
     .replace(/奈良県北葛城郡広陵町笠287-1/g, COMPANY_ADDRESS)
+    .replace(/\[\s*■.*?\]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
 
@@ -139,13 +141,16 @@ const extractByLabel = ($, labels) => {
   let value = ''
   $('tr').each((_, row) => {
     if (value) return
-    const th = $(row).find('th').first()
-    const td = $(row).find('td').first()
-    if (!th.length || !td.length) return
-    const thText = (th.text() || '').replace(/\s+/g, '')
-    if (labelList.some((label) => thText.includes(label))) {
-      value = td.text()
-    }
+    const ths = $(row).find('th')
+    const tds = $(row).find('td')
+    if (!ths.length || !tds.length) return
+    ths.each((idx, th) => {
+      if (value) return
+      const thText = ($(th).text() || '').replace(/\s+/g, '')
+      if (!labelList.some((label) => thText.includes(label))) return
+      const td = tds.eq(idx).length ? tds.eq(idx) : $(th).next('td')
+      if (td.length) value = td.text()
+    })
   })
 
   if (value) return value
@@ -277,6 +282,74 @@ const extractEventInfo = (html) => {
   return match[0].replace(/<br\s*\/?>/gi, '\n')
 }
 
+const extractOverview = ($) => {
+  const labels = [
+    '建物構造',
+    '築年月',
+    '築年数',
+    '駐車場',
+    '私道負担',
+    '道路',
+    '接道',
+    '建ぺい率',
+    '容積率',
+    '地目',
+    '土地権利',
+    '国土法',
+    '取引態様',
+    '諸費用',
+    '都市計画',
+    '用途地域',
+    '建築確認番号',
+    '引渡し',
+    '現況'
+  ]
+  const overview = {}
+  labels.forEach((label) => {
+    const value = sanitizeText(extractByLabel($, [label]))
+    if (value) overview[label] = value
+  })
+  return overview
+}
+
+const extractEquipmentNotes = (imageMeta) => {
+  const keywords = /(QUIE|クワイエ|住宅性能|性能評価|複層ガラス|制震|耐震|断熱|省エネ|保証)/i
+  const notes = imageMeta
+    .map((meta) => sanitizeText(meta.caption || ''))
+    .filter((caption) => caption && keywords.test(caption))
+  return Array.from(new Set(notes))
+}
+
+const extractSurroundings = (imageMeta) => {
+  const target = new Set([
+    '駅',
+    'スーパー',
+    'コンビニ',
+    '小学校',
+    '中学校',
+    '幼稚園・保育園',
+    '病院',
+    '公園',
+    'ドラッグストア',
+    'ショッピングセンター',
+    '郵便局',
+    '銀行'
+  ])
+  return imageMeta
+    .filter((meta) => target.has(meta.category))
+    .map((meta) => {
+      const caption = sanitizeText(meta.caption || '')
+      const match = caption.match(/(.+?)まで(\d+\\w*)\\s*徒歩(\\d+分)?/)
+      return {
+        category: meta.category,
+        name: match ? sanitizeText(match[1]) : caption,
+        distance: match ? match[2] : '',
+        walk_time: match ? match[3] || '' : ''
+      }
+    })
+    .filter((item) => item.name)
+}
+
 const extractSitePlan = ($) => {
   let image = ''
   let caption = ''
@@ -366,11 +439,14 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
     const sitePlan = extractSitePlan($)
     const units = extractUnits($)
     const eventInfo = sanitizeText(extractEventInfo(detailHtml))
+    const overview = extractOverview($)
 
     const images = extractImages($)
     const imageMeta = extractImageMeta($)
     const mainImageUrl = images[0] || ''
     const featureList = extractFeatureList(detailHtml)
+    const equipmentNotes = extractEquipmentNotes(imageMeta)
+    const surroundings = extractSurroundings(imageMeta)
 
     const slug = hashId(url)
     const localImages = []
@@ -407,12 +483,11 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       if (unit.floor_plan_image) {
         const imagePath = path.join(IMAGE_DIR, `${slug}_unit${unitIndex + 1}_floorplan.jpg`)
         try {
-          await downloadImage(unit.floor_plan_image, imagePath)
-          await overlayLogo(imagePath)
-          floorPlanLocal = `/suumo/images/${slug}_unit${unitIndex + 1}_floorplan.jpg`
-        } catch (error) {
-          console.error(`Floor plan failed for ${url}:`, error)
-        }
+        await downloadImage(unit.floor_plan_image, imagePath)
+        floorPlanLocal = `/suumo/images/${slug}_unit${unitIndex + 1}_floorplan.jpg`
+      } catch (error) {
+        console.error(`Floor plan failed for ${url}:`, error)
+      }
       }
       unitData.push({
         name: sanitizeText(unit.name || ''),
@@ -438,6 +513,9 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       transportation,
       event_info: eventInfo,
       features: featureList.map((item) => sanitizeText(item)).filter(Boolean),
+      overview,
+      equipment_notes: equipmentNotes,
+      surroundings,
       images: localImages,
       site_plan_image: sitePlanImageLocal,
       units: unitData,

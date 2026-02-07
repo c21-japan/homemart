@@ -6,5 +6,5 @@ export default async function SuumoPropertyPage({
   params: Promise<{ id: string }>
 }) {
   const resolved = await params
-  redirect(`/properties/suumo-${resolved.id}`)
+  redirect(`/properties-new/${resolved.id}`)
 }
