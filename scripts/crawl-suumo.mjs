@@ -132,13 +132,77 @@ const extractByLabel = ($, labels) => {
 
 const extractImages = ($) => {
   const urls = []
-  $('img').each((_, img) => {
-    const src = $(img).attr('data-src') || $(img).attr('rel') || $(img).attr('src') || ''
+  $('a.carousel_item-object').each((_, el) => {
+    const src = $(el).attr('data-src') || ''
     if (!src || src.startsWith('data:')) return
     if (/logo|icon|sprite|blank/i.test(src)) return
     urls.push(src)
   })
+
+  $('input[id^="imgKukakuMadori_"][id$="orgn"]').each((_, el) => {
+    const value = $(el).attr('value') || ''
+    const url = value.split(',')[0]
+    if (!url) return
+    urls.push(url)
+  })
+
   return Array.from(new Set(urls))
+}
+
+const extractImageMeta = ($) => {
+  const images = []
+  $('a.carousel_item-object').each((_, el) => {
+    const src = $(el).attr('data-src') || ''
+    if (!src || src.startsWith('data:')) return
+    if (/logo|icon|sprite|blank/i.test(src)) return
+    images.push({
+      url: src,
+      category: $(el).attr('data-category') || '',
+      caption: $(el).attr('data-caption') || ''
+    })
+  })
+
+  $('input[id^="imgKukakuMadori_"][id$="orgn"]').each((_, el) => {
+    const value = $(el).attr('value') || ''
+    const [url, label] = value.split(',')
+    if (!url) return
+    images.push({
+      url,
+      category: label || '間取り図',
+      caption: ''
+    })
+  })
+
+  return images
+}
+
+const extractFeatureList = (html) => {
+  const match = html.match(/tokuchoPickupList\\s*:\\s*\\[(.*?)\\]/s)
+  if (!match) return []
+  const raw = `[${match[1]}]`
+  try {
+    const list = JSON.parse(raw)
+    return Array.isArray(list) ? list : []
+  } catch {
+    return []
+  }
+}
+
+const extractDescription = ($) => {
+  let description = ''
+  $('.section').each((_, section) => {
+    if (description) return
+    const heading = $(section).find('.section_h2-header_title').first().text()
+    if (heading && heading.includes('物件の特徴')) {
+      description = $(section).find('p.fs14').first().text()
+    }
+  })
+
+  if (!description) {
+    description = $('p.fs14').first().text()
+  }
+
+  return description
 }
 
 const crawl = async ({ limit, delayMin, delayMax }) => {
@@ -174,19 +238,31 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       sanitizeText($('.property_view_detail_type').first().text())
 
     const description = sanitizeText(
+      extractDescription($) ||
       $('.overview, .detailinfo-table, .section_detail').first().text()
     )
 
+    const layout = sanitizeText(extractByLabel($, ['間取り']))
+    const landArea = sanitizeText(extractByLabel($, ['土地面積']))
+    const buildingArea = sanitizeText(extractByLabel($, ['建物面積']))
+    const traffic = sanitizeText(extractByLabel($, ['交通']))
+
     const images = extractImages($)
+    const imageMeta = extractImageMeta($)
     const mainImageUrl = images[0] || ''
+    const featureList = extractFeatureList(detailHtml)
 
     const slug = hashId(url)
-    const imagePath = path.join(IMAGE_DIR, `${slug}.jpg`)
+    const localImages = []
 
-    if (mainImageUrl) {
+    for (let imgIndex = 0; imgIndex < images.length; imgIndex += 1) {
+      const imageUrl = images[imgIndex]
+      if (!imageUrl) continue
+      const imagePath = path.join(IMAGE_DIR, `${slug}_${imgIndex + 1}.jpg`)
       try {
-        await downloadImage(mainImageUrl, imagePath)
+        await downloadImage(imageUrl, imagePath)
         await overlayLogo(imagePath)
+        localImages.push(`/suumo/images/${slug}_${imgIndex + 1}.jpg`)
       } catch (error) {
         console.error(`Image failed for ${url}:`, error)
       }
@@ -197,9 +273,20 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       title: title || `物件 ${index + 1}`,
       price: price || '',
       address,
-      property_type: propertyType,
+      property_type: propertyType || '新築戸建',
       description,
-      image_url: mainImageUrl ? `/suumo/images/${slug}.jpg` : '',
+      layout,
+      land_area: landArea,
+      building_area: buildingArea,
+      traffic,
+      features: featureList.map((item) => sanitizeText(item)).filter(Boolean),
+      images: localImages,
+      image_meta: imageMeta.map((meta) => ({
+        url: meta.url,
+        category: sanitizeText(meta.category || ''),
+        caption: sanitizeText(meta.caption || '')
+      })),
+      image_url: localImages[0] || '',
       source_url: url,
       company_name: COMPANY_NAME,
       company_tel: COMPANY_TEL,

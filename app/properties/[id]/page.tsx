@@ -21,8 +21,10 @@ interface Property {
   walking_time?: number
   property_type: string
   land_area?: number
+  land_area_text?: string
   land_area_tsubo?: number
   building_area?: number
+  building_area_text?: string
   layout?: string
   building_age?: number
   build_year?: string
@@ -46,6 +48,7 @@ interface Property {
   shopping_facilities?: string
   public_facilities?: string
   transportation?: string
+  traffic?: string
   image_url?: string
   images?: string[]
   is_new?: boolean
@@ -122,12 +125,18 @@ export default function PropertyDetail() {
         price: Number.isFinite(priceValue) ? priceValue : 0,
         price_text: priceText || undefined,
         address: item.address || '',
-        property_type: item.property_type || '物件',
+        property_type: item.property_type || '新築戸建',
         created_at: item.fetched_at || new Date().toISOString(),
         updated_at: item.fetched_at || new Date().toISOString(),
-        image_url: item.image_url || '',
-        images: item.image_url ? [item.image_url] : [],
+        image_url: item.images?.[0] || item.image_url || '',
+        images: Array.isArray(item.images) ? item.images : item.image_url ? [item.image_url] : [],
+        layout: item.layout || '',
+        land_area_text: item.land_area || '',
+        building_area_text: item.building_area || '',
+        station: item.traffic || '',
         staff_comment: item.description || '',
+        sales_point: item.description || '',
+        features: Array.isArray(item.features) ? item.features : [],
         source_url: item.source_url || ''
       }
 
@@ -509,19 +518,21 @@ export default function PropertyDetail() {
             <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <h2 className="text-xl font-bold mb-4">土地・建物情報</h2>
               <div className="grid grid-cols-2 gap-4">
-                {property.land_area && (
+                {(property.land_area || property.land_area_text) && (
                   <div>
                     <span className="text-gray-600">土地面積</span>
                     <p className="font-medium">
-                      {property.land_area}㎡
+                      {property.land_area_text ?? `${property.land_area}㎡`}
                       {property.land_area_tsubo && ` (${property.land_area_tsubo}坪)`}
                     </p>
                   </div>
                 )}
-                {property.building_area && (
+                {(property.building_area || property.building_area_text) && (
                   <div>
                     <span className="text-gray-600">建物面積</span>
-                    <p className="font-medium">{property.building_area}㎡</p>
+                    <p className="font-medium">
+                      {property.building_area_text ?? `${property.building_area}㎡`}
+                    </p>
                   </div>
                 )}
                 {property.structure && (
