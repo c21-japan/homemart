@@ -5,6 +5,7 @@ import { supabase, testSupabaseConnection } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { getRelatedProperties } from '@/lib/supabase/related-properties'
+import { formatPrice } from '@/lib/formatPrice'
 
 interface Property {
   id: string
@@ -485,7 +486,7 @@ export default function PropertyDetailPage({ propertyId }: { propertyId: string 
             <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <h1 className="text-2xl font-bold mb-4">{property.title}</h1>
               <div className="text-3xl font-bold text-red-600 mb-4">
-                {property.price_text ?? `${property.price.toLocaleString()}万円`}
+                {property.price_text ?? formatPrice(property.price)}
               </div>
               
               {/* スタッフコメント */}
@@ -923,7 +924,7 @@ export default function PropertyDetailPage({ propertyId }: { propertyId: string 
                       <div className="p-3">
                         <h3 className="font-bold text-sm mb-1 line-clamp-2">{recentProperty.title}</h3>
                         <p className="text-lg font-bold text-red-600 mb-1">
-                          {recentProperty.price.toLocaleString()}万円
+                          {formatPrice(recentProperty.price)}
                         </p>
                         <p className="text-xs text-gray-600 line-clamp-1">{recentProperty.address}</p>
                         <p className="text-xs text-blue-500 font-medium">最近見た物件</p>

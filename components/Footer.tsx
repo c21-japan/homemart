@@ -31,8 +31,11 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-[#F4C84B]">サイト</h4>
             <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/properties-new" className="hover:text-[#F4C84B]">新築戸建</Link></li>
+              <li><Link href="/properties-used" className="hover:text-[#F4C84B]">中古戸建</Link></li>
+              <li><Link href="/properties-land" className="hover:text-[#F4C84B]">土地</Link></li>
+              <li><Link href="/properties-mansion" className="hover:text-[#F4C84B]">マンション</Link></li>
               <li><Link href="/properties" className="hover:text-[#F4C84B]">物件検索</Link></li>
-              <li><Link href="/buy" className="hover:text-[#F4C84B]">買う</Link></li>
               <li><Link href="/sell" className="hover:text-[#F4C84B]">売る</Link></li>
               <li><Link href="/reform" className="hover:text-[#F4C84B]">リフォーム</Link></li>
               <li><Link href="/contact" className="hover:text-[#F4C84B]">お問い合わせ</Link></li>
