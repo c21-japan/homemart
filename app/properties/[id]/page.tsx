@@ -47,10 +47,24 @@ interface Property {
   school_district?: string
   shopping_facilities?: string
   public_facilities?: string
-  transportation?: string
+  transportation?: Array<{
+    line: string
+    station: string
+    walk_time: string
+  }>
   traffic?: string
   image_url?: string
   images?: string[]
+  site_plan_image?: string
+  units?: Array<{
+    name: string
+    price: string
+    layout: string
+    land_area: string
+    building_area: string
+    floor_plan_image: string
+  }>
+  event_info?: string
   is_new?: boolean
   created_at: string
   updated_at: string
@@ -130,10 +144,14 @@ export default function PropertyDetail() {
         updated_at: item.fetched_at || new Date().toISOString(),
         image_url: item.images?.[0] || item.image_url || '',
         images: Array.isArray(item.images) ? item.images : item.image_url ? [item.image_url] : [],
+        site_plan_image: item.site_plan_image || '',
+        units: Array.isArray(item.units) ? item.units : [],
         layout: item.layout || '',
         land_area_text: item.land_area || '',
         building_area_text: item.building_area || '',
         station: item.traffic || '',
+        transportation: Array.isArray(item.transportation) ? item.transportation : [],
+        event_info: item.event_info || '',
         staff_comment: item.description || '',
         sales_point: item.description || '',
         features: Array.isArray(item.features) ? item.features : [],
@@ -499,6 +517,19 @@ export default function PropertyDetail() {
                     </p>
                   </div>
                 )}
+                {property.transportation && property.transportation.length > 0 && (
+                  <div className="col-span-2">
+                    <span className="text-gray-600">交通</span>
+                    <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                      {property.transportation.map((item, index) => (
+                        <li key={`${item.line}-${index}`}>
+                          {item.line ? `${item.line}「${item.station}」` : item.station}
+                          {item.walk_time ? ` ${item.walk_time}` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {property.layout && (
                   <div>
                     <span className="text-gray-600">間取り</span>
@@ -588,6 +619,65 @@ export default function PropertyDetail() {
                     </span>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {property.event_info && (
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 className="text-xl font-bold mb-4">イベント情報</h2>
+                <p className="whitespace-pre-wrap text-gray-700">{property.event_info}</p>
+              </div>
+            )}
+
+            {(property.site_plan_image || (property.units && property.units.length > 0)) && (
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 className="text-xl font-bold mb-4">区画・住戸情報</h2>
+                {property.site_plan_image && (
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-600 mb-2">区画図</p>
+                    <img
+                      src={property.site_plan_image}
+                      alt="区画図"
+                      className="w-full max-h-[360px] object-contain bg-gray-100 rounded"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                {property.units && property.units.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {property.units.map((unit, idx) => (
+                      <div key={`${unit.name}-${idx}`} className="border border-gray-200 rounded-lg p-4">
+                        <p className="font-semibold mb-2">{unit.name}</p>
+                        {unit.floor_plan_image && (
+                          <img
+                            src={unit.floor_plan_image}
+                            alt={`${unit.name} 間取り図`}
+                            className="w-full h-32 object-contain bg-gray-100 rounded mb-2"
+                            loading="lazy"
+                          />
+                        )}
+                        <dl className="text-sm text-gray-700 space-y-1">
+                          <div className="flex justify-between">
+                            <dt>価格</dt>
+                            <dd>{unit.price}</dd>
+                          </div>
+                          <div className="flex justify-between">
+                            <dt>間取り</dt>
+                            <dd>{unit.layout}</dd>
+                          </div>
+                          <div className="flex justify-between">
+                            <dt>土地面積</dt>
+                            <dd>{unit.land_area}</dd>
+                          </div>
+                          <div className="flex justify-between">
+                            <dt>建物面積</dt>
+                            <dd>{unit.building_area}</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

@@ -29,7 +29,7 @@ const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) 
 
 const sanitizeText = (value = '') =>
   value
-    .replace(/住まいるプラス1|近畿住宅流通/gi, COMPANY_NAME)
+    .replace(/住まいるプラス\s*1|住まいるプラス１|近畿住宅流通本店|近畿住宅流通/gi, COMPANY_NAME)
     .replace(/\b0?\d{2,4}-\d{2,4}-\d{3,4}\b/g, COMPANY_TEL)
     .replace(/奈良県北葛城郡広陵町笠287-1/g, COMPANY_ADDRESS)
     .replace(/\s+/g, ' ')
@@ -140,6 +140,40 @@ const extractByLabel = ($, labels) => {
   return value
 }
 
+const extractTransportation = ($) => {
+  const raw = extractByLabel($, ['交通'])
+  if (!raw) return []
+  const lines = raw
+    .split(/\n|<br\s*\/?>/i)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+
+  const results = []
+  const pattern = /(.*?)[「『]([^」』]+)[」』].*?(徒歩|歩)([^\\s]+)/g
+
+  lines.forEach((line) => {
+    let matched = false
+    let match
+    while ((match = pattern.exec(line)) !== null) {
+      matched = true
+      results.push({
+        line: sanitizeText(match[1]),
+        station: sanitizeText(match[2]),
+        walk_time: sanitizeText(`${match[3]}${match[4]}`)
+      })
+    }
+    if (!matched) {
+      results.push({
+        line: '',
+        station: sanitizeText(line),
+        walk_time: ''
+      })
+    }
+  })
+
+  return results
+}
+
 const extractImages = ($) => {
   const urls = []
   $('a.carousel_item-object').each((_, el) => {
@@ -215,6 +249,56 @@ const extractDescription = ($) => {
   return description
 }
 
+const extractEventInfo = (html) => {
+  const match = html.match(/現地説明会[^<]*<br>[^<]*|見学会[^<]*<br>[^<]*/i)
+  if (!match) return ''
+  return match[0].replace(/<br\s*\/?>/gi, '\n')
+}
+
+const extractSitePlan = ($) => {
+  let image = ''
+  let caption = ''
+  $('.secTitleInnerR').each((_, el) => {
+    const title = $(el).text().trim()
+    if (title === '区画図') {
+      const section = $(el).closest('.mt20')
+      image = section.find('img').attr('src') || ''
+      caption = section.find('p').first().text() || ''
+    }
+  })
+  return { image, caption }
+}
+
+const extractUnits = ($) => {
+  const units = []
+  $('.secTitleInnerR').each((_, el) => {
+    const title = $(el).text().trim()
+    if (title !== '間取り図') return
+    const section = $(el).closest('.mt20')
+    section.find('li.dibz').each((__, item) => {
+      const name = $(item).find('.icLoupeSide').first().text().trim()
+      const image = $(item).find('img').first().attr('src') || ''
+      const data = {}
+      $(item)
+        .find('dt')
+        .each((idx, dt) => {
+          const label = $(dt).text().trim()
+          const dd = $(dt).next('dd').text().trim().replace(/^：/, '')
+          data[label] = dd
+        })
+      units.push({
+        name,
+        price: data['価格'] || '',
+        layout: data['間取り'] || '',
+        land_area: data['土地面積'] || '',
+        building_area: data['建物面積'] || '',
+        floor_plan_image: image
+      })
+    })
+  })
+  return units
+}
+
 const crawl = async ({ limit, delayMin, delayMax }) => {
   await ensureDirs()
 
@@ -245,7 +329,7 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
 
     const propertyType =
       sanitizeText(extractByLabel($, ['物件種目', '種別'])) ||
-      sanitizeText($('.property_view_detail_type').first().text())
+      '新築戸建'
 
     const description = sanitizeText(
       extractDescription($) ||
@@ -256,6 +340,10 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
     const landArea = sanitizeText(extractByLabel($, ['土地面積']))
     const buildingArea = sanitizeText(extractByLabel($, ['建物面積']))
     const traffic = sanitizeText(extractByLabel($, ['交通']))
+    const transportation = extractTransportation($)
+    const sitePlan = extractSitePlan($)
+    const units = extractUnits($)
+    const eventInfo = sanitizeText(extractEventInfo(detailHtml))
 
     const images = extractImages($)
     const imageMeta = extractImageMeta($)
@@ -278,6 +366,42 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       }
     }
 
+    let sitePlanImageLocal = ''
+    if (sitePlan.image) {
+      const imagePath = path.join(IMAGE_DIR, `${slug}_siteplan.jpg`)
+      try {
+        await downloadImage(sitePlan.image, imagePath)
+        await overlayLogo(imagePath)
+        sitePlanImageLocal = `/suumo/images/${slug}_siteplan.jpg`
+      } catch (error) {
+        console.error(`Site plan failed for ${url}:`, error)
+      }
+    }
+
+    const unitData = []
+    for (let unitIndex = 0; unitIndex < units.length; unitIndex += 1) {
+      const unit = units[unitIndex]
+      let floorPlanLocal = ''
+      if (unit.floor_plan_image) {
+        const imagePath = path.join(IMAGE_DIR, `${slug}_unit${unitIndex + 1}_floorplan.jpg`)
+        try {
+          await downloadImage(unit.floor_plan_image, imagePath)
+          await overlayLogo(imagePath)
+          floorPlanLocal = `/suumo/images/${slug}_unit${unitIndex + 1}_floorplan.jpg`
+        } catch (error) {
+          console.error(`Floor plan failed for ${url}:`, error)
+        }
+      }
+      unitData.push({
+        name: sanitizeText(unit.name || ''),
+        price: sanitizeText(unit.price || ''),
+        layout: sanitizeText(unit.layout || ''),
+        land_area: sanitizeText(unit.land_area || ''),
+        building_area: sanitizeText(unit.building_area || ''),
+        floor_plan_image: floorPlanLocal || unit.floor_plan_image || ''
+      })
+    }
+
     results.push({
       id: slug,
       title: title || `物件 ${index + 1}`,
@@ -289,8 +413,12 @@ const crawl = async ({ limit, delayMin, delayMax }) => {
       land_area: landArea,
       building_area: buildingArea,
       traffic,
+      transportation,
+      event_info: eventInfo,
       features: featureList.map((item) => sanitizeText(item)).filter(Boolean),
       images: localImages,
+      site_plan_image: sitePlanImageLocal,
+      units: unitData,
       image_meta: imageMeta.map((meta) => ({
         url: meta.url,
         category: sanitizeText(meta.category || ''),
