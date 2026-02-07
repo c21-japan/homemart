@@ -1,307 +1,3497 @@
 {
   "source": "suumo",
   "url": "https://suumo.jp/ikkodate/__JJ_JJ010FJ001_arz1060z2bsz1020z2kkcz1126506001z2kkcz1126506002z2kkcz1126506005z2kkcz1126506006z2kkcz1126506007z2kkcz1126506008z2kkcz1126506009z2kkcz1126506010z2kkcz1126506011z2kkcz1126506013z2kkcz1126506014z2kkcz1126506015.html",
-  "fetched_at": "2026-02-07T05:32:53.470Z",
+  "fetched_at": "2026-02-07T09:20:03.388Z",
   "items": [
-    {
-      "id": "0ba1bf564e15",
-      "title": "東近江市宮荘町 一戸建て 全３邸第4期",
-      "price": "1980万円～2080万円 [ □支払シミュレーション ]",
-      "address": "滋賀県東近江市宮荘町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/0ba1bf564e15.jpg",
-      "source_url": "https://suumo.jp/ikkodate/shiga/sc_higashiomi/nc_78948940/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:10.477Z"
-    },
     {
       "id": "77a2a607550a",
       "title": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期",
       "price": "1980万円～2180万円 [ □支払シミュレーション ]",
       "address": "滋賀県犬上郡豊郷町大字四十九院 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/77a2a607550a.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "160.73m2～263.78m2（48.62坪～79.79坪）（登記）",
+      "building_area": "： 108.53m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1694.jpg",
+          "category": "現地外観写真",
+          "caption": "■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1674.jpg",
+          "category": "全体区画図",
+          "caption": "全３邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1698.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1689.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1690.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1688.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1691.jpg",
+          "category": "リビング以外の居室",
+          "caption": "和室<br>畳は、クッション性といぐさの香りがあり、家族みんなを癒してくれます。座布団を出して応接間、来客用の寝室にもできるので、多目的に使用できます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1692.jpg",
+          "category": "その他内観",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1693.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1697.jpg",
+          "category": "バルコニー",
+          "caption": "■陽当たり良好な南向きインナーバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1687.jpg",
+          "category": "現地外観写真",
+          "caption": "■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1696.jpg",
+          "category": "現地外観写真",
+          "caption": "■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1695.jpg",
+          "category": "現地外観写真",
+          "caption": "■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1699.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1700.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1701.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1702.jpg",
+          "category": "その他設備",
+          "caption": "火を使わないので、安心なＩＨコンロ！でこぼこが無い構造なので、掃除もしやすく清潔に保てます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1703.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1658.jpg",
+          "category": "駅",
+          "caption": "近江鉄道本線「豊郷」駅まで1120m 徒歩14分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1659.jpg",
+          "category": "スーパー",
+          "caption": "丸善アスト店まで2280m 徒歩29分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1663.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "豊郷町立豊郷幼稚園まで498m 徒歩6分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1675.jpg",
+          "category": "",
+          "caption": "(１号棟)、価格1980万円、4LDK+S、土地面積174.05m<sup>2</sup>、建物面積108.53m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_0966.jpg",
+          "category": "その他",
+          "caption": "【耐震 ＋ 制震の家、QUIE（クワイエ）】<br>震度7の揺れに鍛えられた、ふたつの備え。建築基準法で定められた壁量の1.5倍に達する十分な性能を誇っています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_0967.jpg",
+          "category": "その他",
+          "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1676.jpg",
+          "category": "２号棟",
+          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1677.jpg",
+          "category": "３号棟",
+          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1660.jpg",
+          "category": "コンビニ",
+          "caption": "ローソン豊郷安食西店まで1602m 徒歩21分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1675.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1676.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1677.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/shiga/sc_inukamigun/nc_78416749/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:18.019Z"
+      "fetched_at": "2026-02-07T09:14:59.347Z"
+    },
+    {
+      "id": "0ba1bf564e15",
+      "title": "東近江市宮荘町 一戸建て 全３邸第4期",
+      "price": "1980万円～2080万円 [ □支払シミュレーション ]",
+      "address": "滋賀県東近江市宮荘町 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "161.5m2～161.56m2",
+      "building_area": "： 108.54m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1718.jpg",
+          "category": "現地外観写真",
+          "caption": "■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1689.jpg",
+          "category": "全体区画図",
+          "caption": "全３邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1710.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1701.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1702.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1700.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1703.jpg",
+          "category": "リビング以外の居室",
+          "caption": "和室<br>畳は、クッション性といぐさの香りがあり、家族みんなを癒してくれます。座布団を出して応接間、来客用の寝室にもできるので、多目的に使用できます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1704.jpg",
+          "category": "その他内観",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1705.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1709.jpg",
+          "category": "バルコニー",
+          "caption": "■陽当たり良好な南向きインナーバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1721.jpg",
+          "category": "現地外観写真",
+          "caption": "■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1719.jpg",
+          "category": "現地外観写真",
+          "caption": "■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1720.jpg",
+          "category": "現地外観写真",
+          "caption": "■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1711.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1712.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1713.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1714.jpg",
+          "category": "その他設備",
+          "caption": "火を使わないので、安心なＩＨコンロ！でこぼこが無い構造なので、掃除もしやすく清潔に保てます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1715.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1690.jpg",
+          "category": "駅",
+          "caption": "近江鉄道本線「五箇荘」駅まで1200m 徒歩17分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1691.jpg",
+          "category": "スーパー",
+          "caption": "フレンドマート五個荘店まで2041m 徒歩26分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1695.jpg",
+          "category": "小学校",
+          "caption": "東近江市立五個荘小学校まで1200m 徒歩17分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1686.jpg",
+          "category": "",
+          "caption": "(１号棟)、価格2080万円、4LDK、土地面積161.5m<sup>2</sup>、建物面積108.54m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_0966.jpg",
+          "category": "その他",
+          "caption": "【耐震 ＋ 制震の家、QUIE（クワイエ）】<br>震度7の揺れに鍛えられた、ふたつの備え。建築基準法で定められた壁量の1.5倍に達する十分な性能を誇っています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_0967.jpg",
+          "category": "その他",
+          "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1687.jpg",
+          "category": "２号棟",
+          "caption": "東近江市宮荘町 一戸建て 全３邸第4期 ２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1688.jpg",
+          "category": "３号棟",
+          "caption": "東近江市宮荘町 一戸建て 全３邸第4期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1692.jpg",
+          "category": "コンビニ",
+          "caption": "ローソン東近江宮荘町店まで1106m 徒歩14分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1686.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1687.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1688.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_higashiomi/nc_78948940/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:15:11.168Z"
     },
     {
       "id": "63511117e8d8",
       "title": "南丹市園部町横田 一戸建て 全４邸",
       "price": "2090万円～2390万円 [ □支払シミュレーション ]",
       "address": "京都府南丹市園部町横田１号 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/63511117e8d8.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "152.14m2～156.05m2（46.02坪～47.20坪）（登記）",
+      "building_area": "： 104.27m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1464.jpg",
+          "category": "現地外観写真",
+          "caption": "「設計」「建設」の住宅性能評価をダブル取得！品質へのこだわりが違います！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1485.jpg",
+          "category": "全体区画図",
+          "caption": "全４邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1474.jpg",
+          "category": "リビング",
+          "caption": "ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1466.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1467.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1465.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1469.jpg",
+          "category": "リビング以外の居室",
+          "caption": "和室<br>大壁仕様のモダンな和室！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1468.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のウォークインクロゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1470.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1475.jpg",
+          "category": "バルコニー",
+          "caption": "陽当たり良好なバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1472.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>窓枠は熱伝導率が低く結露を抑える「樹脂アングル」を採用"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1481.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>Low-E複合ガラス採用で断熱と遮熱によるダブルの断熱効果"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1471.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>徹底した地盤調査と最適な改良工事を実施！強い建物と強い地盤を自信を持ってご提案いたします！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1476.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1478.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1479.jpg",
+          "category": "その他設備",
+          "caption": "火を使わないので、安心なＩＨコンロ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1480.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1482.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1429.jpg",
+          "category": "駅",
+          "caption": "JR山陰本線「園部」まで2800m 徒歩35分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1430.jpg",
+          "category": "スーパー",
+          "caption": "スーパーマツモト新そのべ店まで700m 徒歩9分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1435.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "南丹市立園部幼稚園まで1200m 徒歩15分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1453.jpg",
+          "category": "",
+          "caption": "(１号棟)、価格2390万円、4LDK+S、土地面積155.55m<sup>2</sup>、建物面積104.27m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1455.jpg",
+          "category": "３号棟",
+          "caption": "南丹市園部町横田 一戸建て 全４邸 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1456.jpg",
+          "category": "４号棟",
+          "caption": "南丹市園部町横田 一戸建て 全４邸 ４号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1431.jpg",
+          "category": "コンビニ",
+          "caption": "ミニストップ園部町宮町店まで884m 徒歩12分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1453.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1455.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1456.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/kyoto/sc_nantan/nc_77783076/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:24.786Z"
+      "fetched_at": "2026-02-07T09:15:26.436Z"
     },
     {
       "id": "5bbdbb857c1e",
       "title": "湖南市下田 第２期 一戸建て",
       "price": "2098万円 [ □支払シミュレーション ]",
       "address": "滋賀県湖南市下田 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/5bbdbb857c1e.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "4LDK",
+      "land_area": "142.78m2（43.19坪）（登記）",
+      "building_area": "",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0743.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真<br>限定１邸！駐車３台可能！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0762.jpg",
+          "category": "間取り図",
+          "caption": "2098万円、4LDK、土地面積142.78m<sup>2</sup>、建物面積101.85m<sup>2</sup> １区画"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0753.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0745.jpg",
+          "category": "キッチン",
+          "caption": "現地写真（キッチン）<br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0746.jpg",
+          "category": "浴室",
+          "caption": "現地写真（浴室）<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0744.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0748.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のウォークインクロゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0747.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のウォークインクロゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0749.jpg",
+          "category": "玄関",
+          "caption": "現地写真（玄関）<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0754.jpg",
+          "category": "バルコニー",
+          "caption": "陽当たり良好なバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0752.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>窓枠は熱伝導率が低く結露を抑える「樹脂アングル」を採用"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0751.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>Low-E複合ガラス採用で断熱と遮熱によるダブルの断熱効果"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0750.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>徹底した地盤調査と最適な改良工事を実施！強い建物と強い地盤を自信を持ってご提案いたします！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0755.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0756.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0757.jpg",
+          "category": "その他設備",
+          "caption": "スタイリッシュなフラットタイプ！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0758.jpg",
+          "category": "その他設備",
+          "caption": "天板がフラットな構造なので料理のあともお掃除がラクラクできれいに保てます！<br>火を使わないので安全性も高いです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0759.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0733.jpg",
+          "category": "駅",
+          "caption": "JR草津線「三雲」駅まで2732m 車７分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0761.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート甲西日枝店まで800m 徒歩１０分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0738.jpg",
+          "category": "小学校",
+          "caption": "湖南市立下田小学校まで538m 徒歩7分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0735.jpg",
+          "category": "ドラッグストア",
+          "caption": "スギドラッグ甲西店まで2000m 徒歩25分"
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/shiga/sc_konan/nc_78202604/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:31.559Z"
-    },
-    {
-      "id": "ebdf49ac59c9",
-      "title": "岸和田市西大路町 全２邸 一戸建て第３期",
-      "price": "2180万円・2280万円 [ □支払シミュレーション ]",
-      "address": "大阪府岸和田市西大路町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/ebdf49ac59c9.jpg",
-      "source_url": "https://suumo.jp/ikkodate/osaka/sc_kishiwada/nc_77421116/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:38.778Z"
+      "fetched_at": "2026-02-07T09:15:41.001Z"
     },
     {
       "id": "852b82bf3973",
       "title": "大津市坂本 一戸建て 全１７邸",
       "price": "2180万円～3280万円 [ □支払シミュレーション ]",
       "address": "滋賀県大津市坂本８ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/852b82bf3973.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "120.22m2～158.29m2（36.36坪～47.88坪）（登記）",
+      "building_area": "： 99.36m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1541.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（街並）<br>全2邸！駐車２台可能！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1560.jpg",
+          "category": "全体区画図",
+          "caption": "全１７邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1529.jpg",
+          "category": "リビング",
+          "caption": "現地写真(リビング)<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1524.jpg",
+          "category": "キッチン",
+          "caption": "現地写真（キッチン)<br>スライド収納！浄水器付シャワー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1525.jpg",
+          "category": "浴室",
+          "caption": "現地写真(浴室)<br>雨の日のお洗濯にも大活躍な浴室乾燥機付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1523.jpg",
+          "category": "リビング",
+          "caption": "現地写真(リビング)<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1526.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1527.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1528.jpg",
+          "category": "玄関",
+          "caption": "現地写真(玄関)<br>散らかりがちな玄関もスッキリの玄関収納付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1533.jpg",
+          "category": "バルコニー",
+          "caption": "陽当たり良好な南向きバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1530.jpg",
+          "category": "現地外観写真",
+          "caption": "■家族を守るためのセキュリティ対策！玄関ドアには、ピッキング対策に優れる２ロック機構が標準装備。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1531.jpg",
+          "category": "現地外観写真",
+          "caption": "■外壁の美しさを持続！外装には、雨で汚れを洗い落とすセルフクリーニング機能「ナノ親水マイクロガード」を採用。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1532.jpg",
+          "category": "現地外観写真",
+          "caption": "■熱の出入りが最も多い窓にこだわり住まいを快適に。「LOW-E 複層ガラス」を採用。高い断熱性とともに、結露対策にも効果あり！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1534.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1535.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1536.jpg",
+          "category": "その他設備",
+          "caption": "スタイリッシュなフラットタイプ！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1537.jpg",
+          "category": "その他設備",
+          "caption": "ダブル高火力Ｓｉセンサー付きコンロ！３口あるので、まとめて料理をする時も大活躍！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1538.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1505.jpg",
+          "category": "駅",
+          "caption": "JR湖西線「比叡山坂本」駅まで1440m 徒歩18分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1506.jpg",
+          "category": "スーパー",
+          "caption": "平和堂坂本店まで1000m 徒歩13分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1510.jpg",
+          "category": "小学校",
+          "caption": "大津市立坂本小学校まで1440m 徒歩18分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1543.jpg",
+          "category": "",
+          "caption": "(１号棟)、価格3280万円、4LDK+S、土地面積138.21m<sup>2</sup>、建物面積99.36m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1547.jpg",
+          "category": "５号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ５号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1555.jpg",
+          "category": "１３号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1553.jpg",
+          "category": "１１号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １１号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1550.jpg",
+          "category": "８号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ８号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1552.jpg",
+          "category": "１０号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １０号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1558.jpg",
+          "category": "１６号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １６号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1546.jpg",
+          "category": "４号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ４号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1554.jpg",
+          "category": "１２号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1507.jpg",
+          "category": "コンビニ",
+          "caption": "ローソン大津坂本七丁目店まで1000m 徒歩13分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1543.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1544.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1545.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1546.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1547.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1548.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1549.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1550.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1552.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1553.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1554.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1555.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1556.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1557.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1558.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1559.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/shiga/sc_otsu/nc_79223286/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:49.209Z"
-    },
-    {
-      "id": "bf91723c98ac",
-      "title": "天理市田町 全2邸 一戸建て第1期",
-      "price": "2180万円・2380万円 [ □支払シミュレーション ]",
-      "address": "奈良県天理市田町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/bf91723c98ac.jpg",
-      "source_url": "https://suumo.jp/ikkodate/nara/sc_tenri/nc_78084547/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:30:57.886Z"
+      "fetched_at": "2026-02-07T09:15:58.198Z"
     },
     {
       "id": "705db8aa482f",
       "title": "松原市丹南 第１期",
       "price": "2180万円 [ □支払シミュレーション ]",
       "address": "大阪府松原市丹南４ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/705db8aa482f.jpg",
+      "property_type": "新築戸建",
+      "description": "ZEH水準の新築戸建が登場【無料相談受付中】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "layout": "3LDK",
+      "land_area": "78.16m2（23.64坪）",
+      "building_area": "",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1386.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観写真<br>～ご見学に関して～<br>平日や夜間でもご案内は可能です。お仕事の形態が多様化しておりますので、決まったお時間では中々身動きが取れないお客様も臨機応変に対応させて頂きます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1364.jpg",
+          "category": "間取り図",
+          "caption": "2180万円、3LDK、土地面積78.16m<sup>2</sup>、建物面積83.42m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1403.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>太陽の光が差し込むとっても明るいリビング！思わず微笑みたくなる居心地の良さ。家族団らんの時間も増えそうなくつろぎのＬＤＫで、住む人のこだわりを活かすゆとりある空間！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1396.jpg",
+          "category": "キッチン",
+          "caption": "現地写真(キッチン)<br>収納力抜群！浄水器付きキッチン！お子さまの様子を見ながらお料理を楽しむことができますね。家族のコミュニケーションが増え会話もはずみます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1393.jpg",
+          "category": "浴室",
+          "caption": "現地写真(浴室)<br>一日の疲れを癒す広々とした浴室。足をのばしてゆったりと湯船につかれますよ。窓付きで湿気対策もバッチリです♪浴室乾燥機付きなので雨の日のお洗濯も安心ですね！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1406.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>洋室は、風通しも日当たりも良く子供部屋にも仕事用のお部屋にも用途を選ばず使える快適空間！<br>大容量の収納スペースで収納が苦手な方も安心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1405.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(洋室)<br>大容量の収納スペースで快適な生活！落ち着いたカラーでまとめた洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1404.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>重さのあるベッドや家具やソファーなどをそのまま置くことが可能です！洋室だと床がへこむことなく部屋の中にいろいろな物を置いて空間を自在にコーディネートできます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1389.jpg",
+          "category": "玄関",
+          "caption": "現地写真（玄関）<br>散らかりがちな玄関もスッキリの玄関収納付！ 玄関ドアは、防犯レベルの高いダブルロックドアを採用！ピッキング対策もしています！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1407.jpg",
+          "category": "バルコニー",
+          "caption": "現地写真（バルコニー）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1387.jpg",
+          "category": "駐車場",
+          "caption": "現地写真（駐車スペース）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1398.jpg",
+          "category": "その他",
+          "caption": "現地写真（浄水器付き水栓）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1400.jpg",
+          "category": "その他",
+          "caption": "現地写真（レンジフード）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1399.jpg",
+          "category": "その他",
+          "caption": "現地写真（コンロ）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1391.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1390.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1394.jpg",
+          "category": "その他設備",
+          "caption": "ジメジメしがちな浴室もボタンひとつでカラッと解決！寒い冬には暖房！暑い夏には冷房！<br>快適バスタイム！雨の日のお洗濯にも大活躍な浴室乾燥機付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1392.jpg",
+          "category": "その他設備",
+          "caption": "操作ミスが少ない大きなボタンで安心！<br>暖房・冷房・乾燥・換気がボタン一つで簡単操作！<br>お風呂に入る前の準備が肝心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1401.jpg",
+          "category": "その他設備",
+          "caption": "ボタン一つでお風呂のお湯はり・追い炊き可能！<br>キッチンからも操作ができるので家事の合間にお風呂の準備！<br>少しの時間短縮で束の間の休息を！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1402.jpg",
+          "category": "その他設備",
+          "caption": "防犯に安心なカラーモニターインターホン！<br>録画機能付きで不在時の来客も安心！宅配の受け取り忘れにも大助かり！<br>外には声が聞こえないようにモニタリングも可能！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1388.jpg",
+          "category": "前面道路含む現地写真",
+          "caption": "～まずはご相談からどうぞ～<br>住宅購入をするには色々心配や不安があると思います。まずはお話をお伺いし、問題を解消する方法を考えその上でご検討というお手伝いを致します。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0921.jpg",
+          "category": "その他",
+          "caption": "地震から住まいと家族を守る、制震装置『SAFE365』<br>震度7の地震波による実大振動実験をクリアした確かな性能"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0647.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0648.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0649.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0650.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0651.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_0652.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1341.jpg",
+          "category": "駅",
+          "caption": "近鉄南大阪線「河内松原」駅まで2320m 徒歩29分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1342.jpg",
+          "category": "スーパー",
+          "caption": "食品館アプロ岡店まで862m 徒歩11分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1343.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート松原丹南四丁目店まで279m 徒歩4分"
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/osaka/sc_matsubara/nc_78640092/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:07.613Z"
+      "fetched_at": "2026-02-07T09:16:12.025Z"
+    },
+    {
+      "id": "ebdf49ac59c9",
+      "title": "岸和田市西大路町 全２邸 一戸建て第３期",
+      "price": "2180万円・2280万円 [ □支払シミュレーション ]",
+      "address": "大阪府岸和田市西大路町 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "JR久米田駅まで徒歩15分！岸和田市西大路町に駐車2台可能な新築戸建が登場【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "layout": "-",
+      "land_area": "99.97m2・100.18m2（30.24坪・30.30坪）",
+      "building_area": "： 94.77m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1650.jpg",
+          "category": "現地外観写真",
+          "caption": "～ご見学に関して～<br>平日や夜間でもご案内は可能です。お仕事の形態が多様化しておりますので、決まったお時間では中々身動きが取れないお客様も臨機応変に対応させて頂きます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1568.jpg",
+          "category": "全体区画図",
+          "caption": "～リーブルガーデン～<br>岸和田市西大路町 全３邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1634.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>太陽の光が差し込むとっても明るいリビング！思わず微笑みたくなる居心地の良さ。家族団らんの時間も増えそうなくつろぎのＬＤＫで、住む人のこだわりを活かすゆとりある空間！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1632.jpg",
+          "category": "キッチン",
+          "caption": "現地写真(キッチン)<br>収納力抜群！浄水器付きキッチン！お子さまの様子を見ながらお料理を楽しむことができますね。家族のコミュニケーションが増え会話もはずみます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1622.jpg",
+          "category": "浴室",
+          "caption": "現地写真(浴室)<br>一日の疲れを癒す広々とした浴室。足をのばしてゆったりと湯船につかれますよ。窓付きで湿気対策もバッチリです♪浴室乾燥機付きなので雨の日のお洗濯も安心ですね！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1608.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(洋室)<br>大容量の収納スペースで快適な生活！落ち着いたカラーでまとめた洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1609.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(洋室)<br>大容量の収納スペースで快適な生活！落ち着いたカラーでまとめた洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1614.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(洋室)<br>大容量の収納スペースで快適な生活！落ち着いたカラーでまとめた洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1617.jpg",
+          "category": "玄関",
+          "caption": "現地写真（玄関）<br>散らかりがちな玄関もスッキリの玄関収納付！ 玄関ドアは、防犯レベルの高いダブルロックドアを採用！ピッキング対策もしています！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1607.jpg",
+          "category": "バルコニー",
+          "caption": "現地写真（バルコニー）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1645.jpg",
+          "category": "駐車場",
+          "caption": "現地写真（駐車場）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1627.jpg",
+          "category": "その他",
+          "caption": "現地写真（レンジフード）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1628.jpg",
+          "category": "その他",
+          "caption": "現地写真（コンロ）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1630.jpg",
+          "category": "その他",
+          "caption": "現地写真（シンク）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1618.jpg",
+          "category": "その他設備",
+          "caption": "毎日使う洗面所には小窓があるので風通しや採光も取り込めて、洗面所にはいると気持ちの良く使えます！<br>ハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1615.jpg",
+          "category": "その他設備",
+          "caption": "今の新築住宅には必須アイテムのウォッシュレット！<br>１階も２階も標準装備で夜中のトイレも安心！<br>快適、省エネ、お掃除ラクラク仕様のウォシュレット！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1621.jpg",
+          "category": "その他設備",
+          "caption": "ジメジメしがちな浴室もボタンひとつでカラッと解決！寒い冬には暖房！暑い夏には冷房！<br>快適バスタイム！雨の日のお洗濯にも大活躍な浴室乾燥機付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1619.jpg",
+          "category": "その他設備",
+          "caption": "操作ミスが少ない大きなボタンで安心！<br>暖房・冷房・乾燥・換気がボタン一つで簡単操作！<br>お風呂に入る前の準備が肝心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1625.jpg",
+          "category": "その他設備",
+          "caption": "ボタン一つでお風呂のお湯はり・追い炊き可能！<br>キッチンからも操作ができるので家事の合間にお風呂の準備！<br>少しの時間短縮で束の間の休息を！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1624.jpg",
+          "category": "その他設備",
+          "caption": "防犯に安心なカラーモニターインターホン！<br>録画機能付きで不在時の来客も安心！宅配の受け取り忘れにも大助かり！<br>外には声が聞こえないようにモニタリングも可能！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1653.jpg",
+          "category": "前面道路含む現地写真",
+          "caption": "～まずはご相談からどうぞ～<br>住宅購入をするには色々心配や不安があると思います。まずはお話をお伺いし、問題を解消する方法を考えその上でご検討というお手伝いを致します。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1569.jpg",
+          "category": "",
+          "caption": "(１号地)、価格2180万円、3LDK、土地面積100.18m<sup>2</sup>、建物面積94.77m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0852.jpg",
+          "category": "その他",
+          "caption": "住宅の品質基準を満たし、住宅性能表示制度8項目で最高等級を取得している住宅は、安全・快適・健康な住宅の証です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0823.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0824.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0825.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0826.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0827.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_0828.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1570.jpg",
+          "category": "2号地",
+          "caption": "岸和田市西大路町 全２邸 一戸建て第３期 2号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1545.jpg",
+          "category": "駅",
+          "caption": "阪和線「久米田」駅まで1200m 徒歩１５分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1546.jpg",
+          "category": "スーパー",
+          "caption": "オークワ和泉小田店まで910m 徒歩１２分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1547.jpg",
+          "category": "コンビニ",
+          "caption": "ローソン岸和田東大路町店まで530m 徒歩７分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F116%2F77421116%2F77421116_1569.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F116%2F77421116%2F77421116_1570.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/osaka/sc_kishiwada/nc_77421116/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:16:28.809Z"
+    },
+    {
+      "id": "bf91723c98ac",
+      "title": "天理市田町 全2邸 一戸建て第1期",
+      "price": "2180万円・2380万円 [ □支払シミュレーション ]",
+      "address": "奈良県天理市田町 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "130.06m2・130.58m2（39.34坪・39.50坪）",
+      "building_area": "： 105.3m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0409.jpg",
+          "category": "現地外観写真",
+          "caption": "「天理市田町」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0377.jpg",
+          "category": "間取り図",
+          "caption": "(1号棟)、価格2180万円、4LDK+S、土地面積130.06m<sup>2</sup>、建物面積105.3m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0376.jpg",
+          "category": "全体区画図",
+          "caption": "天理市田町に新築戸建が登場！全2区画の新しい街並みの誕生です♪ぜひお問い合わせください！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0410.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0411.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0378.jpg",
+          "category": "間取り図",
+          "caption": "(2号棟)、価格2380万円、4LDK、土地面積130.58m<sup>2</sup>、建物面積105.3m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0412.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0413.jpg",
+          "category": "リビング以外の居室",
+          "caption": "日本人の心でもある畳コーナー。畳の香りに癒されながらお昼寝をしたり、来客用としてのゲストルームとしてもぴったりですね！寒い時期にはこたつを囲んで鍋料理なんかも楽しみの一つです♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0414.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0417.jpg",
+          "category": "バルコニー",
+          "caption": "雨が降っても洗濯物が濡れずに安心なインナーバルコニー。床に木製のタイルを敷き詰め、机とチェアーを置くとプライベートな空間にも出来、多種多様な使い方が楽しめます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0425.jpg",
+          "category": "駅",
+          "caption": "JR万葉まほろば線「天理」駅まで1520m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0375.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "天理市立丹波市南こども園まで883m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0374.jpg",
+          "category": "小学校",
+          "caption": "天理市立丹波市小学校まで1029m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0373.jpg",
+          "category": "中学校",
+          "caption": "私立天理北中学校まで3750m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0372.jpg",
+          "category": "スーパー",
+          "caption": "オークワ天理南店まで1197m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0418.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0415.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0416.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0419.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0421.jpg",
+          "category": "その他設備",
+          "caption": "雨の多い季節にはとっても便利な浴室乾燥機。洗濯物をためなくても浴室内で乾燥が出来てとっても便利！冬場は寒い浴室を暖房で温めることも出来ます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0424.jpg",
+          "category": "その他設備",
+          "caption": "カラーモニター付きインターフォンです。訪問客が一目でわかるので、防犯に役に立ちます。不在時の録画機能もついているのはうれしいですね♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0385.jpg",
+          "category": "構造・工法・仕様",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0369.jpg",
+          "category": "ショッピングセンター",
+          "caption": "イオンタウン天理まで900m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0370.jpg",
+          "category": "スーパー",
+          "caption": "ハッスル3天理店まで645m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0420.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F547%2F78084547%2F78084547_0377.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F547%2F78084547%2F78084547_0378.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/nara/sc_tenri/nc_78084547/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:16:46.847Z"
     },
     {
       "id": "33b75d0a34bc",
       "title": "磯城郡川西町結崎 全3邸 一戸建て第18期",
       "price": "2230万円・2380万円 [ □支払シミュレーション ]",
       "address": "奈良県磯城郡川西町大字結崎 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/33b75d0a34bc.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "133.21m2・134m2（40.29坪・40.53坪）",
+      "building_area": "： 95.57m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0457.jpg",
+          "category": "現地外観写真",
+          "caption": "「磯城郡川西町結崎」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0386.jpg",
+          "category": "間取り図",
+          "caption": "(1号棟)、価格2380万円、4LDK+S、土地面積134m<sup>2</sup>、建物面積95.57m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0467.jpg",
+          "category": "全体区画図",
+          "caption": "磯城郡川西町結崎に新築戸建が登場！全3区画の新しい街並みの誕生です♪ぜひお問い合わせください！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0458.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0459.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0465.jpg",
+          "category": "バルコニー",
+          "caption": "雨が降っても洗濯物が濡れずに安心なインナーバルコニー。床に木製のタイルを敷き詰め、机とチェアーを置くとプライベートな空間にも出来、多種多様な使い方が楽しめます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0387.jpg",
+          "category": "間取り図",
+          "caption": "(2号棟)、価格2230万円、3LDK、土地面積133.21m<sup>2</sup>、建物面積93.55m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0460.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0461.jpg",
+          "category": "リビング以外の居室",
+          "caption": "日本人の心でもある畳コーナー。畳の香りに癒されながらお昼寝をしたり、来客用としてのゲストルームとしてもぴったりですね！寒い時期にはこたつを囲んで鍋料理なんかも楽しみの一つです♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0462.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0426.jpg",
+          "category": "駅",
+          "caption": "近鉄橿原線「結崎」駅まで800m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0381.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "川西町立認定こども園川西幼稚園まで932m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0380.jpg",
+          "category": "小学校",
+          "caption": "川西町立川西小学校まで775m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0379.jpg",
+          "category": "中学校",
+          "caption": "川西町三宅町組合立式下中学校まで1128m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0376.jpg",
+          "category": "スーパー",
+          "caption": "スーパーおくやま結崎店まで1058m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0466.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0463.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0464.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0452.jpg",
+          "category": "その他設備",
+          "caption": "雨の多い季節にはとっても便利な浴室乾燥機。洗濯物をためなくても浴室内で乾燥が出来てとっても便利！冬場は寒い浴室を暖房で温めることも出来ます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0454.jpg",
+          "category": "その他設備",
+          "caption": "カラーモニター付きインターフォンです。訪問客が一目でわかるので、防犯に役に立ちます。不在時の録画機能もついているのはうれしいですね♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0449.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0384.jpg",
+          "category": "構造・工法・仕様",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0377.jpg",
+          "category": "スーパー",
+          "caption": "スーパーセンターオークワ田原本インター店まで3303m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0450.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0451.jpg",
+          "category": "その他設備",
+          "caption": "簡単操作の浴室乾燥機リモコンです♪乾燥や暖房ともに便利なタイマー機能が付いています。『洗濯物の量が多いから3時間乾燥させよう』とか、『少ないから1時間半でいいか』みたいな調整ができます。"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F483%2F78167483%2F78167483_0386.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F483%2F78167483%2F78167483_0387.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/nara/sc_shikigunkawanishi/nc_78167483/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:16.970Z"
+      "fetched_at": "2026-02-07T09:16:59.201Z"
     },
     {
       "id": "37327f0f39cd",
       "title": "生駒郡平群町三里 全11邸 一戸建て第3.4.5期",
       "price": "2280万円～3180万円 [ □支払シミュレーション ]",
       "address": "奈良県生駒郡平群町大字三里 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/37327f0f39cd.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "131.4m2～134.75m2（39.74坪～40.76坪）",
+      "building_area": "： 99.99m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0316.jpg",
+          "category": "現地外観写真",
+          "caption": "「生駒郡平群町三里」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0208.jpg",
+          "category": "間取り図",
+          "caption": "(3期3号棟)、価格2280万円、4LDK、土地面積134.4m<sup>2</sup>、建物面積99.99m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0302.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0303.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0304.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0278.jpg",
+          "category": "間取り図",
+          "caption": "(4期1号棟)、価格2980万円、4LDK+S、土地面積132.84m<sup>2</sup>、建物面積102.26m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0300.jpg",
+          "category": "間取り図",
+          "caption": "(5期2号棟)、価格3180万円、3LDK+2S、土地面積131.4m<sup>2</sup>、建物面積110.13m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0298.jpg",
+          "category": "全体区画図",
+          "caption": "生駒郡平群町三里に新築戸建が登場！開発分譲地全11区画の新しい街並みの誕生です♪ぜひお問い合わせください！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0299.jpg",
+          "category": "間取り図",
+          "caption": "(5期1号棟)、価格3180万円、3LDK、土地面積132.31m<sup>2</sup>、建物面積109.3m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0301.jpg",
+          "category": "間取り図",
+          "caption": "(5期3号棟)、価格2980万円、3LDK+S、土地面積134.75m<sup>2</sup>、建物面積104.33m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0287.jpg",
+          "category": "駅",
+          "caption": "近鉄生駒線「平群」駅まで320m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0265.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "平群町立はなさとこども園まで960m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0288.jpg",
+          "category": "小学校",
+          "caption": "平群町立平群小学校まで887m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0263.jpg",
+          "category": "中学校",
+          "caption": "平群町立平群中学校まで1241m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0260.jpg",
+          "category": "スーパー",
+          "caption": "サンディ平群店まで416m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0309.jpg",
+          "category": "バルコニー",
+          "caption": "2階バルコニーには植物等を置いて、癒しの空間にするのはいかがでしょう。のんびりくつろぐもよし、ちょっとした趣味のスペースにするもよし。様々な用途で使えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0305.jpg",
+          "category": "リビング以外の居室",
+          "caption": "日本人の心でもある和室。畳の香りに癒されながらお昼寝をしたり、来客用としてのゲストルームとしてもぴったりですね！寒い時期にはこたつを囲んで鍋料理なんかも楽しみの一つです♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0306.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0310.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0307.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0308.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0266.jpg",
+          "category": "その他",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0261.jpg",
+          "category": "コンビニ",
+          "caption": "ローソン平群バイパス店まで182m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0311.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0312.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0257.jpg",
+          "category": "その他設備",
+          "caption": "簡単操作の浴室乾燥機リモコンです♪乾燥や暖房ともに便利なタイマー機能が付いています。『洗濯物の量が多いから3時間乾燥させよう』とか、『少ないから1時間半でいいか』みたいな調整ができます。"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0208.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0278.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0299.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0300.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0301.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/nara/sc_ikomagunheguri/nc_78117531/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:23.615Z"
+      "fetched_at": "2026-02-07T09:17:12.120Z"
+    },
+    {
+      "id": "ffc8c9bf08dc",
+      "title": "湖南市柑子袋西 一戸建て 第１期",
+      "price": "2280万円 [ □支払シミュレーション ]",
+      "address": "滋賀県湖南市柑子袋西４ [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "4LDK",
+      "land_area": "185.7m2（56.17坪）（登記）",
+      "building_area": "",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1214.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1202.jpg",
+          "category": "間取り図",
+          "caption": "2280万円、4LDK、土地面積185.7m<sup>2</sup>、建物面積108.54m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1224.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1216.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン<br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1217.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1215.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1218.jpg",
+          "category": "リビング以外の居室",
+          "caption": "和室<br>畳は、クッション性といぐさの香りがあり、家族みんなを癒してくれます。座布団を出して応接間、来客用の寝室にもできるので、多目的に使用できます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1219.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1220.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1225.jpg",
+          "category": "バルコニー",
+          "caption": "日当たり良好！インナーバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1223.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1222.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1221.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1226.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1227.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1228.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1229.jpg",
+          "category": "その他設備",
+          "caption": "IHコンロ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1230.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1231.jpg",
+          "category": "その他設備",
+          "caption": "暖房・涼風・換気・乾燥など快適な機能が搭載！雨の日のお洗濯も安心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1203.jpg",
+          "category": "駅",
+          "caption": "草津線「甲西」駅まで2800m 徒歩35分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1204.jpg",
+          "category": "スーパー",
+          "caption": "丸善石部店まで1100m 徒歩14分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1205.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート湖南石部南店まで797m 徒歩10分"
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_konan/nc_78685072/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:17:26.675Z"
     },
     {
       "id": "74f1828f6bed",
       "title": "東大阪市布市町 全５邸 一戸建て第１期",
       "price": "2280万円～2880万円 [ □支払シミュレーション ]",
       "address": "大阪府東大阪市布市町１ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/74f1828f6bed.jpg",
+      "property_type": "新築戸建",
+      "description": "東大阪市布市町1丁目に新築戸建が登場！地震に強い「SAFE365」搭載【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "layout": "・ZEH水準！・駐車場有り！・対面式キッチン！・べた基礎！",
+      "land_area": "99.18m2～112.82m2（30.00坪～34.12坪）",
+      "building_area": "： 90.72m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1691.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観写真<br>～ご見学に関して～<br>平日や夜間でもご案内は可能です。お仕事の形態が多様化しておりますので、決まったお時間では中々身動きが取れないお客様も臨機応変に対応させて頂きます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1688.jpg",
+          "category": "全体区画図",
+          "caption": "～クレイドルガーデン～<br>東大阪市布市町 全６邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1661.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>太陽の光が差し込むとっても明るいリビング！思わず微笑みたくなる居心地の良さ。家族団らんの時間も増えそうなくつろぎのＬＤＫで、住む人のこだわりを活かすゆとりある空間！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1662.jpg",
+          "category": "キッチン",
+          "caption": "現地写真(キッチン)<br>収納力抜群！浄水器付きキッチン！お子さまの様子を見ながらお料理を楽しむことができますね。家族のコミュニケーションが増え会話もはずみます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1663.jpg",
+          "category": "浴室",
+          "caption": "現地写真(浴室)<br>一日の疲れを癒す広々とした浴室。足をのばしてゆったりと湯船につかれますよ。窓付きで湿気対策もバッチリです♪浴室乾燥機付きなので雨の日のお洗濯も安心ですね！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1664.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(畳コーナー)<br>一室あると便利な畳コーナーは客間としてだけでなく、小さなお子様のプレイルームやお昼寝のお部屋としてもご利用いただけます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1665.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>重さのあるベッドや家具やソファーなどをそのまま置くことが可能です！洋室だと床がへこむことなく部屋の中にいろいろな物を置いて空間を自在にコーディネートできます！！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1666.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真(洋室)<br>大容量の収納スペースで快適な生活！落ち着いたカラーでまとめた洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1667.jpg",
+          "category": "玄関",
+          "caption": "現地写真（玄関）<br>散らかりがちな玄関もスッキリの玄関収納付！ 玄関ドアは、防犯レベルの高いダブルロックドアを採用！ピッキング対策もしています！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1669.jpg",
+          "category": "バルコニー",
+          "caption": "現地写真（バルコニー）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1668.jpg",
+          "category": "駐車場",
+          "caption": "現地写真（駐車スペース）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1670.jpg",
+          "category": "その他",
+          "caption": "現地写真（レンジフード）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1671.jpg",
+          "category": "その他",
+          "caption": "現地写真（コンロ）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1672.jpg",
+          "category": "その他",
+          "caption": "現地写真（シンク）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1678.jpg",
+          "category": "その他設備",
+          "caption": "毎日使う洗面所には小窓があるので風通しや採光も取り込めて、洗面所にはいると気持ちの良く使えます！<br>ハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1679.jpg",
+          "category": "その他設備",
+          "caption": "今の新築住宅には必須アイテムのウォッシュレット！<br>１階も２階も標準装備で夜中のトイレも安心！<br>快適、省エネ、お掃除ラクラク仕様のウォシュレット！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1680.jpg",
+          "category": "冷暖房・空調設備",
+          "caption": "ジメジメしがちな浴室もボタンひとつでカラッと解決！寒い冬には暖房！暑い夏には冷房！<br>快適バスタイム！雨の日のお洗濯にも大活躍な浴室乾燥機付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1681.jpg",
+          "category": "冷暖房・空調設備",
+          "caption": "操作ミスが少ない大きなボタンで安心！<br>暖房・冷房・乾燥・換気がボタン一つで簡単操作！<br>お風呂に入る前の準備が肝心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1682.jpg",
+          "category": "発電・温水設備",
+          "caption": "ボタン一つでお風呂のお湯はり・追い炊き可能！<br>キッチンからも操作ができるので家事の合間にお風呂の準備！<br>少しの時間短縮で束の間の休息を！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1683.jpg",
+          "category": "防犯設備",
+          "caption": "防犯に安心なカラーモニターインターホン！<br>録画機能付きで不在時の来客も安心！宅配の受け取り忘れにも大助かり！<br>外には声が聞こえないようにモニタリングも可能！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1674.jpg",
+          "category": "前面道路含む現地写真",
+          "caption": "現地写真（前道）"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1605.jpg",
+          "category": "",
+          "caption": "(２号地)、価格2280万円、3LDK、土地面積112.37m<sup>2</sup>、建物面積90.72m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1278.jpg",
+          "category": "その他",
+          "caption": "地震から住まいと家族を守る、制震装置『SAFE365』<br>震度7の地震波による実大振動実験をクリアした確かな性能"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1007.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1008.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1009.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1010.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1011.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1012.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1687.jpg",
+          "category": "4号地",
+          "caption": "東大阪市布市町 全５邸 一戸建て第１期 4号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1606.jpg",
+          "category": "３号地",
+          "caption": "東大阪市布市町 全５邸 一戸建て第１期 ３号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1580.jpg",
+          "category": "駅",
+          "caption": "近鉄けいはんな線「新石切」駅まで1900m 徒歩２４分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1581.jpg",
+          "category": "スーパー",
+          "caption": "万代石切店まで400m 徒歩５分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1582.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート東大阪布市店まで507m 徒歩７分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1605.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1606.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1687.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/osaka/sc_higashiosaka/nc_77275732/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:33.801Z"
-    },
-    {
-      "id": "277c3b0f6908",
-      "title": "生駒郡斑鳩町龍田西3丁目 全2邸 一戸建て",
-      "price": "2290万円 [ □支払シミュレーション ]",
-      "address": "奈良県生駒郡斑鳩町龍田西３-14‐5 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/277c3b0f6908.jpg",
-      "source_url": "https://suumo.jp/ikkodate/nara/sc_ikomagunikaruga/nc_76973321/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:42.829Z"
-    },
-    {
-      "id": "225ac7ce867d",
-      "title": "彦根市高宮町 一戸建て 全３邸第１８期",
-      "price": "2350万円～2450万円 [ □支払シミュレーション ]",
-      "address": "滋賀県彦根市高宮町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/225ac7ce867d.jpg",
-      "source_url": "https://suumo.jp/ikkodate/shiga/sc_hikone/nc_78395018/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:31:50.499Z"
-    },
-    {
-      "id": "93071092a755",
-      "title": "生駒郡斑鳩町龍田4丁目 全2邸 一戸建て第2期",
-      "price": "2350万円・2380万円 [ □支払シミュレーション ]",
-      "address": "奈良県生駒郡斑鳩町龍田４ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/93071092a755.jpg",
-      "source_url": "https://suumo.jp/ikkodate/nara/sc_ikomagunikaruga/nc_20034347/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:00.724Z"
-    },
-    {
-      "id": "9bcaec97b898",
-      "title": "東近江市東沖野 一戸建て 第１期",
-      "price": "2380万円 [ □支払シミュレーション ]",
-      "address": "滋賀県東近江市東沖野５ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/9bcaec97b898.jpg",
-      "source_url": "https://suumo.jp/ikkodate/shiga/sc_higashiomi/nc_78171102/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:10.952Z"
-    },
-    {
-      "id": "3073552b4236",
-      "title": "近江八幡市武佐町 一戸建て 第３期",
-      "price": "2380万円 [ □支払シミュレーション ]",
-      "address": "滋賀県近江八幡市武佐町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/3073552b4236.jpg",
-      "source_url": "https://suumo.jp/ikkodate/shiga/sc_omihachiman/nc_20123560/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:18.524Z"
-    },
-    {
-      "id": "4c90e283aa69",
-      "title": "野洲市六条 一戸建て 全４邸第１期",
-      "price": "2380万円 [ □支払シミュレーション ]",
-      "address": "滋賀県野洲市六条 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/4c90e283aa69.jpg",
-      "source_url": "https://suumo.jp/ikkodate/shiga/sc_yasu/nc_77741622/",
-      "company_name": "センチュリー21ホームマート",
-      "company_tel": "0120-43-8639",
-      "company_address": "奈良県北葛城郡広陵町笠287-1",
-      "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:27.556Z"
+      "fetched_at": "2026-02-07T09:17:38.967Z"
     },
     {
       "id": "50e0a46c6f0a",
       "title": "大津市瀬田 一戸建て 全２邸第２期",
       "price": "2280万円 [ □支払シミュレーション ]",
       "address": "滋賀県大津市瀬田５ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/50e0a46c6f0a.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "124.53m2（37.67坪）（登記）",
+      "building_area": "： 94.76m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1711.jpg",
+          "category": "現地外観写真",
+          "caption": "■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1710.jpg",
+          "category": "全体区画図",
+          "caption": "全2邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1722.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1713.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1714.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1712.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1715.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1716.jpg",
+          "category": "その他内観",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1717.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1721.jpg",
+          "category": "バルコニー",
+          "caption": "■陽当たり良好な南向きインナーバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1719.jpg",
+          "category": "現地外観写真",
+          "caption": "■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1718.jpg",
+          "category": "現地外観写真",
+          "caption": "■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1720.jpg",
+          "category": "現地外観写真",
+          "caption": "■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1723.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1724.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1725.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1726.jpg",
+          "category": "その他設備",
+          "caption": "ダブル高火力Ｓｉセンサー付きコンロ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1727.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1707.jpg",
+          "category": "駅",
+          "caption": "石山坂本線「唐橋」駅まで2405m 徒歩26分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1702.jpg",
+          "category": "スーパー",
+          "caption": "フレンドマート石山寺辺店まで2721m 徒歩35分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1705.jpg",
+          "category": "小学校",
+          "caption": "大津市立瀬田南小学校まで2000m 徒歩25分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1699.jpg",
+          "category": "",
+          "caption": "(２号棟)、価格2280万円、3LDK、土地面積124.53m<sup>2</sup>、建物面積94.76m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_0966.jpg",
+          "category": "その他",
+          "caption": "【耐震 ＋ 制震の家、QUIE（クワイエ）】<br>震度7の揺れに鍛えられた、ふたつの備え。建築基準法で定められた壁量の1.5倍に達する十分な性能を誇っています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_0967.jpg",
+          "category": "その他",
+          "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1701.jpg",
+          "category": "スーパー",
+          "caption": "フレスコ神領店まで1980m 徒歩25分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F032%2F78948032%2F78948032_1699.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/shiga/sc_otsu/nc_78948032/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:36.826Z"
+      "fetched_at": "2026-02-07T09:17:52.884Z"
+    },
+    {
+      "id": "277c3b0f6908",
+      "title": "生駒郡斑鳩町龍田西3丁目 全2邸 一戸建て",
+      "price": "2290万円 [ □支払シミュレーション ]",
+      "address": "奈良県生駒郡斑鳩町龍田西３-14‐5 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "245.46m2（74.25坪）",
+      "building_area": "： 95.58m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0133.jpg",
+          "category": "現地外観写真",
+          "caption": "「生駒郡斑鳩町龍田西3丁目」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0071.jpg",
+          "category": "間取り図",
+          "caption": "(2号棟)、価格2290万円、4LDK、土地面積245.46m<sup>2</sup>、建物面積95.58m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0104.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0109.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0095.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0129.jpg",
+          "category": "全体区画図",
+          "caption": "生駒郡斑鳩町龍田西3丁目に新築戸建が登場！全2区画の新しい街並みの誕生です♪ぜひお問い合わせください！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0085.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0099.jpg",
+          "category": "リビング以外の居室",
+          "caption": "日本人の心でもある和室。畳の香りに癒されながらお昼寝をしたり、来客用としてのゲストルームとしてもぴったりですね！寒い時期にはこたつを囲んで鍋料理なんかも楽しみの一つです♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0083.jpg",
+          "category": "バルコニー",
+          "caption": "2階バルコニーには植物等を置いて、癒しの空間にするのはいかがでしょう。のんびりくつろぐもよし、ちょっとした趣味のスペースにするもよし。様々な用途で使えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0112.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0130.jpg",
+          "category": "駅",
+          "caption": "JR大和路線「王寺」駅まで2320m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0116.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "信貴幼稚園まで1238m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0131.jpg",
+          "category": "小学校",
+          "caption": "平群町立平斑鳩小学校まで1900m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0114.jpg",
+          "category": "中学校",
+          "caption": "斑鳩町立斑鳩中学校まで1610m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0117.jpg",
+          "category": "スーパー",
+          "caption": "イオンいかるが店まで991m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0089.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0088.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0107.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0108.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0092.jpg",
+          "category": "その他設備",
+          "caption": "雨の多い季節にはとっても便利な浴室乾燥機。洗濯物をためなくても浴室内で乾燥が出来てとっても便利！冬場は寒い浴室を暖房で温めることも出来ます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0097.jpg",
+          "category": "その他設備",
+          "caption": "カラーモニター付きインターフォンです。訪問客が一目でわかるので、防犯に役に立ちます。不在時の録画機能もついているのはうれしいですね♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0127.jpg",
+          "category": "構造・工法・仕様",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0091.jpg",
+          "category": "その他設備",
+          "caption": "簡単操作の浴室乾燥機リモコンです♪乾燥や暖房ともに便利なタイマー機能が付いています。『洗濯物の量が多いから3時間乾燥させよう』とか、『少ないから1時間半でいいか』みたいな調整ができます。"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F321%2F76973321%2F76973321_0071.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/nara/sc_ikomagunikaruga/nc_76973321/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:18:10.085Z"
+    },
+    {
+      "id": "93071092a755",
+      "title": "生駒郡斑鳩町龍田4丁目 全2邸 一戸建て第2期",
+      "price": "2350万円・2380万円 [ □支払シミュレーション ]",
+      "address": "奈良県生駒郡斑鳩町龍田４ [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "194.36m2・195.16m2（58.79坪・59.03坪）",
+      "building_area": "： 103.27m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0550.jpg",
+          "category": "現地外観写真",
+          "caption": "「生駒郡斑鳩町龍田4丁目」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0548.jpg",
+          "category": "間取り図",
+          "caption": "(2号棟)、価格2350万円、3LDK+S、土地面積195.16m<sup>2</sup>、建物面積103.27m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0546.jpg",
+          "category": "全体区画図",
+          "caption": "生駒郡斑鳩町龍田4丁目に新築戸建が登場！全2区画の新しい街並みの誕生です♪ぜひお問い合わせください！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0551.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0552.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0547.jpg",
+          "category": "間取り図",
+          "caption": "(1号棟)、価格2380万円、3LDK、土地面積194.36m<sup>2</sup>、建物面積103.27m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0558.jpg",
+          "category": "バルコニー",
+          "caption": "雨が降っても洗濯物が濡れずに安心なインナーバルコニー。床に木製のタイルを敷き詰め、机とチェアーを置くとプライベートな空間にも出来、多種多様な使い方が楽しめます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0553.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0555.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0559.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0537.jpg",
+          "category": "駅",
+          "caption": "近鉄生駒線「新王寺駅」まで2160m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0545.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "斑鳩黎明保育園まで1525m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0543.jpg",
+          "category": "小学校",
+          "caption": "斑鳩町立斑鳩小学校まで1513m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0542.jpg",
+          "category": "中学校",
+          "caption": "斑鳩町立斑鳩中学校まで1197m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0541.jpg",
+          "category": "ドラッグストア",
+          "caption": "クスリのアオキ斑鳩店まで612m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0554.jpg",
+          "category": "リビング以外の居室",
+          "caption": "ナチュラル感のある洋室は、自分好みのインテリアが楽しめます♪ご家族とインテリアや家具を選びに行くのは新築購入時の醍醐味の一つです。ぜひお楽しみください♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0556.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0557.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0560.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0562.jpg",
+          "category": "その他設備",
+          "caption": "雨の多い季節にはとっても便利な浴室乾燥機。洗濯物をためなくても浴室内で乾燥が出来てとっても便利！冬場は寒い浴室を暖房で温めることも出来ます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0565.jpg",
+          "category": "その他設備",
+          "caption": "カラーモニター付きインターフォンです。訪問客が一目でわかるので、防犯に役に立ちます。不在時の録画機能もついているのはうれしいですね♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0385.jpg",
+          "category": "構造・工法・仕様",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0538.jpg",
+          "category": "スーパー",
+          "caption": "イオンいかるが店まで829m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0539.jpg",
+          "category": "スーパー",
+          "caption": "コープたつたがわまで1270m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0561.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F347%2F20034347%2F20034347_0547.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F347%2F20034347%2F20034347_0548.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/nara/sc_ikomagunikaruga/nc_20034347/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:18:23.078Z"
+    },
+    {
+      "id": "225ac7ce867d",
+      "title": "彦根市高宮町 一戸建て 全３邸第１８期",
+      "price": "2350万円～2450万円 [ □支払シミュレーション ]",
+      "address": "滋賀県彦根市高宮町 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "135.38m2～149.72m2（40.95坪～45.29坪）（登記）",
+      "building_area": "： 111.51m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1490.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（街並）<br>全３邸！駅徒歩12分！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1474.jpg",
+          "category": "全体区画図",
+          "caption": "全３邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1497.jpg",
+          "category": "リビング",
+          "caption": "現地写真(リビング)<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1492.jpg",
+          "category": "キッチン",
+          "caption": "現地写真（キッチン)<br>スライド収納！浄水器付シャワー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1493.jpg",
+          "category": "浴室",
+          "caption": "現地写真(浴室)<br>雨の日のお洗濯にも大活躍な浴室乾燥機付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1491.jpg",
+          "category": "リビング",
+          "caption": "現地写真(リビング)<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1494.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1495.jpg",
+          "category": "リビング以外の居室",
+          "caption": "現地写真（洋室）<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1496.jpg",
+          "category": "玄関",
+          "caption": "現地写真(玄関)<br>散らかりがちな玄関もスッキリの玄関収納付！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1501.jpg",
+          "category": "バルコニー",
+          "caption": "陽当たり良好な南向きバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1498.jpg",
+          "category": "現地外観写真",
+          "caption": "■家族を守るためのセキュリティ対策！玄関ドアには、ピッキング対策に優れる２ロック機構が標準装備。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1499.jpg",
+          "category": "現地外観写真",
+          "caption": "■外壁の美しさを持続！外装には、雨で汚れを洗い落とすセルフクリーニング機能「ナノ親水マイクロガード」を採用。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1500.jpg",
+          "category": "現地外観写真",
+          "caption": "■熱の出入りが最も多い窓にこだわり住まいを快適に。「LOW-E 複層ガラス」を採用。高い断熱性とともに、結露対策にも効果あり！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1502.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1503.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1504.jpg",
+          "category": "その他設備",
+          "caption": "スタイリッシュなフラットタイプ！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1505.jpg",
+          "category": "その他設備",
+          "caption": "火やガスを使わないので、お子さまにも安心！調理後は、プレートを拭くだけなので、お手入れが簡単です！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1506.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1465.jpg",
+          "category": "駅",
+          "caption": "近江鉄道本線「高宮」駅まで960m 徒歩12分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1466.jpg",
+          "category": "スーパー",
+          "caption": "フタバヤ彦根店まで1100m 徒歩14分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1470.jpg",
+          "category": "小学校",
+          "caption": "彦根市立高宮小学校まで850m 徒歩11分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1475.jpg",
+          "category": "",
+          "caption": "(１号棟)、価格2350万円、4LDK、土地面積137.03m<sup>2</sup>、建物面積111.51m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1477.jpg",
+          "category": "３号棟",
+          "caption": "彦根市高宮町 一戸建て 全３邸第１８期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1476.jpg",
+          "category": "２号棟",
+          "caption": "彦根市高宮町 一戸建て 全３邸第１８期 ２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1467.jpg",
+          "category": "スーパー",
+          "caption": "ビバシティ平和堂まで1627m 徒歩21分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1475.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1476.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1477.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_hikone/nc_78395018/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:18:38.934Z"
+    },
+    {
+      "id": "9bcaec97b898",
+      "title": "東近江市東沖野 一戸建て 第１期",
+      "price": "2380万円 [ □支払シミュレーション ]",
+      "address": "滋賀県東近江市東沖野５ [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "3LDK+S（納戸）",
+      "land_area": "128.91m2（38.99坪）（登記）",
+      "building_area": "",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0986.jpg",
+          "category": "現地外観写真",
+          "caption": "■建材には、有害物質の発散を抑えた最高ランクF☆☆☆☆（フォースター）を採用し、暮らす方の健康に配慮しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0972.jpg",
+          "category": "間取り図",
+          "caption": "2380万円、3LDK+S（納戸）、土地面積128.91m<sup>2</sup>、建物面積98.53m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0988.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0980.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0981.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0979.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0982.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のウォークインクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0983.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>日射熱や紫外線を大幅にカットできる複層ガラスを採用、結露防止効果もあります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0984.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0989.jpg",
+          "category": "バルコニー",
+          "caption": "現地（2024年11月）撮影<br>モデルハウスご見学できます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0985.jpg",
+          "category": "現地外観写真",
+          "caption": "■地震に強い耐震金物、木造住宅用制震ダンパーを採用！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0978.jpg",
+          "category": "現地外観写真",
+          "caption": "■断熱性・保温性にすぐれ、省エネ効果のあるペアガラスを採用！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0987.jpg",
+          "category": "現地外観写真",
+          "caption": "■万全の地盤調査を行ってからの基礎工事"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0990.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0991.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0992.jpg",
+          "category": "その他設備",
+          "caption": "スタイリッシュなフラットタイプ！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0993.jpg",
+          "category": "その他設備",
+          "caption": "火やガスを使わないので、お子さまにも安心！調理後は、プレートを拭くだけなので、お手入れが簡単です！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0994.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0995.jpg",
+          "category": "その他設備",
+          "caption": "雨の日のお洗濯に大活躍の浴室乾燥機！暖房機能付きのため、冬の寒い浴室内を温かく快適に！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0958.jpg",
+          "category": "駅",
+          "caption": "近江鉄道本線「八日市」駅まで3600m バス乗車12分 徒歩8分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0959.jpg",
+          "category": "スーパー",
+          "caption": "フレンドマート八日市妙法寺店まで850m 徒歩11分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0960.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート東近江沖野五丁目店まで130m 徒歩2分"
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_higashiomi/nc_78171102/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:18:52.537Z"
+    },
+    {
+      "id": "3073552b4236",
+      "title": "近江八幡市武佐町 一戸建て 第３期",
+      "price": "2380万円 [ □支払シミュレーション ]",
+      "address": "滋賀県近江八幡市武佐町 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "4LDK",
+      "land_area": "200.83m2（60.75坪）（登記）",
+      "building_area": "",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1253.jpg",
+          "category": "現地外観写真",
+          "caption": "現地写真（外観）<br>■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1243.jpg",
+          "category": "間取り図",
+          "caption": "2380万円、4LDK、土地面積200.83m<sup>2</sup>、建物面積110.16m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1263.jpg",
+          "category": "リビング",
+          "caption": "現地写真（リビング）<br>ご家族みんながゆったりくつろげる広々リビング！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1255.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン<br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1256.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1254.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1257.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1258.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1259.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1264.jpg",
+          "category": "バルコニー",
+          "caption": "日当たり良好！広々バルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1260.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1261.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1262.jpg",
+          "category": "現地外観写真",
+          "caption": "現地外観<br>■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1265.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付き！洗顔もシャワーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1266.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1267.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1268.jpg",
+          "category": "その他設備",
+          "caption": "お掃除楽々！IHヒーター！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1269.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1213.jpg",
+          "category": "その他設備",
+          "caption": "暖房・涼風・換気・乾燥など快適な機能が搭載！雨の日のお洗濯も安心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1244.jpg",
+          "category": "駅",
+          "caption": "近江鉄道八日市線「平田」駅まで640m 徒歩8分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1245.jpg",
+          "category": "スーパー",
+          "caption": "フレンドマート・D武佐店まで718m 徒歩9分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1246.jpg",
+          "category": "コンビニ",
+          "caption": "ファミリーマート武佐北店まで550m 徒歩7分"
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_omihachiman/nc_20123560/",
+      "company_name": "センチュリー21ホームマート",
+      "company_tel": "0120-43-8639",
+      "company_address": "奈良県北葛城郡広陵町笠287-1",
+      "video_url": "https://homemart-one.vercel.app/",
+      "fetched_at": "2026-02-07T09:19:06.672Z"
     },
     {
       "id": "d2e302551c29",
       "title": "大和郡山市満願寺町 限定1邸 一戸建て第1期",
       "price": "2380万円 [ □支払シミュレーション ]",
       "address": "奈良県大和郡山市満願寺町 [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/d2e302551c29.jpg",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "157.66m2（47.69坪）",
+      "building_area": "： 108.54m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0580.jpg",
+          "category": "現地外観写真",
+          "caption": "「大和郡山市満願寺町」好評分譲中です！本日は物件の魅力がたっぷり詰まった情報をご紹介致します♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0540.jpg",
+          "category": "間取り図",
+          "caption": "(1号棟)、価格2380万円、4LDK、土地面積157.66m<sup>2</sup>、建物面積108.54m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0565.jpg",
+          "category": "リビング",
+          "caption": "キッチンの正面に広がるリビング・ダイニング。ご家族の様子を見守りながらお料理ができます。時には配膳を頼んだり、会話を楽しめますね！正面にテレビがあると料理中でもテレビが見えますよ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0566.jpg",
+          "category": "キッチン",
+          "caption": "リビングと統一感があり、シンプルで使い勝手のいいキッチン。お子様と二人並んで一緒に色々なお料理に挑戦してみるのも楽しそうですね。3口コンロで同時にたくさんのお料理を作る事ができ、時短にも繋がりますよ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0567.jpg",
+          "category": "浴室",
+          "caption": "ゆったりと足を伸ばせる浴室は一日の疲れを癒してくれる大切な空間です。小窓も付いており換気も行えます。浴室乾燥機も設置しているので、雨の日の洗濯物はこちらで♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0582.jpg",
+          "category": "バルコニー",
+          "caption": "雨が降っても洗濯物が濡れずに安心なインナーバルコニー。床に木製のタイルを敷き詰め、机とチェアーを置くとプライベートな空間にも出来、多種多様な使い方が楽しめます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0568.jpg",
+          "category": "リビング以外の居室",
+          "caption": "日本人の心でもある畳コーナー。畳の香りに癒されながらお昼寝をしたり、来客用としてのゲストルームとしてもぴったりですね！寒い時期にはこたつを囲んで鍋料理なんかも楽しみの一つです♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0569.jpg",
+          "category": "リビング以外の居室",
+          "caption": "主寝室は、ゆっくり快適に過ごせることが一番です。日当たり、風通しも考慮しながら、気持ちの良い朝を迎える事が出来る様考えました！お好みのカーテンを付ける事で自分好みのお部屋で気持ちの良い朝を・・・"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0571.jpg",
+          "category": "玄関",
+          "caption": "重厚感のある玄関扉を開けると、家族みんなの靴がすべて収まる大容量のシューズクローゼットがございます。ブーツや小物もしまえる可動式の棚になっているので大変便利です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0572.jpg",
+          "category": "洗面台・洗面所",
+          "caption": "大きな鏡の付いた洗面化粧台。忙しい朝には二人並んで歯磨きや身支度チェックも可能です。鏡の裏には日用品が片付けられるたっぷりな収納棚付きです。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0520.jpg",
+          "category": "駅",
+          "caption": "JR大和路線「大和小泉駅」まで2080m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0526.jpg",
+          "category": "幼稚園・保育園",
+          "caption": "西田中保育園まで579m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0525.jpg",
+          "category": "小学校",
+          "caption": "大和郡山市立片桐西小学校まで1114m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0524.jpg",
+          "category": "中学校",
+          "caption": "大和郡山市立片桐中学校まで1389m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0523.jpg",
+          "category": "スーパー",
+          "caption": "アピタ大和郡山店まで1711m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0573.jpg",
+          "category": "トイレ",
+          "caption": "1・2階、2ヶ所にあるので、朝の忙しい時間の順番待ちもなく、深夜の利用にも大変便利です。窓があるので、換気も出来ます。清潔感のあるトイレです！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0574.jpg",
+          "category": "その他設備",
+          "caption": "たくさんの調理をする必要がある方にはコンロの数は多ければ多いほどいいですよね。朝ごはんと家族のお弁当を作らなければいけないママには忙しい朝の時間に3口あると大変便利です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0575.jpg",
+          "category": "その他設備",
+          "caption": "レンジフードはコンロに対してかぶさっている形状のため、換気扇よりも油煙や臭い、蒸気が効率良く排出できます。基本的なお手入れはフィルターのみで済むのでお掃除がラクラク♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0577.jpg",
+          "category": "その他設備",
+          "caption": "雨の多い季節にはとっても便利な浴室乾燥機。洗濯物をためなくても浴室内で乾燥が出来てとっても便利！冬場は寒い浴室を暖房で温めることも出来ます♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0578.jpg",
+          "category": "その他設備",
+          "caption": "給湯器でお湯を沸かす時にはリモコンで温度の設定をします。温度調整以外にも便利な機能がたくさんあるので機能を最大限利用すれば節約につながったり、給湯器の異常にすぐ気付くことができます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0579.jpg",
+          "category": "その他設備",
+          "caption": "カラーモニター付きインターフォンです。訪問客が一目でわかるので、防犯に役に立ちます。不在時の録画機能もついているのはうれしいですね♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0013.jpg",
+          "category": "その他",
+          "caption": "地震や建造物の劣化への対策、断熱性や省エネルギー性などについて、厳しいグループ統一の品質基準を設けています。日本で一番多く家を建てているからこそ、高い基準をもち高品質を保つことは私たちの使命です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0014.jpg",
+          "category": "その他",
+          "caption": "「住宅の品質確保の促進等に関する法律（品確法）」に基づく住宅性能表示制度は、国の定める基準に基づいて、国土交通省に登録された「登録住宅性能評価機関」が検査・評価を行う住宅品質に対する客観的な評価です。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0015.jpg",
+          "category": "その他",
+          "caption": "住宅の規格化を進め、全国で建てる木材の一部を自社工場で一括して製造することで資材調達コストの削減を図っています。また規格化することで品質のバラつきもなくなり、より高品質な住宅を提供することができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0016.jpg",
+          "category": "その他",
+          "caption": "建築現場で木材の加工をすると、時間的にも金銭的にも多くのコストがかかります。必要な木材を工場であらかじめ加工する「プレカット」を使うことで、現場では家の組立てに集中してもらい、建築現場の負担を軽減。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0017.jpg",
+          "category": "その他",
+          "caption": "土地の仕入から造成、企画、設計、施工、販売、アフターサービスまでを一貫して行っています。これに加え分譲住宅日本一のスケールメリットを活かし、高い品質を保ちながら”好価格”を実現しています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0018.jpg",
+          "category": "その他",
+          "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0364.jpg",
+          "category": "構造・工法・仕様",
+          "caption": "柱で建物を支えている為、壁を抜いて間取りを変えたり壁に大きな窓を作ることも比較的容易にできます。特にリフォームで間取りを変えたり、増築も簡単にできます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0521.jpg",
+          "category": "スーパー",
+          "caption": "サンディ大和小泉店まで1152m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0522.jpg",
+          "category": "スーパー",
+          "caption": "産直市場よってって大和郡山店まで1790m"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0576.jpg",
+          "category": "その他設備",
+          "caption": "簡単操作の浴室乾燥機リモコンです♪乾燥や暖房ともに便利なタイマー機能が付いています。『洗濯物の量が多いから3時間乾燥させよう』とか、『少ないから1時間半でいいか』みたいな調整ができます。"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F384%2F78803384%2F78803384_0540.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
       "source_url": "https://suumo.jp/ikkodate/nara/sc_yamatokoriyama/nc_78803384/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:44.090Z"
+      "fetched_at": "2026-02-07T09:19:25.713Z"
     },
     {
-      "id": "d522bf36fe87",
-      "title": "Heartful - Town 神戸市北区東大池 全１邸 第２期",
-      "price": "2390万円 [ □支払シミュレーション ]",
-      "address": "兵庫県神戸市北区東大池３ [ ■周辺環境 ]",
-      "property_type": "",
-      "description": "",
-      "image_url": "/suumo/images/d522bf36fe87.jpg",
-      "source_url": "https://suumo.jp/ikkodate/hyogo/sc_kobeshikita/nc_77893656/",
+      "id": "4c90e283aa69",
+      "title": "野洲市六条 一戸建て 全４邸第１期",
+      "price": "2380万円 [ □支払シミュレーション ]",
+      "address": "滋賀県野洲市六条 [ ■周辺環境 ]",
+      "property_type": "新築戸建",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！オプション工事最大40%OFF！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "layout": "-",
+      "land_area": "162.03m2・162.41m2（49.01坪・49.12坪）（登記）",
+      "building_area": "： 98.82m2",
+      "traffic": "",
+      "features": [],
+      "images": [],
+      "image_meta": [
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1681.jpg",
+          "category": "現地外観写真",
+          "caption": "■地震に強い家！制震装置「QUIE（クワイエ）」搭載住宅！安心の未来をお届けします♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1688.jpg",
+          "category": "全体区画図",
+          "caption": "全４邸！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1685.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1660.jpg",
+          "category": "キッチン",
+          "caption": "システムキッチン <br>カウンターのあるキッチンは、家族とのコミュニケーションを取ったり小さいお子さんの様子を見守りながら安心して料理ができます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1661.jpg",
+          "category": "浴室",
+          "caption": "バスルーム<br>バリアフリー設計で安心のバスルームは、親子入浴に最適な浴槽内ステップ付き。ドアはパッキンをなくし、床は乾燥が速いのでカビの発生を抑えます。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1684.jpg",
+          "category": "リビング",
+          "caption": "リビングダイニング<br>家族との大切な団らん空間ですね。明るい日差しをふんだんに取り込んだ伸びやかなリビングダイニングは家族の笑顔につつまれた素敵な空間になります。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1662.jpg",
+          "category": "リビング以外の居室",
+          "caption": "洋室<br>大容量の収納スペースで快適な生活！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1663.jpg",
+          "category": "その他内観",
+          "caption": "洋室<br>広々した安らぎの主寝室。自分時間を満喫する書斎や沢山の物をスッキリ収納できる大型のクローゼットなども魅力の一つですね。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1664.jpg",
+          "category": "玄関",
+          "caption": "玄関<br>明るく広い玄関に、飾り棚で遊び心をプラス。大型シューズクローゼットでスッキリ整頓。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1669.jpg",
+          "category": "バルコニー",
+          "caption": "■陽当たり良好な南向きインナーバルコニー！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1682.jpg",
+          "category": "現地外観写真",
+          "caption": "■複層ガラスを標準採用しています。断熱効果を高めます！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1680.jpg",
+          "category": "現地外観写真",
+          "caption": "■住宅設備延長保証サービス！保証期間は、安心＆納得の最大10年です♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1678.jpg",
+          "category": "現地外観写真",
+          "caption": "■夜間でも来訪者の顔を認識できるLEDライトを装備！ＴＶモニター付きインターフォンで安心のセキュリティ♪"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1670.jpg",
+          "category": "その他設備",
+          "caption": "伸びるハンドシャワー付！洗顔もシャンプーもラクラク！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1671.jpg",
+          "category": "その他設備",
+          "caption": "表面コートでキレイ長持ち！省エネ節水仕様のウォシュレットトイレ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1672.jpg",
+          "category": "その他設備",
+          "caption": "汚れにくいスロットフィルタでお手入れラクラク！ＬＥＤ照明付き！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1673.jpg",
+          "category": "その他設備",
+          "caption": "お掃除ラクラク！IHコンロ！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1674.jpg",
+          "category": "その他設備",
+          "caption": "簡単便利なレバー式！伸びる浄水器内蔵水栓！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1675.jpg",
+          "category": "その他設備",
+          "caption": "暖房・涼風・換気・乾燥など快適な機能が搭載！雨の日のお洗濯も安心！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1628.jpg",
+          "category": "駅",
+          "caption": "JR東海道線本線「野洲」駅まで5700m バス乗車21分 停歩9分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1629.jpg",
+          "category": "スーパー",
+          "caption": "フレンドマート中主店まで774m 徒歩10分"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1648.jpg",
+          "category": "",
+          "caption": "(２号地)、価格2380万円、4LDK、土地面積162.03m<sup>2</sup>、建物面積98.82m<sup>2</sup>"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_0966.jpg",
+          "category": "その他",
+          "caption": "【耐震 ＋ 制震の家、QUIE（クワイエ）】<br>震度7の揺れに鍛えられた、ふたつの備え。建築基準法で定められた壁量の1.5倍に達する十分な性能を誇っています。"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_0967.jpg",
+          "category": "その他",
+          "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1650.jpg",
+          "category": "４号地",
+          "caption": "野洲市六条 一戸建て 全４邸第１期 ４号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1630.jpg",
+          "category": "コンビニ",
+          "caption": "セブンイレブン野洲中主店まで556m 徒歩7分"
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F622%2F77741622%2F77741622_1648.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        },
+        {
+          "url": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F622%2F77741622%2F77741622_1650.jpg&w=500",
+          "category": "間取り図",
+          "caption": ""
+        }
+      ],
+      "image_url": "",
+      "source_url": "https://suumo.jp/ikkodate/shiga/sc_yasu/nc_77741622/",
       "company_name": "センチュリー21ホームマート",
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T05:32:53.470Z"
+      "fetched_at": "2026-02-07T09:20:03.388Z"
     }
   ]
 }
