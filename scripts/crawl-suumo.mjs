@@ -40,6 +40,16 @@ const hashId = (input) => crypto.createHash('md5').update(input).digest('hex').s
 const ensureDirs = async () => {
   await fs.mkdir(OUTPUT_DIR, { recursive: true })
   await fs.mkdir(IMAGE_DIR, { recursive: true })
+  try {
+    const files = await fs.readdir(IMAGE_DIR)
+    await Promise.all(
+      files
+        .filter((file) => file.endsWith('.jpg'))
+        .map((file) => fs.unlink(path.join(IMAGE_DIR, file)))
+    )
+  } catch {
+    // ignore cleanup errors
+  }
 }
 
 const downloadImage = async (url, destPath) => {
