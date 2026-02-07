@@ -11,6 +11,7 @@ interface Property {
   id: string
   title: string
   price: number
+  price_text?: string
   prefecture?: string
   city?: string
   town?: string
@@ -50,6 +51,7 @@ interface Property {
   is_new?: boolean
   created_at: string
   updated_at: string
+  source_url?: string
   
   // マンション専用
   total_units?: number
@@ -80,9 +82,71 @@ export default function PropertyDetail() {
         url: process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
       })
+      if (typeof params.id === 'string' && params.id.startsWith('suumo-')) {
+        fetchSuumoProperty(params.id)
+        return
+      }
       fetchProperty(params.id as string)
     }
   }, [params?.id])
+
+  const fetchSuumoProperty = async (id: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const response = await fetch('/suumo/properties.json', { cache: 'no-store' })
+      if (!response.ok) {
+        setError('物件情報の取得に失敗しました')
+        return
+      }
+
+      const data = await response.json()
+      const items = Array.isArray(data?.items) ? data.items : []
+      const suumoId = id.replace('suumo-', '')
+      const item = items.find((entry: any) => entry.id === suumoId)
+
+      if (!item) {
+        setError('指定された物件が見つかりませんでした')
+        return
+      }
+
+      const priceText = typeof item.price === 'string' ? item.price.trim() : ''
+      const numericMatch = priceText.replace(/,/g, '').match(/\d+(\.\d+)?/)
+      const priceValue = numericMatch ? Number(numericMatch[0]) : 0
+
+      const normalized: Property = {
+        id,
+        title: item.title || '物件',
+        price: Number.isFinite(priceValue) ? priceValue : 0,
+        price_text: priceText || undefined,
+        address: item.address || '',
+        property_type: item.property_type || '物件',
+        created_at: item.fetched_at || new Date().toISOString(),
+        updated_at: item.fetched_at || new Date().toISOString(),
+        image_url: item.image_url || '',
+        images: item.image_url ? [item.image_url] : [],
+        staff_comment: item.description || '',
+        source_url: item.source_url || ''
+      }
+
+      setProperty(normalized)
+      addRecentlyViewed({
+        id: normalized.id,
+        title: normalized.title,
+        price: normalized.price,
+        property_type: normalized.property_type,
+        address: normalized.address,
+        image_url: normalized.image_url,
+        images: normalized.images
+      })
+    } catch (err) {
+      console.error('Error fetching SUUMO property:', err)
+      setError('物件情報の取得に失敗しました')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchProperty = async (id: string) => {
     try {
@@ -381,7 +445,7 @@ export default function PropertyDetail() {
             <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <h1 className="text-2xl font-bold mb-4">{property.title}</h1>
               <div className="text-3xl font-bold text-red-600 mb-4">
-                {property.price.toLocaleString()}万円
+                {property.price_text ?? `${property.price.toLocaleString()}万円`}
               </div>
               
               {/* スタッフコメント */}
