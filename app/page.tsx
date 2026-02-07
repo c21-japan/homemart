@@ -34,33 +34,33 @@ export default function HomePage() {
 
   const featuredProperties = [
     {
-      id: '1',
+      id: 'featured-1',
       name: '広陵町の新築戸建',
       price: 28800000,
       property_type: '新築戸建',
       address: '奈良県北葛城郡広陵町',
       city: '広陵町',
-      image_url: '/images/property1.jpg',
+      image_url: '/kitchen_after.jpg',
       created_at: new Date().toISOString()
     },
     {
-      id: '2',
+      id: 'featured-2',
       name: '香芝市の中古戸建',
       price: 22000000,
       property_type: '中古戸建',
       address: '奈良県香芝市',
       city: '香芝市',
-      image_url: '/images/property2.jpg',
+      image_url: '/bathroom_after.jpg',
       created_at: new Date().toISOString()
     },
     {
-      id: '3',
+      id: 'featured-3',
       name: '大和高田市の土地',
       price: 15000000,
       property_type: '土地',
       address: '奈良県大和高田市',
       city: '大和高田市',
-      image_url: '/images/property3.jpg',
+      image_url: '/bathroom_before.jpg',
       created_at: new Date().toISOString()
     }
   ]
@@ -187,7 +187,12 @@ export default function HomePage() {
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {featuredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property.id}
+                property={property}
+                showFavoriteButton={false}
+                linkTo="/properties"
+              />
             ))}
           </div>
         </div>

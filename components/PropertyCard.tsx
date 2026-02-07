@@ -17,9 +17,14 @@ interface PropertyCardProps {
     created_at: string
   }
   showFavoriteButton?: boolean
+  linkTo?: string
 }
 
-export default function PropertyCard({ property, showFavoriteButton = true }: PropertyCardProps) {
+export default function PropertyCard({
+  property,
+  showFavoriteButton = true,
+  linkTo
+}: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -105,12 +110,21 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
   }
 
   const handleCardClick = () => {
+    if (linkTo) {
+      router.push(linkTo)
+      return
+    }
     router.push(`/properties/${property.id}`)
   }
 
+  const isLinkEnabled = Boolean(linkTo) || Boolean(property.id)
+
   return (
     <div className="group overflow-hidden rounded-3xl border border-[#EAD8A6] bg-white shadow-[0_14px_30px_rgba(21,19,13,0.08)] transition hover:-translate-y-1 hover:border-[#F4C84B]">
-      <div className="relative cursor-pointer" onClick={handleCardClick}>
+      <div
+        className={`relative ${isLinkEnabled ? 'cursor-pointer' : ''}`}
+        onClick={isLinkEnabled ? handleCardClick : undefined}
+      >
         {property.image_url ? (
           <div className="relative w-full h-48">
             <Image
@@ -167,7 +181,10 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
         </div>
       </div>
 
-      <div className="cursor-pointer p-5" onClick={handleCardClick}>
+      <div
+        className={`${isLinkEnabled ? 'cursor-pointer' : ''} p-5`}
+        onClick={isLinkEnabled ? handleCardClick : undefined}
+      >
         <h3 className="mb-2 line-clamp-2 text-lg font-display text-[#15130D]">
           {property.name}
         </h3>
@@ -185,12 +202,14 @@ export default function PropertyCard({ property, showFavoriteButton = true }: Pr
             {new Date(property.created_at).toLocaleDateString('ja-JP')}
           </span>
           
-          <button
-            onClick={handleCardClick}
-            className="rounded-full bg-[#F4C84B] px-4 py-2 text-xs font-semibold text-[#15130D] transition hover:bg-[#E6B62F]"
-          >
-            詳細を見る
-          </button>
+          {isLinkEnabled && (
+            <button
+              onClick={handleCardClick}
+              className="rounded-full bg-[#F4C84B] px-4 py-2 text-xs font-semibold text-[#15130D] transition hover:bg-[#E6B62F]"
+            >
+              詳細を見る
+            </button>
+          )}
         </div>
       </div>
     </div>
