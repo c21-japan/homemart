@@ -1,7 +1,7 @@
 {
   "source": "suumo",
   "url": "https://suumo.jp/ikkodate/__JJ_JJ010FJ001_arz1060z2bsz1020z2kkcz1126506001z2kkcz1126506002z2kkcz1126506005z2kkcz1126506006z2kkcz1126506007z2kkcz1126506008z2kkcz1126506009z2kkcz1126506010z2kkcz1126506011z2kkcz1126506013z2kkcz1126506014z2kkcz1126506015.html",
-  "fetched_at": "2026-02-07T09:20:03.388Z",
+  "fetched_at": "2026-02-07T09:59:12.321Z",
   "items": [
     {
       "id": "77a2a607550a",
@@ -9,13 +9,42 @@
       "price": "1980万円～2180万円 [ □支払シミュレーション ]",
       "address": "滋賀県犬上郡豊郷町大字四十九院 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "160.73m2～263.78m2（48.62坪～79.79坪）（登記）",
       "building_area": "： 108.53m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号棟",
+          "price": "1980万円",
+          "layout": "4LDK+S",
+          "land_area": "174.05m2",
+          "building_area": "108.53m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1675.jpg&w=202&h=124"
+        },
+        {
+          "name": "２号棟",
+          "price": "2180万円",
+          "layout": "4LDK",
+          "land_area": "160.73m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1676.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号棟",
+          "price": "2080万円",
+          "layout": "3LDK+S",
+          "land_area": "263.78m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F749%2F78416749%2F78416749_1677.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1694.jpg",
@@ -138,14 +167,14 @@
           "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1676.jpg",
-          "category": "２号棟",
-          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ２号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1677.jpg",
           "category": "３号棟",
           "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1676.jpg",
+          "category": "２号棟",
+          "caption": "犬上郡豊郷町四十九院 一戸建て 全３邸第２期 ２号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/749/78416749/78416749_1660.jpg",
@@ -174,7 +203,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:14:59.347Z"
+      "fetched_at": "2026-02-07T09:54:46.529Z"
     },
     {
       "id": "0ba1bf564e15",
@@ -182,13 +211,42 @@
       "price": "1980万円～2080万円 [ □支払シミュレーション ]",
       "address": "滋賀県東近江市宮荘町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "161.5m2～161.56m2",
       "building_area": "： 108.54m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号棟",
+          "price": "2080万円",
+          "layout": "4LDK",
+          "land_area": "161.5m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1686.jpg&w=202&h=124"
+        },
+        {
+          "name": "２号棟",
+          "price": "1980万円",
+          "layout": "4LDK+S",
+          "land_area": "161.56m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1687.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号棟",
+          "price": "1980万円",
+          "layout": "4LDK",
+          "land_area": "161.56m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F940%2F78948940%2F78948940_1688.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1718.jpg",
@@ -311,14 +369,14 @@
           "caption": "【住宅性能表示制度】<br>（住宅性能表示を受けるとこんなメリットがあります。）<br>・第三者機関の評価員が性能をチェック！<br>・万一のトラブルにも専門機関が対応！<br>・住宅ローンの優遇や保険料の割引！"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1687.jpg",
-          "category": "２号棟",
-          "caption": "東近江市宮荘町 一戸建て 全３邸第4期 ２号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1688.jpg",
           "category": "３号棟",
           "caption": "東近江市宮荘町 一戸建て 全３邸第4期 ３号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1687.jpg",
+          "category": "２号棟",
+          "caption": "東近江市宮荘町 一戸建て 全３邸第4期 ２号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/940/78948940/78948940_1692.jpg",
@@ -347,7 +405,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:15:11.168Z"
+      "fetched_at": "2026-02-07T09:55:01.332Z"
     },
     {
       "id": "63511117e8d8",
@@ -355,13 +413,42 @@
       "price": "2090万円～2390万円 [ □支払シミュレーション ]",
       "address": "京都府南丹市園部町横田１号 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "152.14m2～156.05m2（46.02坪～47.20坪）（登記）",
       "building_area": "： 104.27m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号棟",
+          "price": "2390万円",
+          "layout": "4LDK+S",
+          "land_area": "155.55m2",
+          "building_area": "104.27m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1453.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号棟",
+          "price": "2090万円",
+          "layout": "3LDK",
+          "land_area": "152.14m2",
+          "building_area": "101.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1455.jpg&w=202&h=124"
+        },
+        {
+          "name": "４号棟",
+          "price": "2290万円",
+          "layout": "3LDK",
+          "land_area": "156.05m2",
+          "building_area": "101.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F076%2F77783076%2F77783076_1456.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/076/77783076/77783076_1464.jpg",
@@ -510,7 +597,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:15:26.436Z"
+      "fetched_at": "2026-02-07T09:55:12.916Z"
     },
     {
       "id": "5bbdbb857c1e",
@@ -518,13 +605,17 @@
       "price": "2098万円 [ □支払シミュレーション ]",
       "address": "滋賀県湖南市下田 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "4LDK",
       "land_area": "142.78m2（43.19坪）（登記）",
       "building_area": "",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/604/78202604/78202604_0743.jpg",
@@ -643,7 +734,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:15:41.001Z"
+      "fetched_at": "2026-02-07T09:55:26.275Z"
     },
     {
       "id": "852b82bf3973",
@@ -651,13 +742,146 @@
       "price": "2180万円～3280万円 [ □支払シミュレーション ]",
       "address": "滋賀県大津市坂本８ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "120.22m2～158.29m2（36.36坪～47.88坪）（登記）",
       "building_area": "： 99.36m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号棟",
+          "price": "3280万円",
+          "layout": "4LDK+S",
+          "land_area": "138.21m2",
+          "building_area": "99.36m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1543.jpg&w=202&h=124"
+        },
+        {
+          "name": "２号棟",
+          "price": "3180万円",
+          "layout": "3LDK+S",
+          "land_area": "124.96m2",
+          "building_area": "98.74m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1544.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号棟",
+          "price": "2880万円",
+          "layout": "4LDK+S",
+          "land_area": "149.98m2",
+          "building_area": "101.85m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1545.jpg&w=202&h=124"
+        },
+        {
+          "name": "４号棟",
+          "price": "2580万円",
+          "layout": "3LDK",
+          "land_area": "120.92m2",
+          "building_area": "99.36m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1546.jpg&w=202&h=124"
+        },
+        {
+          "name": "５号棟",
+          "price": "2480万円",
+          "layout": "3LDK+S",
+          "land_area": "120.77m2",
+          "building_area": "96.05m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1547.jpg&w=202&h=124"
+        },
+        {
+          "name": "６号棟",
+          "price": "2680万円",
+          "layout": "4LDK+S",
+          "land_area": "120.83m2",
+          "building_area": "100.19m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1548.jpg&w=202&h=124"
+        },
+        {
+          "name": "７号棟",
+          "price": "2680万円",
+          "layout": "3LDK+S",
+          "land_area": "121.23m2",
+          "building_area": "96.46m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1549.jpg&w=202&h=124"
+        },
+        {
+          "name": "８号棟",
+          "price": "2580万円",
+          "layout": "4LDK",
+          "land_area": "138.89m2",
+          "building_area": "101.64m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1550.jpg&w=202&h=124"
+        },
+        {
+          "name": "１０号棟",
+          "price": "2880万円",
+          "layout": "4LDK",
+          "land_area": "120.38m2",
+          "building_area": "98.33m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1552.jpg&w=202&h=124"
+        },
+        {
+          "name": "１１号棟",
+          "price": "2580万円",
+          "layout": "3LDK+S",
+          "land_area": "124.96m2",
+          "building_area": "96.88m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1553.jpg&w=202&h=124"
+        },
+        {
+          "name": "１２号棟",
+          "price": "2880万円",
+          "layout": "4LDK+S",
+          "land_area": "120.68m2",
+          "building_area": "102.06m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1554.jpg&w=202&h=124"
+        },
+        {
+          "name": "１３号棟",
+          "price": "2580万円",
+          "layout": "4LDK+S",
+          "land_area": "155.01m2",
+          "building_area": "97.91m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1555.jpg&w=202&h=124"
+        },
+        {
+          "name": "１４号棟",
+          "price": "2180万円",
+          "layout": "3LDK+S",
+          "land_area": "158.29m2",
+          "building_area": "101.85m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1556.jpg&w=202&h=124"
+        },
+        {
+          "name": "１５号棟",
+          "price": "3180万円",
+          "layout": "3LDK+S",
+          "land_area": "120.39m2",
+          "building_area": "98.95m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1557.jpg&w=202&h=124"
+        },
+        {
+          "name": "１６号棟",
+          "price": "3080万円",
+          "layout": "4LDK+S",
+          "land_area": "120.22m2",
+          "building_area": "105.16m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1558.jpg&w=202&h=124"
+        },
+        {
+          "name": "１７号棟",
+          "price": "2980万円",
+          "layout": "4LDK",
+          "land_area": "121.73m2",
+          "building_area": "101.02m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F286%2F79223286%2F79223286_1559.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1541.jpg",
@@ -770,9 +994,14 @@
           "caption": "(１号棟)、価格3280万円、4LDK+S、土地面積138.21m<sup>2</sup>、建物面積99.36m<sup>2</sup>"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1547.jpg",
-          "category": "５号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 ５号棟"
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1552.jpg",
+          "category": "１０号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １０号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1556.jpg",
+          "category": "１４号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １４号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1555.jpg",
@@ -780,9 +1009,14 @@
           "caption": "大津市坂本 一戸建て 全１７邸 １３号棟"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1553.jpg",
-          "category": "１１号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 １１号棟"
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1559.jpg",
+          "category": "１７号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 １７号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1544.jpg",
+          "category": "２号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ２号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1550.jpg",
@@ -790,24 +1024,9 @@
           "caption": "大津市坂本 一戸建て 全１７邸 ８号棟"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1552.jpg",
-          "category": "１０号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 １０号棟"
-        },
-        {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1558.jpg",
-          "category": "１６号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 １６号棟"
-        },
-        {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1546.jpg",
-          "category": "４号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 ４号棟"
-        },
-        {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1554.jpg",
-          "category": "１２号棟",
-          "caption": "大津市坂本 一戸建て 全１７邸 １２号棟"
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1549.jpg",
+          "category": "７号棟",
+          "caption": "大津市坂本 一戸建て 全１７邸 ７号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/286/79223286/79223286_1507.jpg",
@@ -901,7 +1120,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:15:58.198Z"
+      "fetched_at": "2026-02-07T09:55:44.144Z"
     },
     {
       "id": "705db8aa482f",
@@ -909,13 +1128,17 @@
       "price": "2180万円 [ □支払シミュレーション ]",
       "address": "大阪府松原市丹南４ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "ZEH水準の新築戸建が登場【無料相談受付中】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "description": "ZEH水準の新築戸建が登場【無料相談受付中】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
       "layout": "3LDK",
       "land_area": "78.16m2（23.64坪）",
       "building_area": "",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/092/78640092/78640092_1386.jpg",
@@ -1079,7 +1302,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:16:12.025Z"
+      "fetched_at": "2026-02-07T09:55:59.073Z"
     },
     {
       "id": "ebdf49ac59c9",
@@ -1087,13 +1310,34 @@
       "price": "2180万円・2280万円 [ □支払シミュレーション ]",
       "address": "大阪府岸和田市西大路町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "JR久米田駅まで徒歩15分！岸和田市西大路町に駐車2台可能な新築戸建が登場【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "description": "JR久米田駅まで徒歩15分！岸和田市西大路町に駐車2台可能な新築戸建が登場【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
       "layout": "-",
       "land_area": "99.97m2・100.18m2（30.24坪・30.30坪）",
       "building_area": "： 94.77m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号地",
+          "price": "2180万円",
+          "layout": "3LDK",
+          "land_area": "100.18m2",
+          "building_area": "94.77m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F116%2F77421116%2F77421116_1569.jpg&w=202&h=124"
+        },
+        {
+          "name": "2号地",
+          "price": "2280万円",
+          "layout": "3LDK",
+          "land_area": "99.97m2",
+          "building_area": "95.17m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F116%2F77421116%2F77421116_1570.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/116/77421116/77421116_1650.jpg",
@@ -1277,7 +1521,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:16:28.809Z"
+      "fetched_at": "2026-02-07T09:56:12.097Z"
     },
     {
       "id": "bf91723c98ac",
@@ -1285,13 +1529,34 @@
       "price": "2180万円・2380万円 [ □支払シミュレーション ]",
       "address": "奈良県天理市田町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "130.06m2・130.58m2（39.34坪・39.50坪）",
       "building_area": "： 105.3m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "1号棟",
+          "price": "2180万円",
+          "layout": "4LDK+S",
+          "land_area": "130.06m2",
+          "building_area": "105.3m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F547%2F78084547%2F78084547_0377.jpg&w=202&h=124"
+        },
+        {
+          "name": "2号棟",
+          "price": "2380万円",
+          "layout": "4LDK",
+          "land_area": "130.58m2",
+          "building_area": "105.3m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F547%2F78084547%2F78084547_0378.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/547/78084547/78084547_0409.jpg",
@@ -1465,7 +1730,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:16:46.847Z"
+      "fetched_at": "2026-02-07T09:56:29.787Z"
     },
     {
       "id": "33b75d0a34bc",
@@ -1473,13 +1738,34 @@
       "price": "2230万円・2380万円 [ □支払シミュレーション ]",
       "address": "奈良県磯城郡川西町大字結崎 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "133.21m2・134m2（40.29坪・40.53坪）",
       "building_area": "： 95.57m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "1号棟",
+          "price": "2380万円",
+          "layout": "4LDK+S",
+          "land_area": "134m2",
+          "building_area": "95.57m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F483%2F78167483%2F78167483_0386.jpg&w=202&h=124"
+        },
+        {
+          "name": "2号棟",
+          "price": "2230万円",
+          "layout": "3LDK",
+          "land_area": "133.21m2",
+          "building_area": "93.55m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F483%2F78167483%2F78167483_0387.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/483/78167483/78167483_0457.jpg",
@@ -1653,7 +1939,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:16:59.201Z"
+      "fetched_at": "2026-02-07T09:56:45.687Z"
     },
     {
       "id": "37327f0f39cd",
@@ -1661,13 +1947,58 @@
       "price": "2280万円～3180万円 [ □支払シミュレーション ]",
       "address": "奈良県生駒郡平群町大字三里 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "131.4m2～134.75m2（39.74坪～40.76坪）",
       "building_area": "： 99.99m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "3期3号棟",
+          "price": "2280万円",
+          "layout": "4LDK",
+          "land_area": "134.4m2",
+          "building_area": "99.99m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0208.jpg&w=202&h=124"
+        },
+        {
+          "name": "4期1号棟",
+          "price": "2980万円",
+          "layout": "4LDK+S",
+          "land_area": "132.84m2",
+          "building_area": "102.26m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0278.jpg&w=202&h=124"
+        },
+        {
+          "name": "5期1号棟",
+          "price": "3180万円",
+          "layout": "3LDK",
+          "land_area": "132.31m2",
+          "building_area": "109.3m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0299.jpg&w=202&h=124"
+        },
+        {
+          "name": "5期2号棟",
+          "price": "3180万円",
+          "layout": "3LDK+2S",
+          "land_area": "131.4m2",
+          "building_area": "110.13m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0300.jpg&w=202&h=124"
+        },
+        {
+          "name": "5期3号棟",
+          "price": "2980万円",
+          "layout": "3LDK+S",
+          "land_area": "134.75m2",
+          "building_area": "104.33m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F531%2F78117531%2F78117531_0301.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/531/78117531/78117531_0316.jpg",
@@ -1861,7 +2192,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:17:12.120Z"
+      "fetched_at": "2026-02-07T09:57:01.304Z"
     },
     {
       "id": "ffc8c9bf08dc",
@@ -1869,13 +2200,17 @@
       "price": "2280万円 [ □支払シミュレーション ]",
       "address": "滋賀県湖南市柑子袋西４ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "4LDK",
       "land_area": "185.7m2（56.17坪）（登記）",
       "building_area": "",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！物件内覧可能！7日(土)８日(日)11日(祝)予約受付中！",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/072/78685072/78685072_1214.jpg",
@@ -1994,7 +2329,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:17:26.675Z"
+      "fetched_at": "2026-02-07T09:57:13.520Z"
     },
     {
       "id": "74f1828f6bed",
@@ -2002,13 +2337,42 @@
       "price": "2280万円～2880万円 [ □支払シミュレーション ]",
       "address": "大阪府東大阪市布市町１ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "東大阪市布市町1丁目に新築戸建が登場！地震に強い「SAFE365」搭載【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
+      "description": "東大阪市布市町1丁目に新築戸建が登場！地震に強い「SAFE365」搭載【ネット予約可】＼当日のご案内可能／■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！圧倒的取引実績数！最優遇金利0.41％！光熱費高騰対策キャンペーン実施！●●新型コロナウィルス感染予防対策●●",
       "layout": "・ZEH水準！・駐車場有り！・対面式キッチン！・べた基礎！",
       "land_area": "99.18m2～112.82m2（30.00坪～34.12坪）",
       "building_area": "： 90.72m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "２号地",
+          "price": "2280万円",
+          "layout": "3LDK",
+          "land_area": "112.37m2",
+          "building_area": "90.72m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1605.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号地",
+          "price": "2480万円",
+          "layout": "3LDK",
+          "land_area": "112.82m2",
+          "building_area": "96.38m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1606.jpg&w=202&h=124"
+        },
+        {
+          "name": "4号地",
+          "price": "2880万円",
+          "layout": "3LDK+S",
+          "land_area": "99.18m2",
+          "building_area": "104.28m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F732%2F77275732%2F77275732_1687.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1691.jpg",
@@ -2156,14 +2520,14 @@
           "caption": "住宅をお引渡ししてからも、私たちの仕事は終わりではありません。お客様の快適な住まいを維持するために、ご購入いただいた後も安心のアフターサービスを実施いたします。"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1687.jpg",
-          "category": "4号地",
-          "caption": "東大阪市布市町 全５邸 一戸建て第１期 4号地"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1606.jpg",
           "category": "３号地",
           "caption": "東大阪市布市町 全５邸 一戸建て第１期 ３号地"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1687.jpg",
+          "category": "4号地",
+          "caption": "東大阪市布市町 全５邸 一戸建て第１期 4号地"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/732/77275732/77275732_1580.jpg",
@@ -2202,7 +2566,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:17:38.967Z"
+      "fetched_at": "2026-02-07T09:57:27.006Z"
     },
     {
       "id": "50e0a46c6f0a",
@@ -2210,13 +2574,26 @@
       "price": "2280万円 [ □支払シミュレーション ]",
       "address": "滋賀県大津市瀬田５ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "124.53m2（37.67坪）（登記）",
       "building_area": "： 94.76m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■■ ■車で移動するのが大変というお客様に無料送迎サービスをさせて頂いております。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "２号棟",
+          "price": "2280万円",
+          "layout": "3LDK",
+          "land_area": "124.53m2",
+          "building_area": "94.76m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F032%2F78948032%2F78948032_1699.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/032/78948032/78948032_1711.jpg",
@@ -2355,7 +2732,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:17:52.884Z"
+      "fetched_at": "2026-02-07T09:57:39.608Z"
     },
     {
       "id": "277c3b0f6908",
@@ -2363,13 +2740,26 @@
       "price": "2290万円 [ □支払シミュレーション ]",
       "address": "奈良県生駒郡斑鳩町龍田西３-14‐5 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "245.46m2（74.25坪）",
       "building_area": "： 95.58m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "2号棟",
+          "price": "2290万円",
+          "layout": "4LDK",
+          "land_area": "245.46m2",
+          "building_area": "95.58m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F321%2F76973321%2F76973321_0071.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/321/76973321/76973321_0133.jpg",
@@ -2528,7 +2918,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:18:10.085Z"
+      "fetched_at": "2026-02-07T09:57:55.467Z"
     },
     {
       "id": "93071092a755",
@@ -2536,13 +2926,34 @@
       "price": "2350万円・2380万円 [ □支払シミュレーション ]",
       "address": "奈良県生駒郡斑鳩町龍田４ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "194.36m2・195.16m2（58.79坪・59.03坪）",
       "building_area": "： 103.27m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "1号棟",
+          "price": "2380万円",
+          "layout": "3LDK",
+          "land_area": "194.36m2",
+          "building_area": "103.27m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F347%2F20034347%2F20034347_0547.jpg&w=202&h=124"
+        },
+        {
+          "name": "2号棟",
+          "price": "2350万円",
+          "layout": "3LDK+S",
+          "land_area": "195.16m2",
+          "building_area": "103.27m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F347%2F20034347%2F20034347_0548.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/347/20034347/20034347_0550.jpg",
@@ -2716,7 +3127,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:18:23.078Z"
+      "fetched_at": "2026-02-07T09:58:09.601Z"
     },
     {
       "id": "225ac7ce867d",
@@ -2724,13 +3135,42 @@
       "price": "2350万円～2450万円 [ □支払シミュレーション ]",
       "address": "滋賀県彦根市高宮町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "135.38m2～149.72m2（40.95坪～45.29坪）（登記）",
       "building_area": "： 111.51m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "１号棟",
+          "price": "2350万円",
+          "layout": "4LDK",
+          "land_area": "137.03m2",
+          "building_area": "111.51m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1475.jpg&w=202&h=124"
+        },
+        {
+          "name": "２号棟",
+          "price": "2430万円",
+          "layout": "4LDK",
+          "land_area": "135.38m2",
+          "building_area": "112.33m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1476.jpg&w=202&h=124"
+        },
+        {
+          "name": "３号棟",
+          "price": "2450万円",
+          "layout": "4LDK",
+          "land_area": "149.72m2",
+          "building_area": "111.37m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F018%2F78395018%2F78395018_1477.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1490.jpg",
@@ -2843,14 +3283,14 @@
           "caption": "(１号棟)、価格2350万円、4LDK、土地面積137.03m<sup>2</sup>、建物面積111.51m<sup>2</sup>"
         },
         {
-          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1477.jpg",
-          "category": "３号棟",
-          "caption": "彦根市高宮町 一戸建て 全３邸第１８期 ３号棟"
-        },
-        {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1476.jpg",
           "category": "２号棟",
           "caption": "彦根市高宮町 一戸建て 全３邸第１８期 ２号棟"
+        },
+        {
+          "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1477.jpg",
+          "category": "３号棟",
+          "caption": "彦根市高宮町 一戸建て 全３邸第１８期 ３号棟"
         },
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/018/78395018/78395018_1467.jpg",
@@ -2879,7 +3319,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:18:38.934Z"
+      "fetched_at": "2026-02-07T09:58:23.994Z"
     },
     {
       "id": "9bcaec97b898",
@@ -2887,13 +3327,17 @@
       "price": "2380万円 [ □支払シミュレーション ]",
       "address": "滋賀県東近江市東沖野５ [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "3LDK+S（納戸）",
       "land_area": "128.91m2（38.99坪）（登記）",
       "building_area": "",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/102/78171102/78171102_0986.jpg",
@@ -3012,7 +3456,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:18:52.537Z"
+      "fetched_at": "2026-02-07T09:58:34.162Z"
     },
     {
       "id": "3073552b4236",
@@ -3020,13 +3464,17 @@
       "price": "2380万円 [ □支払シミュレーション ]",
       "address": "滋賀県近江八幡市武佐町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "4LDK",
       "land_area": "200.83m2（60.75坪）（登記）",
       "building_area": "",
       "traffic": "",
+      "transportation": [],
+      "event_info": "見学会■ ネットで多くの情報が見れますが、実際に見てみないと気づかない事も御座います。",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/560/20123560/20123560_1253.jpg",
@@ -3145,7 +3593,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:19:06.672Z"
+      "fetched_at": "2026-02-07T09:58:47.813Z"
     },
     {
       "id": "d2e302551c29",
@@ -3153,13 +3601,26 @@
       "price": "2380万円 [ □支払シミュレーション ]",
       "address": "奈良県大和郡山市満願寺町 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "157.66m2（47.69坪）",
       "building_area": "： 108.54m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！ ☆選べる成約者特典は諸費用欄へ",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "1号棟",
+          "price": "2380万円",
+          "layout": "4LDK",
+          "land_area": "157.66m2",
+          "building_area": "108.54m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F384%2F78803384%2F78803384_0540.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/384/78803384/78803384_0580.jpg",
@@ -3328,7 +3789,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:19:25.713Z"
+      "fetched_at": "2026-02-07T09:58:59.986Z"
     },
     {
       "id": "4c90e283aa69",
@@ -3336,13 +3797,34 @@
       "price": "2380万円 [ □支払シミュレーション ]",
       "address": "滋賀県野洲市六条 [ ■周辺環境 ]",
       "property_type": "新築戸建",
-      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！オプション工事最大40%OFF！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』住まいるプラス１センチュリー21ホームマート本店にお任せ下さい！",
+      "description": "■弊社の特徴■【新築取扱件数5400件以上】スーモに掲載していない物件もご相談下さい！住宅ローン提携銀行多数！最優遇金利0.41%！光熱費削減キャンペーン実施！オプション工事最大40%OFF！ ～当日のご案内可能～■住宅ローン相談無料！今お持ちのローンを最大500万円まで住宅ローンと一本化が可能！■住宅ローンアドバイザー有資格者等多数在籍のTV・CMでお馴染みの弊社にご相談下さい！新築物件は『住まい選びのプロフェッショナル』センチュリー21ホームマートセンチュリー21ホームマートにお任せ下さい！",
       "layout": "-",
       "land_area": "162.03m2・162.41m2（49.01坪・49.12坪）（登記）",
       "building_area": "： 98.82m2",
       "traffic": "",
+      "transportation": [],
+      "event_info": "現地説明会開催！物件内覧可能！7日(土)８日(日)11日(祝)予約受付中！",
       "features": [],
       "images": [],
+      "site_plan_image": "",
+      "units": [
+        {
+          "name": "２号地",
+          "price": "2380万円",
+          "layout": "4LDK",
+          "land_area": "162.03m2",
+          "building_area": "98.82m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F622%2F77741622%2F77741622_1648.jpg&w=202&h=124"
+        },
+        {
+          "name": "４号地",
+          "price": "2380万円",
+          "layout": "4LDK",
+          "land_area": "162.41m2",
+          "building_area": "98.82m2",
+          "floor_plan_image": "https://img01.suumo.com/jj/resizeImage?src=gazo%2Fbukken%2F060%2FN010000%2Fimg%2F622%2F77741622%2F77741622_1650.jpg&w=202&h=124"
+        }
+      ],
       "image_meta": [
         {
           "url": "https://suumo.jp/front/gazo/bukken/060/N010000/img/622/77741622/77741622_1681.jpg",
@@ -3491,7 +3973,7 @@
       "company_tel": "0120-43-8639",
       "company_address": "奈良県北葛城郡広陵町笠287-1",
       "video_url": "https://homemart-one.vercel.app/",
-      "fetched_at": "2026-02-07T09:20:03.388Z"
+      "fetched_at": "2026-02-07T09:59:12.321Z"
     }
   ]
 }
