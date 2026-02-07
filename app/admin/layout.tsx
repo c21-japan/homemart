@@ -30,6 +30,7 @@ const navigation: NavItem[] = [
     requiredPermission: { feature: 'CONSTRUCTION_SCHEDULE', type: 'VIEW' }
   },
   { name: '内部申請', href: '/admin/internal-applications', icon: '📝' },
+  { name: '相続DM', href: '/admin/inheritance-dm', icon: '✉️' },
   { name: 'マニュアル', href: '/admin/manuals', icon: '📘' },
   { name: '問い合わせ', href: '/admin/inquiries', icon: '💬' },
   { name: 'リフォーム案件', href: '/admin/reform-projects', icon: '🔨' },
