@@ -151,6 +151,43 @@ const extractDetailLinks = (html) => {
   return Array.from(links)
 }
 
+const extractPaginationInfo = (html) => {
+  const $ = load(html)
+  let maxPage = 1
+  $('a[href*="page="]').each((_, el) => {
+    const href = $(el).attr('href') || ''
+    const match = href.match(/[?&]page=(\d+)/)
+    if (!match) return
+    const page = Number(match[1])
+    if (Number.isFinite(page) && page > maxPage) {
+      maxPage = page
+    }
+  })
+  return { maxPage }
+}
+
+const buildListUrl = (baseUrl, page) => {
+  if (page <= 1) return baseUrl
+  const separator = baseUrl.includes('?') ? '&' : '?'
+  return `${baseUrl}${separator}page=${page}`
+}
+
+const fetchAllDetailLinks = async ({ baseUrl, limit }) => {
+  const firstHtml = await fetchHtml(baseUrl)
+  const { maxPage } = extractPaginationInfo(firstHtml)
+  const allLinks = new Set(extractDetailLinks(firstHtml))
+
+  for (let page = 2; page <= maxPage; page += 1) {
+    if (allLinks.size >= limit) break
+    const pageUrl = buildListUrl(baseUrl, page)
+    const pageHtml = await fetchHtml(pageUrl)
+    extractDetailLinks(pageHtml).forEach((url) => allLinks.add(url))
+    await sleep(800)
+  }
+
+  return Array.from(allLinks)
+}
+
 const extractByLabel = ($, labels) => {
   const labelList = Array.isArray(labels) ? labels : [labels]
   let value = ''
@@ -431,8 +468,7 @@ const crawl = async ({ limit, offset, delayMin, delayMax, resume }) => {
     }
   }
 
-  const listHtml = await fetchHtml(SUUMO_URL)
-  const detailLinks = extractDetailLinks(listHtml)
+  const detailLinks = await fetchAllDetailLinks({ baseUrl: SUUMO_URL, limit: limit + offset })
   const sliced = detailLinks.slice(offset, offset + limit)
   const targets = resume
     ? sliced.filter((url) => !existingIds.has(hashId(url)))
