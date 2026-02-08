@@ -94,6 +94,7 @@ const overlayLogo = async (imagePath) => {
   const baseWidth = Math.max(160, Math.min(240, Math.round(metadata.width * 0.25)))
   const targetWidth = Math.min(metadata.width, Math.round(baseWidth * 1.5))
   const logoBuffer = await sharp(LOGO_PATH)
+    .trim()
     .resize({ width: targetWidth })
     .png()
     .toBuffer()
@@ -446,6 +447,54 @@ const extractUnits = ($) => {
   return units
 }
 
+const reprocessImages = async () => {
+  try {
+    const content = await fs.readFile(OUTPUT_JSON, 'utf-8')
+    const data = JSON.parse(content)
+    const items = Array.isArray(data?.items) ? data.items : []
+    let processed = 0
+
+    for (const item of items) {
+      const imagePaths = []
+      const images = Array.isArray(item.images) ? item.images : []
+      const toLocalPath = (publicPath) => path.join(process.cwd(), 'public', publicPath.replace(/^\//, ''))
+
+      images.forEach((img) => {
+        if (typeof img === 'string' && img.startsWith('/suumo/images/')) {
+          imagePaths.push(toLocalPath(img))
+        }
+      })
+
+      if (item.site_plan_image && item.site_plan_image.startsWith('/suumo/images/')) {
+        imagePaths.push(toLocalPath(item.site_plan_image))
+      }
+
+      if (Array.isArray(item.units)) {
+        item.units.forEach((unit) => {
+          if (unit?.floor_plan_image && unit.floor_plan_image.startsWith('/suumo/images/')) {
+            imagePaths.push(toLocalPath(unit.floor_plan_image))
+          }
+        })
+      }
+
+      for (const imagePath of imagePaths) {
+        try {
+          await fs.access(imagePath)
+          await overlayLogo(imagePath)
+          processed += 1
+        } catch {
+          // ignore missing images
+        }
+      }
+    }
+
+    console.log(`Reprocessed ${processed} images with updated logo.`)
+  } catch (error) {
+    console.error('Reprocess failed:', error)
+    process.exit(1)
+  }
+}
+
 const crawl = async ({ limit, offset, delayMin, delayMax, resume }) => {
   await ensureDirs({ cleanImages: !resume })
 
@@ -631,14 +680,19 @@ const offsetArg = Number(args.find((arg) => arg.startsWith('--offset='))?.split(
 const delayMinArg = Number(args.find((arg) => arg.startsWith('--delay-min='))?.split('=')[1])
 const delayMaxArg = Number(args.find((arg) => arg.startsWith('--delay-max='))?.split('=')[1])
 const resumeArg = args.includes('--resume')
+const reprocessArg = args.includes('--reprocess-images')
 
-crawl({
-  limit: Number.isFinite(limitArg) && limitArg > 0 ? limitArg : DEFAULT_LIMIT,
-  offset: Number.isFinite(offsetArg) && offsetArg >= 0 ? offsetArg : 0,
-  delayMin: Number.isFinite(delayMinArg) && delayMinArg > 0 ? delayMinArg : DEFAULT_DELAY_MIN,
-  delayMax: Number.isFinite(delayMaxArg) && delayMaxArg > 0 ? delayMaxArg : DEFAULT_DELAY_MAX,
-  resume: resumeArg
-}).catch((error) => {
-  console.error(error)
-  process.exit(1)
-})
+if (reprocessArg) {
+  reprocessImages()
+} else {
+  crawl({
+    limit: Number.isFinite(limitArg) && limitArg > 0 ? limitArg : DEFAULT_LIMIT,
+    offset: Number.isFinite(offsetArg) && offsetArg >= 0 ? offsetArg : 0,
+    delayMin: Number.isFinite(delayMinArg) && delayMinArg > 0 ? delayMinArg : DEFAULT_DELAY_MIN,
+    delayMax: Number.isFinite(delayMaxArg) && delayMaxArg > 0 ? delayMaxArg : DEFAULT_DELAY_MAX,
+    resume: resumeArg
+  }).catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })
+}
