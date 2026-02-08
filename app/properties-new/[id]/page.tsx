@@ -1,7 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 interface SuumoItem {
@@ -92,28 +91,41 @@ export default async function PropertiesNewDetailPage({
               {images.length > 0 ? (
                 <div>
                   <div className="relative w-full h-[400px] bg-gray-100 rounded overflow-hidden">
-                    <Image
+                    <img
                       src={images[0]}
                       alt={item.title}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 66vw"
-                      priority
-                      unoptimized
+                      className="absolute inset-0 h-full w-full object-contain"
+                      loading="eager"
+                      onError={(event) => {
+                        const target = event.currentTarget
+                        target.style.display = 'none'
+                        const fallback = target.nextElementSibling as HTMLElement | null
+                        if (fallback) fallback.style.display = 'flex'
+                      }}
                     />
+                    <div className="absolute inset-0 hidden items-center justify-center text-gray-500">
+                      画像なし
+                    </div>
                   </div>
                   {images.length > 1 && (
                     <div className="mt-4 grid grid-cols-4 gap-2">
                       {images.slice(0, 8).map((img, index) => (
                         <div key={`${img}-${index}`} className="relative h-20 bg-gray-100 rounded overflow-hidden">
-                          <Image
+                          <img
                             src={img}
                             alt={`${item.title} ${index + 1}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 25vw, 10vw"
-                            unoptimized
+                            className="absolute inset-0 h-full w-full object-cover"
+                            loading="lazy"
+                            onError={(event) => {
+                              const target = event.currentTarget
+                              target.style.display = 'none'
+                              const fallback = target.nextElementSibling as HTMLElement | null
+                              if (fallback) fallback.style.display = 'flex'
+                            }}
                           />
+                          <div className="absolute inset-0 hidden items-center justify-center text-xs text-gray-400">
+                            画像なし
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -246,14 +258,21 @@ export default async function PropertiesNewDetailPage({
                   <div className="mb-6">
                     <p className="text-sm text-gray-500 mb-2">区画図</p>
                     <div className="relative w-full h-[360px] bg-gray-100 rounded overflow-hidden">
-                      <Image
+                      <img
                         src={item.site_plan_image}
                         alt="区画図"
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 768px) 100vw, 66vw"
-                        unoptimized
+                        className="absolute inset-0 h-full w-full object-contain"
+                        loading="lazy"
+                        onError={(event) => {
+                          const target = event.currentTarget
+                          target.style.display = 'none'
+                          const fallback = target.nextElementSibling as HTMLElement | null
+                          if (fallback) fallback.style.display = 'flex'
+                        }}
                       />
+                      <div className="absolute inset-0 hidden items-center justify-center text-gray-400">
+                        画像なし
+                      </div>
                     </div>
                   </div>
                 )}
@@ -264,14 +283,21 @@ export default async function PropertiesNewDetailPage({
                         <p className="font-semibold mb-2">{unit.name}</p>
                         {unit.floor_plan_image && (
                           <div className="relative w-full h-32 bg-gray-100 rounded mb-2 overflow-hidden">
-                            <Image
+                            <img
                               src={unit.floor_plan_image}
                               alt={`${unit.name} 間取り図`}
-                              fill
-                              className="object-contain"
-                              sizes="(max-width: 768px) 100vw, 20vw"
-                              unoptimized
+                              className="absolute inset-0 h-full w-full object-contain"
+                              loading="lazy"
+                              onError={(event) => {
+                                const target = event.currentTarget
+                                target.style.display = 'none'
+                                const fallback = target.nextElementSibling as HTMLElement | null
+                                if (fallback) fallback.style.display = 'flex'
+                              }}
                             />
+                            <div className="absolute inset-0 hidden items-center justify-center text-xs text-gray-400">
+                              画像なし
+                            </div>
                           </div>
                         )}
                         <dl className="space-y-1 text-gray-700">

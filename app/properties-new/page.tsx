@@ -1,6 +1,5 @@
 import fs from 'fs/promises'
 import path from 'path'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface SuumoItem {
@@ -66,19 +65,28 @@ export default async function PropertiesNewPage() {
                   className="group rounded-3xl border border-[#EAD8A6] bg-white shadow-[0_14px_30px_rgba(21,19,13,0.08)] transition hover:-translate-y-1"
                 >
                   <div className="relative h-48 w-full overflow-hidden rounded-t-3xl bg-[#F8E7B8]/40">
-                    {imageUrl ? (
-                      <Image
+                  {imageUrl ? (
+                    <>
+                      <img
                         src={imageUrl}
                         alt={item.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        unoptimized
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover"
+                        onError={(event) => {
+                          const target = event.currentTarget
+                          target.style.display = 'none'
+                          const fallback = target.nextElementSibling as HTMLElement | null
+                          if (fallback) fallback.style.display = 'flex'
+                        }}
                       />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-[#9B8856]">画像準備中</div>
-                    )}
-                  </div>
+                      <div className="absolute inset-0 hidden items-center justify-center text-[#9B8856]">
+                        画像準備中
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-[#9B8856]">画像準備中</div>
+                  )}
+                </div>
                   <div className="p-6">
                     <div className="text-xs uppercase tracking-[0.25em] text-[#B8A265]">
                       {item.property_type || '物件'}
