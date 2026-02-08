@@ -99,6 +99,7 @@ export default async function PropertiesNewDetailPage({
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, 66vw"
                       priority
+                      unoptimized
                     />
                   </div>
                   {images.length > 1 && (
@@ -111,6 +112,7 @@ export default async function PropertiesNewDetailPage({
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 25vw, 10vw"
+                            unoptimized
                           />
                         </div>
                       ))}
@@ -250,6 +252,7 @@ export default async function PropertiesNewDetailPage({
                         fill
                         className="object-contain"
                         sizes="(max-width: 768px) 100vw, 66vw"
+                        unoptimized
                       />
                     </div>
                   </div>
@@ -267,6 +270,7 @@ export default async function PropertiesNewDetailPage({
                               fill
                               className="object-contain"
                               sizes="(max-width: 768px) 100vw, 20vw"
+                              unoptimized
                             />
                           </div>
                         )}
