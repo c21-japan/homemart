@@ -82,16 +82,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams?: 
                         alt={item.title}
                         loading="lazy"
                         className="absolute inset-0 h-full w-full object-cover"
-                        onError={(event) => {
-                          const target = event.currentTarget
-                          target.style.display = 'none'
-                          const fallback = target.nextElementSibling as HTMLElement | null
-                          if (fallback) fallback.style.display = 'flex'
-                        }}
                       />
-                      <div className="absolute inset-0 hidden items-center justify-center text-[#9B8856]">
-                        画像準備中
-                      </div>
                     </>
                   ) : (
                     <div className="flex h-full items-center justify-center text-[#9B8856]">画像準備中</div>

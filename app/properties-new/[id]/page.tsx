@@ -96,16 +96,7 @@ export default async function PropertiesNewDetailPage({
                       alt={item.title}
                       className="absolute inset-0 h-full w-full object-contain"
                       loading="eager"
-                      onError={(event) => {
-                        const target = event.currentTarget
-                        target.style.display = 'none'
-                        const fallback = target.nextElementSibling as HTMLElement | null
-                        if (fallback) fallback.style.display = 'flex'
-                      }}
                     />
-                    <div className="absolute inset-0 hidden items-center justify-center text-gray-500">
-                      画像なし
-                    </div>
                   </div>
                   {images.length > 1 && (
                     <div className="mt-4 grid grid-cols-4 gap-2">
@@ -116,16 +107,7 @@ export default async function PropertiesNewDetailPage({
                             alt={`${item.title} ${index + 1}`}
                             className="absolute inset-0 h-full w-full object-cover"
                             loading="lazy"
-                            onError={(event) => {
-                              const target = event.currentTarget
-                              target.style.display = 'none'
-                              const fallback = target.nextElementSibling as HTMLElement | null
-                              if (fallback) fallback.style.display = 'flex'
-                            }}
                           />
-                          <div className="absolute inset-0 hidden items-center justify-center text-xs text-gray-400">
-                            画像なし
-                          </div>
                         </div>
                       ))}
                     </div>
@@ -263,16 +245,7 @@ export default async function PropertiesNewDetailPage({
                         alt="区画図"
                         className="absolute inset-0 h-full w-full object-contain"
                         loading="lazy"
-                        onError={(event) => {
-                          const target = event.currentTarget
-                          target.style.display = 'none'
-                          const fallback = target.nextElementSibling as HTMLElement | null
-                          if (fallback) fallback.style.display = 'flex'
-                        }}
                       />
-                      <div className="absolute inset-0 hidden items-center justify-center text-gray-400">
-                        画像なし
-                      </div>
                     </div>
                   </div>
                 )}
@@ -288,16 +261,7 @@ export default async function PropertiesNewDetailPage({
                               alt={`${unit.name} 間取り図`}
                               className="absolute inset-0 h-full w-full object-contain"
                               loading="lazy"
-                              onError={(event) => {
-                                const target = event.currentTarget
-                                target.style.display = 'none'
-                                const fallback = target.nextElementSibling as HTMLElement | null
-                                if (fallback) fallback.style.display = 'flex'
-                              }}
                             />
-                            <div className="absolute inset-0 hidden items-center justify-center text-xs text-gray-400">
-                              画像なし
-                            </div>
                           </div>
                         )}
                         <dl className="space-y-1 text-gray-700">
